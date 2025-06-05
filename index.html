@@ -64,11 +64,6 @@
       color: var(--select-color);
       transition: background 0.35s, color 0.35s, border 0.35s;
     }
-    #bgUpload, #clearBgBtn {
-      margin-bottom: 1em;
-      margin-right: 0.5em;
-      font-size: 1em;
-    }
     #viewer-wrapper {
       width: 600px;
       height: 350px;
@@ -80,6 +75,9 @@
       margin-bottom: 2em;
       min-width: 250px;
       transition: background 0.35s, box-shadow 0.35s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     #viewer-wrapper.bg-has-img {
       background-size: cover;
@@ -99,6 +97,7 @@
       color: var(--desc-color);
       margin-bottom: 2em;
       transition: color 0.35s;
+      text-align: center;
     }
     .btn-bar {
       display: flex;
@@ -132,6 +131,19 @@
       background: var(--primary);
       color: var(--viewer-bg);
     }
+    .bg-controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5em;
+      margin-bottom: 1.2em;
+      width: 100%;
+    }
+    #bgUpload, #clearBgBtn {
+      font-size: 1em;
+      margin: 0;
+      /* Center via flex in .bg-controls */
+    }
   </style>
 </head>
 <body>
@@ -141,9 +153,6 @@
     <button class="switch-btn" id="nightSwitch" aria-label="Switch to Night Mode">🌙 Night Mode</button>
     <button class="switch-btn" id="variantSwitch" style="display:none"></button>
   </div>
-  <!-- Background upload -->
-  <input type="file" id="bgUpload" accept="image/*">
-  <button type="button" id="clearBgBtn">Clear Background</button>
   <div class="controls">
     <div>
       <label for="category" id="label-category">Category:</label>
@@ -164,6 +173,10 @@
       ar
       ar-modes="scene-viewer webxr quick-look">
     </model-viewer>
+  </div>
+  <div class="bg-controls">
+    <input type="file" id="bgUpload" accept="image/*">
+    <button type="button" id="clearBgBtn">Clear Background</button>
   </div>
   <div class="desc" id="desc"></div>
   <script>
