@@ -212,8 +212,8 @@
       // cameraControls is available only after model loads
       if (viewer && viewer.cameraControls) {
         // Both wheel and button zoom steps
-        viewer.cameraControls.dollyStep = 0.005; // ultra fine zoom
-        viewer.cameraControls.dollySpeed = 0.5;  // slow down wheel zoom even more
+        viewer.cameraControls.dollyStep = 0.002; // ultra fine zoom
+        viewer.cameraControls.dollySpeed = 0.2;  // slow down wheel zoom even more
       }
     }
     document.getElementById('viewer').addEventListener('load', setGentleZoomStep);
