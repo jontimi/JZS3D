@@ -151,6 +151,36 @@
       font-size: 1em;
       margin: 0;
     }
+    /* RESET VIEW BUTTON STYLE */
+    #resetViewBtn {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      z-index: 10;
+      padding: 0.5em 1.1em;
+      border-radius: 24px;
+      border: none;
+      font-size: 1em;
+      font-weight: 600;
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 2px 8px #0003;
+      cursor: pointer;
+      opacity: 0.93;
+      transition: background 0.2s, color 0.2s, opacity 0.2s;
+    }
+    #resetViewBtn:hover, #resetViewBtn:focus {
+      background: #1e8fff;
+      opacity: 1;
+    }
+    body.night #resetViewBtn {
+      background: #4098ff;
+      color: #181e28;
+    }
+    body.night #resetViewBtn:hover, body.night #resetViewBtn:focus {
+      background: #5caaff;
+      color: #232b39;
+    }
   </style>
 </head>
 <body>
@@ -178,8 +208,10 @@
       alt="3D model preview"
       shadow-intensity="1"
       ar
-      ar-modes="scene-viewer webxr quick-look">
+      ar-modes="scene-viewer webxr quick-look"
+      max-camera-orbit="auto auto 24m">
     </model-viewer>
+    <button id="resetViewBtn" title="Reset View" aria-label="Reset View">🔄 Reset View</button>
   </div>
   <div class="bg-controls">
     <input type="file" id="bgUpload" accept="image/*">
@@ -214,6 +246,15 @@
     document.getElementById('viewer').addEventListener('load', setGentleZoomStep);
     function safeSetGentleZoomStep() { setTimeout(setGentleZoomStep, 100); }
 
+    // RESET VIEW BUTTON FUNCTIONALITY
+    document.getElementById('resetViewBtn').onclick = function() {
+      const viewer = document.getElementById('viewer');
+      if (viewer) {
+        viewer.resetTurntableRotation();
+        viewer.jumpCameraToGoal();
+      }
+    };
+
     // Translations
     const translations = {
       en: {
@@ -225,6 +266,7 @@
         lang: "🇮🇱 עברית",
         switchTo: "Switch to",
         desc: (cat, model, variant) => `Category: ${cat} | Model: ${model}${variant ? ' (' + variant + ')' : ''}`,
+        resetView: "🔄 Reset View"
       },
       he: {
         title: "תצוגת מודלים בתלת-ממד",
@@ -235,6 +277,7 @@
         lang: "🇬🇧 English",
         switchTo: "החלף ל",
         desc: (cat, model, variant) => `קטגוריה: ${cat} | מודל: ${model}${variant ? ' (' + variant + ')' : ''}`,
+        resetView: "🔄 איפוס תצוגה"
       }
     };
     const categoryLabels = {
@@ -292,6 +335,7 @@
       document.getElementById('nightSwitch').setAttribute('aria-label',
         isNight ? (lang === "en" ? "Switch to Light Mode" : "החלף למצב יום") :
                   (lang === "en" ? "Switch to Night Mode" : "החלף למצב לילה"));
+      document.getElementById('resetViewBtn').textContent = translations[lang].resetView;
       renderCategoryDropdown();
       renderModelDropdown();
       updateViewer();
@@ -353,10 +397,8 @@
       viewer.src = modelFile;
       viewer.alt = prettyModel(modelObj);
 
-      // Remove all camera orbit attributes to let model-viewer auto-frame
-      viewer.removeAttribute('camera-orbit');
-      viewer.removeAttribute('min-camera-orbit');
-      viewer.removeAttribute('max-camera-orbit');
+      // Always enforce extreme zoom out
+      viewer.setAttribute('max-camera-orbit', 'auto auto 24m');
 
       desc.textContent = translations[lang].desc(
         prettyCategory(currentCategory),
