@@ -393,6 +393,7 @@
         opt.textContent = getTranslation('categories', cat);
         catDropdown.appendChild(opt);
       });
+      if (!CATEGORIES[currentCat]) currentCat = Object.keys(CATEGORIES)[0];
       catDropdown.value = currentCat;
     }
 
@@ -405,6 +406,7 @@
         opt.textContent = getTranslation('models', model.name);
         modelDropdown.appendChild(opt);
       });
+      if (currentModelIdx >= CATEGORIES[category].length) currentModelIdx = 0;
       modelDropdown.selectedIndex = currentModelIdx;
     }
 
@@ -455,6 +457,7 @@
       .then(r => r.json())
       .then(data => {
         CATEGORIES = data;
+        if (!CATEGORIES[currentCat]) currentCat = Object.keys(CATEGORIES)[0];
         renderCategoryDropdown();
         renderModelDropdown(currentCat);
         setModel();
