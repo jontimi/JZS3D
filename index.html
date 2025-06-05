@@ -206,12 +206,14 @@
     });
     window.addEventListener('DOMContentLoaded', adjustViewerHeight);
 
-    // Make zoom in/out EXTREMELY gentle (many steps)
+    // Make zoom in/out extremely gentle (many steps, least aggressive possible)
     function setGentleZoomStep() {
       const viewer = document.getElementById('viewer');
       // cameraControls is available only after model loads
       if (viewer && viewer.cameraControls) {
-        viewer.cameraControls.dollyStep = 0.02; // much gentler than before
+        // Both wheel and button zoom steps
+        viewer.cameraControls.dollyStep = 0.005; // ultra fine zoom
+        viewer.cameraControls.dollySpeed = 0.5;  // slow down wheel zoom even more
       }
     }
     document.getElementById('viewer').addEventListener('load', setGentleZoomStep);
@@ -355,6 +357,16 @@
       }
       viewer.src = modelFile;
       viewer.alt = prettyModel(modelObj);
+
+      // Reset camera-orbit/min/max for all models
+      viewer.removeAttribute('camera-orbit');
+      viewer.removeAttribute('min-camera-orbit');
+      viewer.removeAttribute('max-camera-orbit');
+      // Per-model camera settings
+      if (modelObj.cameraOrbit) viewer.setAttribute('camera-orbit', modelObj.cameraOrbit);
+      if (modelObj.minCameraOrbit) viewer.setAttribute('min-camera-orbit', modelObj.minCameraOrbit);
+      if (modelObj.maxCameraOrbit) viewer.setAttribute('max-camera-orbit', modelObj.maxCameraOrbit);
+
       desc.textContent = translations[lang].desc(
         prettyCategory(currentCategory),
         prettyModel(modelObj),
@@ -407,23 +419,17 @@
         const wrapper = document.getElementById('viewer-wrapper');
         const img = new Image();
         img.onload = function() {
-          // Get viewport width for responsive design
           let viewportWidth = Math.min(window.innerWidth, 1200) * 0.85;
           if (window.innerWidth < 900) {
             viewportWidth = window.innerWidth * 0.99;
           }
-          // Calculate new height based on image aspect ratio and wrapper width
           const aspect = img.height / img.width;
           let width = viewportWidth;
           let height = width * aspect;
-
-          // Clamp width/height to CSS min/max
           if (width < 250) width = 250;
           if (width > 1200) width = 1200;
           if (height < 220) height = 220;
           if (height > 600) height = 600;
-
-          // Actually set the width/height for a perfect fit, and set background
           wrapper.style.width = width + 'px';
           wrapper.style.height = height + 'px';
           wrapper.classList.add('bg-has-img');
@@ -438,7 +444,6 @@
       wrapper.classList.remove('bg-has-img');
       wrapper.style.backgroundImage = '';
       document.getElementById('bgUpload').value = '';
-      // Restore responsive width/height
       wrapper.style.width = '';
       wrapper.style.height = '';
       adjustViewerHeight();
