@@ -1,63 +1,23 @@
 {
-  "Furniture": [
-    {
-      "file": "Furniture/HiveShelf90cm.glb",
-      "name": "HiveShelf90cm",
-      "colors": [
-        {"name": "Natural Wood", "file": "Furniture/HiveShelf90cm.glb"},
-        {"name": "White", "file": "Furniture/HiveShelf90cm_white.glb"}
-      ],
-      "dimensions": "900mm × 400mm × 1800mm",
-      "description": "A modern storage shelf, ideal for living rooms.",
-      "creator": "Jane Doe"
-    },
-    {
-      "file": "Furniture/ROMAcouchTripoAIcompressed.glb",
-      "name": "ROMAcouchTripoAIcompressed",
-      "colors": [
-        {"name": "Brown", "file": "Furniture/ROMAcouchTripoAIcompressed.glb"},
-        {"name": "Dark Grey", "file": "Furniture/ROMAcouchTripoAIcompressed_darkgrey.glb"}
-      ],
-      "dimensions": "2000mm × 900mm × 800mm",
-      "description": "Classic Roma couch for modern interiors.",
-      "creator": "Jane Doe"
-    },
-    {
-      "file": "Furniture/ShiraTableAI.glb",
-      "name": "ShiraTableAI",
-      "dimensions": "1400mm × 800mm × 750mm",
-      "description": "AI-designed Shira table.",
-      "creator": "Jane Doe"
-    },
-    {
-      "file": "Furniture/Sittingtable.glb",
-      "name": "Sittingtable",
-      "dimensions": "1200mm × 700mm × 400mm",
-      "description": "Elegant sitting table for multipurpose use.",
-      "creator": "John Smith"
-    },
-    {
-      "file": "Furniture/SlimClosetAce.glb",
-      "name": "SlimClosetAce",
-      "dimensions": "500mm × 600mm × 1800mm",
-      "description": "Slim closet for compact rooms.",
-      "creator": "Jane Doe"
-    }
+  "Cabinets": [
+    { "name": "bookcase", "file": "Cabinets/bookcase.glb" },
+    { "name": "closet_oak_white", "file": "Cabinets/closet_oak_white.glb" },
+    { "name": "ikea_alex_drawer", "file": "Cabinets/ikea_alex_drawer.glb" }
   ],
-  "Animals": [
-    {
-      "file": "animals/Armadillo.glb",
-      "name": "Armadillo",
-      "dimensions": "450mm × 200mm × 150mm",
-      "description": "A detailed 3D armadillo model.",
-      "creator": "Wildlife Studio"
-    },
-    {
-      "file": "animals/ArmadilloV2.glb",
-      "name": "ArmadilloV2",
-      "dimensions": "470mm × 210mm × 160mm",
-      "description": "Updated armadillo model with extra detail.",
-      "creator": "Wildlife Studio"
-    }
+  "Lamps": [
+    { "name": "floor_lamp", "file": "Lamps/floor_lamp.glb" },
+    { "name": "mario_floor_lamp", "file": "Lamps/mario_floor_lamp.glb" },
+    { "name": "sweep_floor_lamp_black", "file": "Lamps/sweep_floor_lamp_black.glb" }
+  ],
+  "Sofas": [
+    { "name": "BLACKSofa", "file": "Sofas/BLACKSofa.glb" },
+    { "name": "dolton_armchair_hudson_grey", "file": "Sofas/dolton_armchair_hudson_grey.glb" },
+    { "name": "sofawood", "file": "Sofas/sofawood.glb" },
+    { "name": "wassily_chair", "file": "Sofas/wassily_chair.glb" }
+  ],
+  "Tables": [
+    { "name": "floor_lamp", "file": "Tables/floor_lamp.glb" },
+    { "name": "kumo_white_coffee_table", "file": "Tables/kumo_white_coffee_table.glb" },
+    { "name": "noguchi_coffee_table", "file": "Tables/noguchi_coffee_table.glb" }
   ]
 }
