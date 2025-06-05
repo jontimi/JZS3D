@@ -1,22 +1,96 @@
 {
   "Cabinets": [
-    { "name": "bookcase", "file": "Cabinets/bookcase.glb" },
-    { "name": "closet_oak_white", "file": "Cabinets/closet_oak_white.glb" },
-    { "name": "ikea_alex_drawer", "file": "Cabinets/ikea_alex_drawer.glb" }
+    {
+      "name": "slimcloset",
+      "label_en": "Slim Closet",
+      "label_he": "ארון דק",
+      "file": "Cabinets/slimcloset_closed.glb",
+      "variants": [
+        { "label": "Closed", "label_he": "סגור", "file": "Cabinets/slimcloset_closed.glb" },
+        { "label": "Open",   "label_he": "פתוח", "file": "Cabinets/slimcloset_open.glb" }
+      ]
+    },
+    {
+      "name": "bookcase",
+      "label_en": "Bookcase",
+      "label_he": "כוננית",
+      "file": "Cabinets/bookcase.glb"
+    },
+    {
+      "name": "closet_oak_white",
+      "label_en": "Closet Oak White",
+      "label_he": "ארון עץ לבן",
+      "file": "Cabinets/closet_oak_white.glb"
+    },
+    {
+      "name": "ikea_alex_drawer",
+      "label_en": "IKEA Alex Drawer",
+      "label_he": "מגירות אלכס איקאה",
+      "file": "Cabinets/ikea_alex_drawer.glb"
+    }
   ],
   "Lamps": [
-    { "name": "floor_lamp", "file": "Lamps/floor_lamp.glb" },
-    { "name": "mario_floor_lamp", "file": "Lamps/mario_floor_lamp.glb" },
-    { "name": "sweep_floor_lamp_black", "file": "Lamps/sweep_floor_lamp_black.glb" }
+    {
+      "name": "floor_lamp",
+      "label_en": "Floor Lamp",
+      "label_he": "מנורת רצפה",
+      "file": "Lamps/floor_lamp_off.glb",
+      "variants": [
+        { "label": "Off", "label_he": "כבוי", "file": "Lamps/floor_lamp_off.glb" },
+        { "label": "On",  "label_he": "דלוק", "file": "Lamps/floor_lamp_on.glb" }
+      ]
+    },
+    {
+      "name": "mario_floor_lamp",
+      "label_en": "Mario Floor Lamp",
+      "label_he": "מנורת מריו",
+      "file": "Lamps/mario_floor_lamp.glb"
+    },
+    {
+      "name": "sweep_floor_lamp_black",
+      "label_en": "Sweep Floor Lamp Black",
+      "label_he": "מנורת Sweep שחורה",
+      "file": "Lamps/sweep_floor_lamp_black.glb"
+    }
   ],
   "Sofas": [
-    { "name": "BLACKSofa", "file": "Sofas/BLACKSofa.glb" },
-    { "name": "dolton_armchair_hudson_grey", "file": "Sofas/dolton_armchair_hudson_grey.glb" },
-    { "name": "sofawood", "file": "Sofas/sofawood.glb" },
-    { "name": "wassily_chair", "file": "Sofas/wassily_chair.glb" }
+    {
+      "name": "BLACKSofa",
+      "label_en": "Black Sofa",
+      "label_he": "ספה שחורה",
+      "file": "Sofas/BLACKSofa.glb"
+    },
+    {
+      "name": "dolton_armchair_hudson_grey",
+      "label_en": "Dolton Armchair Hudson Grey",
+      "label_he": "כורסא דולטון הדסון אפור",
+      "file": "Sofas/dolton_armchair_hudson_grey.glb"
+    },
+    {
+      "name": "sofawood",
+      "label_en": "Wood Sofa",
+      "label_he": "ספת עץ",
+      "file": "Sofas/sofawood.glb"
+    },
+    {
+      "name": "wassily_chair",
+      "label_en": "Wassily Chair",
+      "label_he": "כיסא ואסילי",
+      "file": "Sofas/wassily_chair.glb"
+    }
   ],
   "Tables": [
-    { "name": "kumo_white_coffee_table", "file": "Tables/kumo_white_coffee_table.glb" },
-    { "name": "noguchi_coffee_table", "file": "Tables/noguchi_coffee_table.glb" }
+    {
+      "name": "kumo_white_coffee_table",
+      "label_en": "Kumo White Coffee Table",
+      "label_he": "שולחן קפה לבן קומו",
+      "file": "Tables/kumo_white_coffee_table.glb"
+    },
+    {
+      "name": "noguchi_coffee_table",
+      "label_en": "Noguchi Coffee Table",
+      "label_he": "שולחן קפה נגוצ'י",
+      "file": "Tables/noguchi_coffee_table.glb"
+    }
   ]
 }
