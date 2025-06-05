@@ -77,15 +77,15 @@
       overflow: hidden;
       position: relative;
       margin-bottom: 2em;
-      transition: background 0.35s, box-shadow 0.35s;
+      transition: background 0.35s, box-shadow 0.35s, height 0.3s;
       display: flex;
       align-items: center;
       justify-content: center;
     }
     #viewer-wrapper.bg-has-img {
-      background-size: cover;
-      background-position: center;
+      background-size: contain;
       background-repeat: no-repeat;
+      background-position: center;
     }
     model-viewer {
       width: 100%;
@@ -207,17 +207,12 @@
     // Make zoom in/out less aggressive
     function setGentleZoomStep() {
       const viewer = document.getElementById('viewer');
-      // cameraControls is available only after model loads
       if (viewer && viewer.cameraControls) {
-        viewer.cameraControls.dollyStep = 0.2; // Default is 1, smaller = gentler
+        viewer.cameraControls.dollyStep = 0.2;
       }
     }
-    // Set on load
     document.getElementById('viewer').addEventListener('load', setGentleZoomStep);
-    // Also set after every model/variant change for safety
-    function safeSetGentleZoomStep() {
-      setTimeout(setGentleZoomStep, 100); // Give the model-viewer time to update
-    }
+    function safeSetGentleZoomStep() { setTimeout(setGentleZoomStep, 100); }
 
     // Translations
     const translations = {
@@ -242,16 +237,12 @@
         desc: (cat, model, variant) => `קטגוריה: ${cat} | מודל: ${model}${variant ? ' (' + variant + ')' : ''}`,
       }
     };
-
-    // Category names for Hebrew
     const categoryLabels = {
       "Cabinets": { en: "Cabinets", he: "ארונות" },
       "Lamps": { en: "Lamps", he: "מנורות" },
       "Sofas": { en: "Sofas", he: "ספות" },
       "Tables": { en: "Tables", he: "שולחנות" }
     };
-
-    // List of available GLB files in your repo (update this if you add more files)
     const availableFiles = [
       "Cabinets/bookcase.glb",
       "Cabinets/closet_oak_white.glb",
@@ -266,7 +257,6 @@
       "Tables/kumo_white_coffee_table.glb",
       "Tables/noguchi_coffee_table.glb"
     ];
-
     function fileExists(path) {
       return availableFiles.includes(path);
     }
@@ -280,12 +270,10 @@
     function prettyCategory(cat) {
       return (categoryLabels[cat] && categoryLabels[cat][lang]) ? categoryLabels[cat][lang] : cat;
     }
-
     function prettyModel(modelObj) {
       if (!modelObj) return "";
       return lang === "he" ? (modelObj.label_he || modelObj.label_en || modelObj.name) : (modelObj.label_en || modelObj.name);
     }
-
     function prettyVariant(variantObj) {
       if (!variantObj) return "";
       return lang === "he" ? (variantObj.label_he || variantObj.label) : (variantObj.label || variantObj.label_he);
@@ -310,7 +298,6 @@
       updateViewer();
       document.body.dir = (lang === "he") ? "rtl" : "ltr";
     }
-
     function renderCategoryDropdown() {
       const catSel = document.getElementById('category');
       const cats = Object.keys(modelsData);
@@ -323,7 +310,6 @@
       });
       catSel.value = currentCategory;
     }
-
     function renderModelDropdown() {
       const modelSel = document.getElementById('model');
       if (!modelsData[currentCategory]) return;
@@ -336,7 +322,6 @@
       });
       modelSel.selectedIndex = currentModelIndex;
     }
-
     function updateViewer() {
       const viewer = document.getElementById('viewer');
       const desc = document.getElementById('desc');
@@ -348,11 +333,9 @@
       let hasValidVariants = false;
       let validVariants = [];
       if (modelObj.variants && Array.isArray(modelObj.variants)) {
-        // Only count as valid if at least 2 different variants AND both files exist
         validVariants = modelObj.variants.filter(v => v.file && fileExists(v.file));
         hasValidVariants = validVariants.length >= 2;
         if (hasValidVariants) {
-          // Clamp variant index to valid range
           if (currentVariantIndex >= validVariants.length) currentVariantIndex = 0;
           const variantObj = validVariants[currentVariantIndex];
           modelFile = variantObj.file;
@@ -382,14 +365,12 @@
       setLanguage(lang === "en" ? "he" : "en");
       safeSetGentleZoomStep();
     };
-
     document.getElementById('nightSwitch').onclick = function() {
       document.body.classList.toggle('night');
       const isNight = document.body.classList.contains('night');
       document.getElementById('nightSwitch').textContent = isNight ? translations[lang].light : translations[lang].night;
       safeSetGentleZoomStep();
     };
-
     document.getElementById('category').addEventListener('change', function() {
       currentCategory = this.value;
       currentModelIndex = 0;
@@ -398,17 +379,14 @@
       updateViewer();
       safeSetGentleZoomStep();
     });
-
     document.getElementById('model').addEventListener('change', function() {
       currentModelIndex = +this.value;
       currentVariantIndex = 0;
       updateViewer();
       safeSetGentleZoomStep();
     });
-
     document.getElementById('variantSwitch').onclick = function () {
       const modelObj = modelsData[currentCategory][currentModelIndex];
-      // Only switch if there are valid variants
       if (!modelObj.variants || !Array.isArray(modelObj.variants)) return;
       const validVariants = modelObj.variants.filter(v => v.file && fileExists(v.file));
       if (validVariants.length < 2) return;
@@ -417,7 +395,7 @@
       safeSetGentleZoomStep();
     };
 
-    // Background image upload
+    // Option 2: When uploading a background, resize viewer window to fit the image's aspect ratio
     document.getElementById('bgUpload').addEventListener('change', function(event) {
       const file = event.target.files && event.target.files[0];
       if (!file) return;
@@ -425,17 +403,29 @@
       const reader = new FileReader();
       reader.onload = function(e) {
         const wrapper = document.getElementById('viewer-wrapper');
-        wrapper.classList.add('bg-has-img');
-        wrapper.style.backgroundImage = `url('${e.target.result}')`;
+        const img = new Image();
+        img.onload = function() {
+          const width = wrapper.offsetWidth;
+          const aspect = img.height / img.width;
+          let height = width * aspect;
+          // Clamp to min/max heights from CSS
+          if (height < 220) height = 220;
+          if (height > 600) height = 600;
+          wrapper.style.height = height + 'px';
+          wrapper.classList.add('bg-has-img');
+          wrapper.style.backgroundImage = `url('${e.target.result}')`;
+        };
+        img.src = e.target.result;
       };
       reader.readAsDataURL(file);
     });
-
     document.getElementById('clearBgBtn').onclick = function() {
       const wrapper = document.getElementById('viewer-wrapper');
       wrapper.classList.remove('bg-has-img');
       wrapper.style.backgroundImage = '';
       document.getElementById('bgUpload').value = '';
+      // Restore responsive height
+      adjustViewerHeight();
     };
 
     // Initial fetch and boot
