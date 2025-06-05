@@ -64,18 +64,35 @@
       color: var(--select-color);
       transition: background 0.35s, color 0.35s, border 0.35s;
     }
-    model-viewer {
+    #bgUpload, #clearBgBtn {
+      margin-bottom: 1em;
+      margin-right: 0.5em;
+      font-size: 1em;
+    }
+    #viewer-wrapper {
       width: 600px;
       height: 350px;
       background: var(--viewer-bg);
       border-radius: 12px;
       box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
       margin-bottom: 2em;
       min-width: 250px;
       transition: background 0.35s, box-shadow 0.35s;
     }
+    #viewer-wrapper.bg-has-img {
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    model-viewer {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+    }
     @media (max-width: 700px) {
-      model-viewer { width: 99vw; height: 220px; }
+      #viewer-wrapper { width: 99vw; height: 220px; }
     }
     .desc {
       font-size: 1.1em;
@@ -124,6 +141,9 @@
     <button class="switch-btn" id="nightSwitch" aria-label="Switch to Night Mode">🌙 Night Mode</button>
     <button class="switch-btn" id="variantSwitch" style="display:none"></button>
   </div>
+  <!-- Background upload -->
+  <input type="file" id="bgUpload" accept="image/*">
+  <button type="button" id="clearBgBtn">Clear Background</button>
   <div class="controls">
     <div>
       <label for="category" id="label-category">Category:</label>
@@ -134,15 +154,17 @@
       <select id="model"></select>
     </div>
   </div>
-  <model-viewer
-    id="viewer"
-    camera-controls
-    auto-rotate
-    alt="3D model preview"
-    shadow-intensity="1"
-    ar
-    ar-modes="scene-viewer webxr quick-look">
-  </model-viewer>
+  <div id="viewer-wrapper">
+    <model-viewer
+      id="viewer"
+      camera-controls
+      auto-rotate
+      alt="3D model preview"
+      shadow-intensity="1"
+      ar
+      ar-modes="scene-viewer webxr quick-look">
+    </model-viewer>
+  </div>
   <div class="desc" id="desc"></div>
   <script>
     // Translations
@@ -155,8 +177,7 @@
         light: "☀️ Light Mode",
         lang: "🇮🇱 עברית",
         switchTo: "Switch to",
-        desc: (cat, model) => `Category: ${cat} | Model: ${model}`,
-        pretty: (str) => str.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+        desc: (cat, model, variant) => `Category: ${cat} | Model: ${model}${variant ? ' (' + variant + ')' : ''}`,
       },
       he: {
         title: "תצוגת מודלים בתלת-ממד",
@@ -166,44 +187,37 @@
         light: "☀️ מצב יום",
         lang: "🇬🇧 English",
         switchTo: "החלף ל",
-        desc: (cat, model) => `קטגוריה: ${cat} | מודל: ${model}`,
-        pretty: (str) => {
-          // Hebrew pretty translation for known categories/models
-          const cats = {
-            "Cabinets": "ארונות",
-            "Lamps": "מנורות",
-            "Sofas": "ספות",
-            "Tables": "שולחנות"
-          };
-          const mods = {
-            "bookcase": "כוננית",
-            "closet_oak_white": "ארון עץ לבן",
-            "ikea_alex_drawer": "מגירות אלכס איקאה",
-            "slimcloset": "ארון דק",
-            "slimcloset_closed": "ארון דק סגור",
-            "slimcloset_open": "ארון דק פתוח",
-            "floor_lamp": "מנורת רצפה",
-            "mario_floor_lamp": "מנורת מריו",
-            "sweep_floor_lamp_black": "מנורת Sweep שחורה",
-            "BLACKSofa": "ספה שחורה",
-            "dolton_armchair_hudson_grey": "כורסא דולטון הדסון אפור",
-            "sofawood": "ספת עץ",
-            "wassily_chair": "כיסא ואסילי",
-            "kumo_white_coffee_table": "שולחן קפה לבן קומו",
-            "noguchi_coffee_table": "שולחן קפה נגוצ'י",
-            "Closed": "סגור",
-            "Open": "פתוח"
-          };
-          return cats[str] || mods[str] ||
-            str.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-        }
+        desc: (cat, model, variant) => `קטגוריה: ${cat} | מודל: ${model}${variant ? ' (' + variant + ')' : ''}`,
       }
     };
+
+    // Category names for Hebrew
+    const categoryLabels = {
+      "Cabinets": { en: "Cabinets", he: "ארונות" },
+      "Lamps": { en: "Lamps", he: "מנורות" },
+      "Sofas": { en: "Sofas", he: "ספות" },
+      "Tables": { en: "Tables", he: "שולחנות" }
+    };
+
     let lang = "en";
     let modelsData = {};
     let currentCategory = "";
     let currentModelIndex = 0;
     let currentVariantIndex = 0;
+
+    function prettyCategory(cat) {
+      return (categoryLabels[cat] && categoryLabels[cat][lang]) ? categoryLabels[cat][lang] : cat;
+    }
+
+    function prettyModel(modelObj) {
+      if (!modelObj) return "";
+      return lang === "he" ? (modelObj.label_he || modelObj.label_en || modelObj.name) : (modelObj.label_en || modelObj.name);
+    }
+
+    function prettyVariant(variantObj) {
+      if (!variantObj) return "";
+      return lang === "he" ? (variantObj.label_he || variantObj.label) : (variantObj.label || variantObj.label_he);
+    }
 
     function setLanguage(newLang) {
       lang = newLang;
@@ -232,7 +246,7 @@
       cats.forEach(cat => {
         const opt = document.createElement('option');
         opt.value = cat;
-        opt.textContent = translations[lang].pretty(cat);
+        opt.textContent = prettyCategory(cat);
         catSel.appendChild(opt);
       });
       catSel.value = currentCategory;
@@ -245,7 +259,7 @@
       modelsData[currentCategory].forEach((model, i) => {
         const opt = document.createElement('option');
         opt.value = i;
-        opt.textContent = translations[lang].pretty(model.name);
+        opt.textContent = prettyModel(model);
         modelSel.appendChild(opt);
       });
       modelSel.selectedIndex = currentModelIndex;
@@ -254,27 +268,28 @@
     function updateViewer() {
       const viewer = document.getElementById('viewer');
       const desc = document.getElementById('desc');
-      const modelObj = modelsData[currentCategory][currentModelIndex];
       const variantSwitch = document.getElementById('variantSwitch');
+      const modelObj = modelsData[currentCategory][currentModelIndex];
       let modelFile = modelObj.file;
+      let variantLabel = "";
 
       if (modelObj.variants && modelObj.variants.length > 1) {
-        modelFile = modelObj.variants[currentVariantIndex].file;
+        const variantObj = modelObj.variants[currentVariantIndex];
+        modelFile = variantObj.file;
+        variantLabel = prettyVariant(variantObj);
         variantSwitch.style.display = '';
-        variantSwitch.textContent = translations[lang].switchTo + ' ' +
-          translations[lang].pretty(modelObj.variants[(currentVariantIndex + 1) % modelObj.variants.length].label);
+        const nextVariantObj = modelObj.variants[(currentVariantIndex + 1) % modelObj.variants.length];
+        variantSwitch.textContent = translations[lang].switchTo + ' ' + prettyVariant(nextVariantObj);
       } else {
         currentVariantIndex = 0;
         variantSwitch.style.display = 'none';
       }
       viewer.src = modelFile;
-      viewer.alt = translations[lang].pretty(modelObj.name);
+      viewer.alt = prettyModel(modelObj);
       desc.textContent = translations[lang].desc(
-        translations[lang].pretty(currentCategory),
-        translations[lang].pretty(modelObj.name) +
-          (modelObj.variants && modelObj.variants.length > 1
-            ? ' (' + translations[lang].pretty(modelObj.variants[currentVariantIndex].label) + ')'
-            : '')
+        prettyCategory(currentCategory),
+        prettyModel(modelObj),
+        variantLabel
       );
     }
 
@@ -306,6 +321,27 @@
       const modelObj = modelsData[currentCategory][currentModelIndex];
       currentVariantIndex = (currentVariantIndex + 1) % modelObj.variants.length;
       updateViewer();
+    };
+
+    // Background image upload
+    document.getElementById('bgUpload').addEventListener('change', function(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const wrapper = document.getElementById('viewer-wrapper');
+        wrapper.classList.add('bg-has-img');
+        wrapper.style.backgroundImage = `url('${e.target.result}')`;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    document.getElementById('clearBgBtn').onclick = function() {
+      const wrapper = document.getElementById('viewer-wrapper');
+      wrapper.classList.remove('bg-has-img');
+      wrapper.style.backgroundImage = '';
+      document.getElementById('bgUpload').value = '';
     };
 
     // Initial fetch and boot
