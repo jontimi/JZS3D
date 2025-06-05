@@ -256,6 +256,12 @@
     body[dir="rtl"] .summary-row {
       flex-direction: row-reverse;
     }
+    .error-msg {
+      color: red;
+      font-weight: bold;
+      margin: 2em;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -297,10 +303,255 @@
         reveal="interaction"
         loading="eager">
       </model-viewer>
+      <div id="error-msg" class="error-msg" style="display:none;"></div>
     </div>
   </div>
   <script>
-    // ... (rest of your JS remains unchanged)
+    const translations = {
+      en: {
+        selectModel: "Select a 3D Model",
+        category: "Category",
+        model: "Model",
+        viewInAR: "View in AR",
+        screenshot: "⬇️ Screenshot",
+        switch: "⏮️⏭️ Switch",
+        summary: {
+          category: "Category:",
+          model: "Model:"
+        },
+        night: "🌙 Night Mode",
+        light: "☀️ Light Mode",
+        lang: "🇮🇱 עברית",
+        categories: {
+          "Cabinets": "Cabinets",
+          "Lamps": "Lamps",
+          "Sofas": "Sofas",
+          "Tables": "Tables"
+        },
+        models: {
+          "bookcase": "Bookcase",
+          "closet_oak_white": "Closet Oak White",
+          "ikea_alex_drawer": "IKEA Alex Drawer",
+          "floor_lamp": "Floor Lamp",
+          "mario_floor_lamp": "Mario Floor Lamp",
+          "sweep_floor_lamp_black": "Sweep Floor Lamp Black",
+          "BLACKSofa": "BLACK Sofa",
+          "dolton_armchair_hudson_grey": "Dolton Armchair Hudson Grey",
+          "sofawood": "Sofa Wood",
+          "wassily_chair": "Wassily Chair",
+          "kumo_white_coffee_table": "Kumo White Coffee Table",
+          "noguchi_coffee_table": "Noguchi Coffee Table"
+        }
+      },
+      he: {
+        selectModel: "בחר מודל תלת מימד",
+        category: "קטגוריה",
+        model: "מודל",
+        viewInAR: "צפה ב-AR",
+        screenshot: "⬇️ צילום מסך",
+        switch: "⏮️⏭️ החלף",
+        summary: {
+          category: "קטגוריה:",
+          model: "מודל:"
+        },
+        night: "🌙 מצב לילה",
+        light: "☀️ מצב יום",
+        lang: "🇬🇧 English",
+        categories: {
+          "Cabinets": "ארונות",
+          "Lamps": "מנורות",
+          "Sofas": "ספות",
+          "Tables": "שולחנות"
+        },
+        models: {
+          "bookcase": "כוננית",
+          "closet_oak_white": "ארון עץ לבן",
+          "ikea_alex_drawer": "מגירות אלכס איקאה",
+          "floor_lamp": "מנורת רצפה",
+          "mario_floor_lamp": "מנורת מריו",
+          "sweep_floor_lamp_black": "מנורת Sweep שחורה",
+          "BLACKSofa": "ספה שחורה",
+          "dolton_armchair_hudson_grey": "כורסא דולטון הדסון אפור",
+          "sofawood": "ספת עץ",
+          "wassily_chair": "כיסא ואסילי",
+          "kumo_white_coffee_table": "שולחן קפה לבן קומו",
+          "noguchi_coffee_table": "שולחן קפה נגוצ'י"
+        }
+      }
+    };
+
+    let currentLang = "en";
+    let CATEGORIES = {};
+    let currentCat = "";
+    let currentModelIdx = 0;
+
+    function getTranslation(type, key) {
+      return (translations[currentLang][type] && translations[currentLang][type][key]) || key;
+    }
+
+    function renderCategoryDropdown() {
+      const catDropdown = document.getElementById("cat-dropdown");
+      catDropdown.innerHTML = '';
+      Object.keys(CATEGORIES).forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = getTranslation('categories', cat);
+        catDropdown.appendChild(opt);
+      });
+      if (!CATEGORIES[currentCat]) currentCat = Object.keys(CATEGORIES)[0];
+      catDropdown.value = currentCat;
+    }
+
+    function renderModelDropdown(category) {
+      const modelDropdown = document.getElementById("model-dropdown");
+      modelDropdown.innerHTML = '';
+      CATEGORIES[category].forEach((model, i) => {
+        const opt = document.createElement('option');
+        opt.value = String(i);
+        opt.textContent = getTranslation('models', model.name);
+        modelDropdown.appendChild(opt);
+      });
+      if (currentModelIdx >= CATEGORIES[category].length) currentModelIdx = 0;
+      modelDropdown.selectedIndex = currentModelIdx;
+    }
+
+    function setModel() {
+      const model = CATEGORIES[currentCat][currentModelIdx];
+      const mv = document.getElementById('viewer');
+      if (!model) {
+        mv.src = "";
+        document.getElementById('viewer-title').textContent = "";
+        document.getElementById('sum-cat').textContent = "";
+        document.getElementById('sum-model').textContent = "";
+        return;
+      }
+      mv.src = model.file;
+      mv.alt = `3D preview of ${getTranslation('models', model.name)}`;
+      document.getElementById('viewer-title').textContent = getTranslation('models', model.name);
+      document.getElementById('sum-cat').textContent = getTranslation('categories', currentCat);
+      document.getElementById('sum-model').textContent = getTranslation('models', model.name);
+      document.getElementById('viewer-title').setAttribute('aria-label', getTranslation('models', model.name));
+    }
+
+    function updateLanguage() {
+      const t = translations[currentLang];
+      document.getElementById("main-title").textContent = t.selectModel;
+      document.querySelector("label[for='cat-dropdown']").textContent = t.category;
+      document.querySelector("label[for='model-dropdown']").textContent = t.model;
+      document.getElementById("ar-btn").textContent = t.viewInAR;
+      document.getElementById("screenshot-btn").textContent = t.screenshot;
+      document.getElementById("switcher-btn").textContent = t.switch;
+      document.querySelector("#summary-panel .summary-row:nth-child(1) span").textContent = t.summary.category;
+      document.querySelector("#summary-panel .summary-row:nth-child(2) span").textContent = t.summary.model;
+      const nightBtn = document.getElementById("nightToggle");
+      const isNight = document.body.classList.contains("night");
+      nightBtn.innerHTML = isNight ? t.light : t.night;
+      document.getElementById("langToggle").textContent = t.lang;
+      document.body.dir = (currentLang === "he") ? "rtl" : "ltr";
+      renderCategoryDropdown();
+      renderModelDropdown(currentCat);
+      setModel();
+    }
+
+    document.getElementById("cat-dropdown").addEventListener("change", function() {
+      currentCat = this.value;
+      currentModelIdx = 0;
+      renderModelDropdown(currentCat);
+      setModel();
+    });
+
+    document.getElementById("model-dropdown").addEventListener("change", function() {
+      currentModelIdx = parseInt(this.value, 10);
+      setModel();
+    });
+
+    document.getElementById("ar-btn").onclick = () => {
+      document.getElementById("viewer").activateAR();
+    };
+
+    document.getElementById("screenshot-btn").onclick = async function () {
+      const viewer = document.getElementById("viewer");
+      if (!viewer.loaded) await viewer.updateComplete;
+      const blob = await viewer.toBlob({ idealAspect: true });
+      const modelName = document.getElementById("viewer-title").textContent.replace(/\s+/g,'_');
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = modelName + "_screenshot.png";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        URL.revokeObjectURL(a.href);
+        a.remove();
+      }, 500);
+    };
+
+    document.getElementById("switcher-btn").onclick = function (e) {
+      const models = CATEGORIES[currentCat];
+      if (models.length < 2) return;
+      if (e && e.shiftKey) {
+        currentModelIdx = (currentModelIdx - 1 + models.length) % models.length;
+      } else {
+        currentModelIdx = (currentModelIdx + 1) % models.length;
+      }
+      document.getElementById("model-dropdown").selectedIndex = currentModelIdx;
+      setModel();
+      document.getElementById('viewer-title').focus();
+    };
+
+    document.getElementById("switcher-btn").addEventListener("keydown", function(e) {
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        this.dispatchEvent(new MouseEvent("click", { shiftKey: true }));
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        this.dispatchEvent(new MouseEvent("click"));
+      }
+    });
+
+    const nightBtn = document.getElementById("nightToggle");
+    nightBtn.addEventListener("click", function() {
+      document.body.classList.toggle("night");
+      const isNight = document.body.classList.contains("night");
+      nightBtn.innerHTML = isNight ? translations[currentLang].light : translations[currentLang].night;
+      nightBtn.setAttribute("aria-pressed", isNight);
+    });
+
+    document.getElementById("langToggle").addEventListener("click", function() {
+      currentLang = (currentLang === "en") ? "he" : "en";
+      updateLanguage();
+    });
+
+    document.getElementById("screenshot-btn").addEventListener("click", function() {
+      const panel = document.getElementById("summary-panel");
+      panel.setAttribute("aria-live", "assertive");
+      panel.innerHTML += "<div style='font-size:0.95em;color:green;'>" +
+        (currentLang === "he" ? "צילום נשמר!" : "Screenshot downloaded!") +
+        "</div>";
+      setTimeout(() => {
+        panel.setAttribute("aria-live", "polite");
+        const last = panel.querySelector("div:last-child");
+        if (last && (last.textContent.includes("Screenshot downloaded!") || last.textContent.includes("צילום נשמר"))) last.remove();
+      }, 1800);
+    });
+
+    // Load models.json and initialize
+    fetch('models.json')
+      .then(r => {
+        if (!r.ok) throw new Error("models.json missing or not accessible");
+        return r.json();
+      })
+      .then(data => {
+        if (!data || Object.keys(data).length === 0) throw new Error("models.json is empty or invalid");
+        CATEGORIES = data;
+        currentCat = Object.keys(CATEGORIES)[0];
+        currentModelIdx = 0;
+        updateLanguage();
+      })
+      .catch(err => {
+        document.getElementById('error-msg').textContent = "Error loading models.json: " + err.message;
+        document.getElementById('error-msg').style.display = "block";
+      });
+
   </script>
 </body>
 </html>
