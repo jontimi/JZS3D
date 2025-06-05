@@ -189,10 +189,9 @@
   </div>
   <div class="desc" id="desc"></div>
   <script>
-    // Responsive aspect ratio for the viewer window
     function adjustViewerHeight() {
       const wrapper = document.getElementById('viewer-wrapper');
-      const aspectRatio = 9 / 16; // 16:9 ratio
+      const aspectRatio = 9 / 16;
       const width = wrapper.offsetWidth;
       let height = width * aspectRatio;
       if (height < 220) height = 220;
@@ -206,14 +205,12 @@
     });
     window.addEventListener('DOMContentLoaded', adjustViewerHeight);
 
-    // Make zoom in/out extremely gentle (many steps, least aggressive possible)
+    // Ultra gentle zoom
     function setGentleZoomStep() {
       const viewer = document.getElementById('viewer');
-      // cameraControls is available only after model loads
       if (viewer && viewer.cameraControls) {
-        // Both wheel and button zoom steps
-        viewer.cameraControls.dollyStep = 0.002; // ultra fine zoom
-        viewer.cameraControls.dollySpeed = 0.2;  // slow down wheel zoom even more
+        viewer.cameraControls.dollyStep = 0.002;
+        viewer.cameraControls.dollySpeed = 0.2;
       }
     }
     document.getElementById('viewer').addEventListener('load', setGentleZoomStep);
@@ -449,7 +446,6 @@
       adjustViewerHeight();
     };
 
-    // Initial fetch and boot
     fetch('models.json')
       .then(r => r.json())
       .then(data => {
