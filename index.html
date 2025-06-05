@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>3D Model Viewer Minimal Test</title>
+  <title>3D Model Showcase</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
   <style>
@@ -13,11 +13,29 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 3em 0;
+      padding: 2em 0;
     }
     h1 {
       color: #1976d2;
+      margin-bottom: 1em;
+    }
+    .controls {
       margin-bottom: 1.5em;
+      display: flex;
+      gap: 1em;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    label {
+      font-weight: bold;
+      margin-right: 0.5em;
+    }
+    select {
+      font-size: 1em;
+      padding: 0.3em 0.7em;
+      border-radius: 6px;
+      border: 1px solid #bbb;
+      background: #fff;
     }
     model-viewer {
       width: 600px;
@@ -26,30 +44,102 @@
       border-radius: 12px;
       box-shadow: 0 2px 16px #0001;
       margin-bottom: 2em;
+      min-width: 250px;
     }
     @media (max-width: 700px) {
       model-viewer { width: 99vw; height: 220px; }
     }
+    .desc {
+      font-size: 1.1em;
+      color: #333;
+      margin-bottom: 2em;
+    }
   </style>
 </head>
 <body>
-  <h1>3D Model Viewer Minimal Test</h1>
-  <p>If you see your model below, 3D loading is working:</p>
+  <h1>3D Model Showcase</h1>
+  <div class="controls">
+    <div>
+      <label for="category">Category:</label>
+      <select id="category"></select>
+    </div>
+    <div>
+      <label for="model">Model:</label>
+      <select id="model"></select>
+    </div>
+  </div>
   <model-viewer
     id="viewer"
-    src="Lamps/mario_floor_lamp.glb"
     camera-controls
     auto-rotate
-    alt="Mario Floor Lamp"
+    alt="3D model preview"
     shadow-intensity="1"
     ar
     ar-modes="scene-viewer webxr quick-look">
   </model-viewer>
-  <p>
-    If you <b>do not</b> see your model above, check for:<br>
-    - Incorrect file path or case sensitivity<br>
-    - CORS issues (repo must be public and accessed via HTTP/HTTPS, not file://)<br>
-    - Errors in your browser Console/Network tab
-  </p>
+  <div class="desc" id="desc"></div>
+  <script>
+    let modelsData = {};
+    let currentCategory = "";
+    let currentModelIndex = 0;
+
+    // Helper: Capitalize and make nice name from snake_case
+    function prettyName(str) {
+      return str
+        .replace(/_/g, ' ')
+        .replace(/\b\w/g, l => l.toUpperCase());
+    }
+
+    fetch('models.json')
+      .then(r => r.json())
+      .then(data => {
+        modelsData = data;
+        // Populate categories
+        const catSel = document.getElementById('category');
+        catSel.innerHTML = '';
+        Object.keys(modelsData).forEach(cat => {
+          const opt = document.createElement('option');
+          opt.value = cat;
+          opt.textContent = prettyName(cat);
+          catSel.appendChild(opt);
+        });
+        currentCategory = Object.keys(modelsData)[0];
+        renderModelDropdown();
+        updateViewer();
+      });
+
+    document.getElementById('category').addEventListener('change', function() {
+      currentCategory = this.value;
+      currentModelIndex = 0;
+      renderModelDropdown();
+      updateViewer();
+    });
+
+    document.getElementById('model').addEventListener('change', function() {
+      currentModelIndex = +this.value;
+      updateViewer();
+    });
+
+    function renderModelDropdown() {
+      const modelSel = document.getElementById('model');
+      modelSel.innerHTML = '';
+      modelsData[currentCategory].forEach((model, i) => {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = prettyName(model.name);
+        modelSel.appendChild(opt);
+      });
+      modelSel.selectedIndex = 0;
+    }
+
+    function updateViewer() {
+      const viewer = document.getElementById('viewer');
+      const desc = document.getElementById('desc');
+      const modelObj = modelsData[currentCategory][currentModelIndex];
+      viewer.src = modelObj.file;
+      viewer.alt = prettyName(modelObj.name);
+      desc.textContent = `Category: ${prettyName(currentCategory)} | Model: ${prettyName(modelObj.name)}`;
+    }
+  </script>
 </body>
 </html>
