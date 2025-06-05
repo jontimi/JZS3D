@@ -178,9 +178,7 @@
       alt="3D model preview"
       shadow-intensity="1"
       ar
-      ar-modes="scene-viewer webxr quick-look"
-      min-camera-orbit="auto auto 1m"
-      max-camera-orbit="auto auto 42m">
+      ar-modes="scene-viewer webxr quick-look">
     </model-viewer>
   </div>
   <div class="bg-controls">
@@ -355,13 +353,10 @@
       viewer.src = modelFile;
       viewer.alt = prettyModel(modelObj);
 
-      // Always use auto auto X for min/max orbits for free zoom in/out
+      // Remove all camera orbit attributes to let model-viewer auto-frame
       viewer.removeAttribute('camera-orbit');
       viewer.removeAttribute('min-camera-orbit');
       viewer.removeAttribute('max-camera-orbit');
-      if (modelObj.cameraOrbit) viewer.setAttribute('camera-orbit', modelObj.cameraOrbit);
-      if (modelObj.minCameraOrbit) viewer.setAttribute('min-camera-orbit', modelObj.minCameraOrbit);
-      if (modelObj.maxCameraOrbit) viewer.setAttribute('max-camera-orbit', modelObj.maxCameraOrbit);
 
       desc.textContent = translations[lang].desc(
         prettyCategory(currentCategory),
@@ -444,6 +439,15 @@
       wrapper.style.height = '';
       adjustViewerHeight();
     };
+
+    // Auto-frame model on load (reset camera)
+    document.getElementById('viewer').addEventListener('model-visibility', function() {
+      const viewer = document.getElementById('viewer');
+      if (viewer) {
+        viewer.resetTurntableRotation();
+        viewer.jumpCameraToGoal();
+      }
+    });
 
     fetch('models.json')
       .then(r => r.json())
