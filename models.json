@@ -1,16 +1,6 @@
 {
   "Cabinets": [
     {
-      "name": "slimcloset",
-      "label_en": "Slim Closet",
-      "label_he": "ארון דק",
-      "file": "Cabinets/slimcloset_closed.glb",
-      "variants": [
-        { "label": "Closed", "label_he": "סגור", "file": "Cabinets/slimcloset_closed.glb" },
-        { "label": "Open",   "label_he": "פתוח", "file": "Cabinets/slimcloset_open.glb" }
-      ]
-    },
-    {
       "name": "bookcase",
       "label_en": "Bookcase",
       "label_he": "כוננית",
@@ -34,11 +24,7 @@
       "name": "floor_lamp",
       "label_en": "Floor Lamp",
       "label_he": "מנורת רצפה",
-      "file": "Lamps/floor_lamp_off.glb",
-      "variants": [
-        { "label": "Off", "label_he": "כבוי", "file": "Lamps/floor_lamp_off.glb" },
-        { "label": "On",  "label_he": "דלוק", "file": "Lamps/floor_lamp_on.glb" }
-      ]
+      "file": "Lamps/floor_lamp.glb"
     },
     {
       "name": "mario_floor_lamp",
