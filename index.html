@@ -199,6 +199,26 @@
       "Tables": { en: "Tables", he: "שולחנות" }
     };
 
+    // List of available GLB files in your repo (update this if you add more files)
+    const availableFiles = [
+      "Cabinets/bookcase.glb",
+      "Cabinets/closet_oak_white.glb",
+      "Cabinets/ikea_alex_drawer.glb",
+      "Lamps/floor_lamp.glb",
+      "Lamps/mario_floor_lamp.glb",
+      "Lamps/sweep_floor_lamp_black.glb",
+      "Sofas/BLACKSofa.glb",
+      "Sofas/dolton_armchair_hudson_grey.glb",
+      "Sofas/sofawood.glb",
+      "Sofas/wassily_chair.glb",
+      "Tables/kumo_white_coffee_table.glb",
+      "Tables/noguchi_coffee_table.glb"
+    ];
+
+    function fileExists(path) {
+      return availableFiles.includes(path);
+    }
+
     let lang = "en";
     let modelsData = {};
     let currentCategory = "";
@@ -273,13 +293,25 @@
       let modelFile = modelObj.file;
       let variantLabel = "";
 
-      if (modelObj.variants && modelObj.variants.length > 1) {
-        const variantObj = modelObj.variants[currentVariantIndex];
-        modelFile = variantObj.file;
-        variantLabel = prettyVariant(variantObj);
-        variantSwitch.style.display = '';
-        const nextVariantObj = modelObj.variants[(currentVariantIndex + 1) % modelObj.variants.length];
-        variantSwitch.textContent = translations[lang].switchTo + ' ' + prettyVariant(nextVariantObj);
+      let hasValidVariants = false;
+      let validVariants = [];
+      if (modelObj.variants && Array.isArray(modelObj.variants)) {
+        // Only count as valid if at least 2 different variants AND both files exist
+        validVariants = modelObj.variants.filter(v => v.file && fileExists(v.file));
+        hasValidVariants = validVariants.length >= 2;
+        if (hasValidVariants) {
+          // Clamp variant index to valid range
+          if (currentVariantIndex >= validVariants.length) currentVariantIndex = 0;
+          const variantObj = validVariants[currentVariantIndex];
+          modelFile = variantObj.file;
+          variantLabel = prettyVariant(variantObj);
+          variantSwitch.style.display = '';
+          const nextVariantObj = validVariants[(currentVariantIndex + 1) % validVariants.length];
+          variantSwitch.textContent = translations[lang].switchTo + ' ' + prettyVariant(nextVariantObj);
+        } else {
+          currentVariantIndex = 0;
+          variantSwitch.style.display = 'none';
+        }
       } else {
         currentVariantIndex = 0;
         variantSwitch.style.display = 'none';
@@ -319,7 +351,11 @@
 
     document.getElementById('variantSwitch').onclick = function () {
       const modelObj = modelsData[currentCategory][currentModelIndex];
-      currentVariantIndex = (currentVariantIndex + 1) % modelObj.variants.length;
+      // Only switch if there are valid variants
+      if (!modelObj.variants || !Array.isArray(modelObj.variants)) return;
+      const validVariants = modelObj.variants.filter(v => v.file && fileExists(v.file));
+      if (validVariants.length < 2) return;
+      currentVariantIndex = (currentVariantIndex + 1) % validVariants.length;
       updateViewer();
     };
 
