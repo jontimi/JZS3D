@@ -345,20 +345,10 @@
       }
     };
 
-    function lockModelZoom(minZoom, maxZoom) {
-      const viewer = document.getElementById('viewer');
-      viewer.setAttribute('min-camera-orbit', minZoom);
-      viewer.setAttribute('max-camera-orbit', maxZoom);
-      viewer.setAttribute('disable-pan', '');
-    }
-    function unlockModelZoom() {
-      const viewer = document.getElementById('viewer');
-      viewer.removeAttribute('min-camera-orbit');
-      viewer.setAttribute('max-camera-orbit', 'auto auto 24m');
-      viewer.removeAttribute('disable-pan');
-    }
+    // DO NOT lock pan/zoom when background image is present!
+    // Instead, always allow camera-controls, zoom, pan, etc.
 
-    // Translations
+    // Translations and support code (unchanged)
     const translations = {
       en: {
         title: "3D Model Showcase",
@@ -482,10 +472,10 @@
       viewer.src = modelFile;
       viewer.alt = prettyModel(modelObj);
 
-      // Always enforce extreme zoom out (unless bg image, see lock/unlock)
-      if (!document.getElementById('viewer-wrapper').classList.contains('bg-has-img')) {
-        unlockModelZoom();
-      }
+      // Always allow zoom and pan
+      viewer.removeAttribute('min-camera-orbit');
+      viewer.setAttribute('max-camera-orbit', 'auto auto 24m');
+      viewer.removeAttribute('disable-pan');
 
       desc.textContent = translations[lang].desc(
         prettyCategory(currentCategory),
@@ -529,7 +519,7 @@
       safeSetGentleZoomStep();
     };
 
-    // When uploading a background, crop window to image aspect ratio and allow rotation but restrict zoom/pan
+    // When uploading a background, crop window to image aspect ratio but DO NOT restrict zoom/pan/orbit
     document.getElementById('bgUpload').addEventListener('change', function(event) {
       const file = event.target.files && event.target.files[0];
       if (!file) return;
@@ -556,14 +546,11 @@
           wrapper.classList.add('bg-has-img');
           wrapper.style.backgroundImage = `url('${e.target.result}')`;
 
-          // Allow orbit, disable pan, lock zoom to current value
+          // DO NOT restrict controls: always allow orbit, zoom, pan
           const viewer = document.getElementById('viewer');
-          viewer.jumpCameraToGoal();
-          setTimeout(() => {
-            const orbit = viewer.getCameraOrbit();
-            const orbitStr = `${orbit.theta}rad ${orbit.phi}rad ${orbit.radius}m`;
-            lockModelZoom(orbitStr, orbitStr); // lock zoom, allow orbit, disable pan
-          }, 150);
+          viewer.removeAttribute('min-camera-orbit');
+          viewer.setAttribute('max-camera-orbit', 'auto auto 24m');
+          viewer.removeAttribute('disable-pan');
         };
         img.src = e.target.result;
       };
@@ -578,7 +565,12 @@
       wrapper.style.width = '';
       wrapper.style.height = '';
       adjustViewerHeight();
-      unlockModelZoom();
+
+      // Always allow free controls
+      const viewer = document.getElementById('viewer');
+      viewer.removeAttribute('min-camera-orbit');
+      viewer.setAttribute('max-camera-orbit', 'auto auto 24m');
+      viewer.removeAttribute('disable-pan');
     };
 
     // Auto-frame model on load (reset camera)
