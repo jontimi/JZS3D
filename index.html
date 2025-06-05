@@ -179,7 +179,7 @@
       shadow-intensity="1"
       ar
       ar-modes="scene-viewer webxr quick-look"
-      min-camera-orbit="auto auto 0.1m"
+      min-camera-orbit="auto auto 1m"
       max-camera-orbit="auto auto 42m">
     </model-viewer>
   </div>
@@ -355,11 +355,10 @@
       viewer.src = modelFile;
       viewer.alt = prettyModel(modelObj);
 
-      // Reset camera-orbit/min/max for all models
+      // Always use auto auto X for min/max orbits for free zoom in/out
       viewer.removeAttribute('camera-orbit');
       viewer.removeAttribute('min-camera-orbit');
       viewer.removeAttribute('max-camera-orbit');
-      // Per-model camera settings
       if (modelObj.cameraOrbit) viewer.setAttribute('camera-orbit', modelObj.cameraOrbit);
       if (modelObj.minCameraOrbit) viewer.setAttribute('min-camera-orbit', modelObj.minCameraOrbit);
       if (modelObj.maxCameraOrbit) viewer.setAttribute('max-camera-orbit', modelObj.maxCameraOrbit);
