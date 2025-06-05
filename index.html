@@ -83,7 +83,7 @@
       justify-content: center;
     }
     #viewer-wrapper.bg-has-img {
-      background-size: contain;
+      background-size: cover;
       background-repeat: no-repeat;
       background-position: center;
     }
@@ -255,6 +255,25 @@
       }
     };
 
+    // Lock/unlock model movement/zoom for background image mode
+    function lockModelToFit() {
+      const viewer = document.getElementById('viewer');
+      viewer.jumpCameraToGoal();
+      setTimeout(() => {
+        const orbit = viewer.getCameraOrbit();
+        const orbitStr = `${orbit.theta}rad ${orbit.phi}rad ${orbit.radius}m`;
+        viewer.setAttribute('min-camera-orbit', orbitStr);
+        viewer.setAttribute('max-camera-orbit', orbitStr);
+        viewer.setAttribute('disable-pan', '');
+      }, 100);
+    }
+    function unlockModel() {
+      const viewer = document.getElementById('viewer');
+      viewer.removeAttribute('min-camera-orbit');
+      viewer.setAttribute('max-camera-orbit', 'auto auto 24m');
+      viewer.removeAttribute('disable-pan');
+    }
+
     // Translations
     const translations = {
       en: {
@@ -397,8 +416,10 @@
       viewer.src = modelFile;
       viewer.alt = prettyModel(modelObj);
 
-      // Always enforce extreme zoom out
-      viewer.setAttribute('max-camera-orbit', 'auto auto 24m');
+      // Always enforce extreme zoom out (unless bg image, see lock/unlock)
+      if (!document.getElementById('viewer-wrapper').classList.contains('bg-has-img')) {
+        unlockModel();
+      }
 
       desc.textContent = translations[lang].desc(
         prettyCategory(currentCategory),
@@ -442,7 +463,7 @@
       safeSetGentleZoomStep();
     };
 
-    // When uploading a background, crop window to image aspect ratio
+    // When uploading a background, crop window to image aspect ratio and lock model view
     document.getElementById('bgUpload').addEventListener('change', function(event) {
       const file = event.target.files && event.target.files[0];
       if (!file) return;
@@ -467,6 +488,7 @@
           wrapper.style.height = height + 'px';
           wrapper.classList.add('bg-has-img');
           wrapper.style.backgroundImage = `url('${e.target.result}')`;
+          lockModelToFit();
         };
         img.src = e.target.result;
       };
@@ -480,6 +502,7 @@
       wrapper.style.width = '';
       wrapper.style.height = '';
       adjustViewerHeight();
+      unlockModel();
     };
 
     // Auto-frame model on load (reset camera)
