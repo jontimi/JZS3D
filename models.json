@@ -16,7 +16,6 @@
     { "name": "wassily_chair", "file": "Sofas/wassily_chair.glb" }
   ],
   "Tables": [
-    { "name": "floor_lamp", "file": "Tables/floor_lamp.glb" },
     { "name": "kumo_white_coffee_table", "file": "Tables/kumo_white_coffee_table.glb" },
     { "name": "noguchi_coffee_table", "file": "Tables/noguchi_coffee_table.glb" }
   ]
