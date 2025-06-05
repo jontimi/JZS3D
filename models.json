@@ -17,9 +17,9 @@
       "label_en": "IKEA Alex Drawer",
       "label_he": "מגירות אלכס איקאה",
       "file": "Cabinets/ikea_alex_drawer.glb",
-      "cameraOrbit": "0deg 75deg 12m",
-      "minCameraOrbit": "0deg 75deg 8m",
-      "maxCameraOrbit": "0deg 75deg 42m"
+      "cameraOrbit": "auto auto 12m",
+      "minCameraOrbit": "auto auto 1m",
+      "maxCameraOrbit": "auto auto 42m"
     }
   ],
   "Lamps": [
