@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>3D Configurator | Furniture & Animals</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:500,700&display=swap">
+  <style>
+    :root {
+      --main-bg: #f8fafd;
+      --panel-bg: #f3f6fa;
+      --panel-border: #e3e8f0;
+      --text-main: #222;
+      --accent: #0078d7;
+      --btn-bg: #fff;
+      --btn-bg-selected: #e9f3fd;
+      --btn-border: #e0e6ef;
+      --btn-border-selected: #0078d7;
+      --summary-bg: #e9f3fd;
+      --ar-btn-bg: #0078d7;
+      --ar-btn-bg-hover: #005fa3;
+      --ar-btn-txt: #fff;
+    }
+    .night {
+      --main-bg: #181e28;
+      --panel-bg: #232b39;
+      --panel-border: #2b3242;
+      --text-main: #f3f6fa;
+      --accent: #5caaff;
+      --btn-bg: #232b39;
+      --btn-bg-selected: #244060;
+      --btn-border: #2e3b4e;
+      --btn-border-selected: #5caaff;
+      --summary-bg: #1d2533;
+      --ar-btn-bg: #5caaff;
+      --ar-btn-bg-hover: #2379be;
+      --ar-btn-txt: #232b39;
+    }
+    html { font-size: 16px; }
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      margin: 0;
+      background: var(--main-bg);
+      color: var(--text-main);
+      transition: background 0.35s, color 0.35s;
+    }
+    .main-wrap {
+      display: flex;
+      min-height: 100vh;
+      max-width: 1200px;
+      margin: 0 auto;
+      background: var(--main-bg);
+      box-shadow: 0 2px 16px 0 #0001;
+      border-radius: 1.25rem;
+      overflow: hidden;
+      gap: 0;
+      transition: background 0.35s;
+    }
+    .side-panel {
+      width: 21.25rem;
+      background: var(--panel-bg);
+      padding: 2.2rem 1.2rem 1.2rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      border-right: 1px solid var(--panel-border);
+      min-width: 13rem;
+      transition: background 0.35s, border-color 0.35s;
+      position: relative;
+      z-index: 2;
+    }
+    .side-panel h2 {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--accent);
+      margin-bottom: 1.1em;
+      letter-spacing: 0.01em;
+    }
+    .night-toggle-btn, .lang-toggle-btn {
+      position: absolute;
+      top: 1.2rem;
+      background: var(--btn-bg);
+      color: var(--accent);
+      border: 1.5px solid var(--btn-border);
+      border-radius: 100px;
+      padding: 0.4em 1em;
+      font-size: 1em;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, border 0.2s;
+      z-index: 10;
+      box-shadow: 0 2px 6px #0002;
+    }
+    .night-toggle-btn { right: 1.2rem; }
+    .lang-toggle-btn { right: 8.4rem; }
+    .night .night-toggle-btn, .night .lang-toggle-btn {
+      color: #f3f6fa;
+      background: #2a3546;
+      border: 1.5px solid #5caaff;
+    }
+    .config-group {
+      margin-bottom: 1.3em;
+    }
+    .group-label {
+      font-weight: 600;
+      margin-bottom: 0.5em;
+      display: block;
+      color: var(--text-main);
+      font-size: 1rem;
+    }
+    select, .option-dropdown {
+      width: 100%;
+      padding: 0.7em 1em;
+      font-size: 1.06em;
+      border-radius: 10px;
+      border: 2px solid var(--btn-border);
+      background: var(--btn-bg);
+      color: var(--text-main);
+      font-family: inherit;
+      margin-bottom: 0.3em;
+      margin-top: 0.15em;
+      appearance: none;
+      outline: none;
+      transition: background 0.2s, border 0.2s, color 0.2s;
+      min-height: 2.7em;
+    }
+    select:focus {
+      border-color: var(--accent);
+    }
+    .summary-panel {
+      margin-top: 1.2em;
+      background: var(--summary-bg);
+      border-radius: 10px;
+      padding: 1em 1.1em;
+      color: var(--text-main);
+      font-size: 1.07em;
+      transition: background 0.35s, color 0.35s;
+      word-break: break-word;
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.45em;
+    }
+    .summary-row strong {
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .action-btns {
+      margin-top: 1.2em;
+      display: flex;
+      gap: 0.7em;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .ar-btn, .screenshot-btn, .switcher-btn {
+      background: var(--ar-btn-bg);
+      color: var(--ar-btn-txt);
+      border: none;
+      padding: 0.8em 0.5em;
+      font-size: 1.07em;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      letter-spacing: 0.01em;
+      box-shadow: 0 0.5px 3px #0078d71a;
+      transition: background 0.2s, color 0.2s;
+      min-width: 0;
+      flex: 1 1 40%;
+      min-height: 2.7em;
+      outline: none;
+    }
+    .ar-btn:hover, .screenshot-btn:hover, .switcher-btn:hover,
+    .ar-btn:focus, .screenshot-btn:focus, .switcher-btn:focus {
+      background: var(--ar-btn-bg-hover);
+    }
+    .viewer-panel {
+      flex: 1 1 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-width: 0;
+      padding: 2.5em 2em;
+      background: var(--main-bg);
+      transition: background 0.35s;
+    }
+    .viewer-title {
+      font-size: 1.7em;
+      font-weight: 700;
+      margin-bottom: 1.2em;
+      color: var(--text-main);
+      transition: color 0.35s;
+      word-break: break-word;
+      text-align: center;
+    }
+    model-viewer {
+      width: 100%;
+      max-width: 600px;
+      height: 350px;
+      border-radius: 14px;
+      background: #f5f7fa;
+      box-shadow: 0 2px 14px #0002;
+      margin-bottom: 0.7em;
+      min-width: 180px;
+      transition: background 0.35s;
+      display: block;
+    }
+    @media (max-width: 1100px) {
+      .main-wrap { flex-direction: column; border-radius: 0; }
+      .side-panel { width: 100%; min-width: 0; border-right: none; border-bottom: 1px solid var(--panel-border); flex-direction: row; flex-wrap: wrap; gap: 1.2em; }
+      .viewer-panel { padding: 1em 0.3em; }
+      model-viewer { max-width: 100vw; }
+      .summary-panel { margin-top: 0.7em; }
+    }
+    @media (max-width: 700px) {
+      html { font-size: 15px; }
+      .main-wrap { padding: 0; }
+      .side-panel {
+        padding: 1em 0.5em 1em 0.5em;
+        flex-direction: column;
+        gap: 1em;
+        border-bottom: none;
+      }
+      .viewer-panel { padding: 0.7em 0.1em; }
+      model-viewer { height: 200px; min-width: 0; }
+      .viewer-title { font-size: 1.05em; }
+      .summary-panel { font-size: 0.96em; }
+      .ar-btn, .screenshot-btn, .switcher-btn { font-size: 1em; }
+    }
+    @media (max-width: 480px) {
+      html { font-size: 13px; }
+      .main-wrap { border-radius: 0; }
+      .side-panel { padding: 0.6em 0.13em 0.35em 0.13em; }
+      .viewer-panel { padding: 0.1em 0; }
+      model-viewer { height: 120px; }
+      .viewer-title { font-size: 0.98em; }
+      .summary-panel { font-size: 0.93em; }
+      .ar-btn, .screenshot-btn, .switcher-btn { font-size: 0.97em; min-height: 2.2em; }
+    }
+    .ar-btn:focus, .screenshot-btn:focus, .switcher-btn:focus {
+      outline: 2.5px solid var(--accent);
+      outline-offset: 2px;
+    }
+    body[dir="rtl"] .side-panel,
+    body[dir="rtl"] .summary-panel,
+    body[dir="rtl"] .viewer-title {
+      text-align: right;
+    }
+    body[dir="rtl"] select, 
+    body[dir="rtl"] button, 
+    body[dir="rtl"] input {
+      direction: rtl;
+    }
+    body[dir="rtl"] .summary-row {
+      flex-direction: row-reverse;
+    }
+  </style>
+</head>
+<body>
+  <div class="main-wrap">
+    <div class="side-panel">
+      <button class="lang-toggle-btn" id="langToggle" aria-pressed="false">🇮🇱 עברית</button>
+      <button class="night-toggle-btn" id="nightToggle" title="Toggle Night Mode" aria-pressed="false">🌙 Night Mode</button>
+      <h2 id="main-title">Select a 3D Model</h2>
+      <div class="config-group">
+        <label class="group-label" for="cat-dropdown">Category</label>
+        <select id="cat-dropdown" class="option-dropdown" aria-label="Category"></select>
+      </div>
+      <div class="config-group">
+        <label class="group-label" for="model-dropdown">Model</label>
+        <select id="model-dropdown" class="option-dropdown" aria-label="Model"></select>
+      </div>
+      <div class="config-group">
+        <label class="group-label" for="color-dropdown">Color</label>
+        <select id="color-dropdown" class="option-dropdown" aria-label="Color"></select>
+      </div>
+      <div class="summary-panel" id="summary-panel" aria-live="polite">
+        <div class="summary-row"><span>Category:</span> <strong id="sum-cat">Furniture</strong></div>
+        <div class="summary-row"><span>Model:</span> <strong id="sum-model">HiveShelf90cm</strong></div>
+        <div class="summary-row"><span>Color:</span> <strong id="sum-color">Natural</strong></div>
+      </div>
+      <div class="action-btns">
+        <button class="ar-btn" id="ar-btn" aria-label="View in AR">View in AR</button>
+        <button class="screenshot-btn" id="screenshot-btn" aria-label="Download Screenshot">⬇️ Screenshot</button>
+        <button class="switcher-btn" id="switcher-btn" aria-label="Switch Model" title="Switch to previous or next model">⏮️⏭️ Switch</button>
+      </div>
+    </div>
+    <div class="viewer-panel">
+      <div class="viewer-title" id="viewer-title" tabindex="0" aria-live="polite">HiveShelf90cm</div>
+      <model-viewer id="viewer"
+        src="Furniture/HiveShelf90cm.glb"
+        alt="3D preview of HiveShelf90cm"
+        ar ar-modes="scene-viewer webxr quick-look"
+        camera-controls auto-rotate shadow-intensity="1"
+        environment-image="neutral"
+        exposure="1.13"
+        style="width:100%;height:350px;"
+        tabindex="0"
+        aria-label="3D model viewer"
+        reveal="interaction"
+        loading="eager"
+        poster="poster.png">
+      </model-viewer>
+    </div>
+  </div>
+  <script>
+    // Translation dictionary with categories and models
+    const translations = {
+      en: {
+        selectModel: "Select a 3D Model",
+        category: "Category",
+        model: "Model",
+        color: "Color",
+        viewInAR: "View in AR",
+        screenshot: "⬇️ Screenshot",
+        switch: "⏮️⏭️ Switch",
+        summary: {
+          category: "Category:",
+          model: "Model:",
+          color: "Color:"
+        },
+        night: "🌙 Night Mode",
+        light: "☀️ Light Mode",
+        lang: "🇮🇱 עברית",
+        categories: {
+          "Furniture": "Furniture",
+          "Animals": "Animals"
+        },
+        models: {
+          // Example: "HiveShelf90cm": "HiveShelf90cm"
+        },
+        colors: {
+          "Natural": "Natural",
+          "Oak": "Oak",
+          "Black": "Black",
+          "White": "White",
+          "Default": "Default"
+        }
+      },
+      he: {
+        selectModel: "בחר מודל תלת מימד",
+        category: "קטגוריה",
+        model: "מודל",
+        color: "צבע",
+        viewInAR: "צפה ב-AR",
+        screenshot: "⬇️ צילום מסך",
+        switch: "⏮️⏭️ החלף",
+        summary: {
+          category: "קטגוריה:",
+          model: "מודל:",
+          color: "צבע:"
+        },
+        night: "🌙 מצב לילה",
+        light: "☀️ מצב יום",
+        lang: "🇬🇧 English",
+        categories: {
+          "Furniture": "רהיטים",
+          "Animals": "חיות"
+        },
+        models: {
+          // Example: "HiveShelf90cm": "כוורת 90 ס\"מ"
+        },
+        colors: {
+          "Natural": "עץ טבעי",
+          "Oak": "אלון",
+          "Black": "שחור",
+          "White": "לבן",
+          "Default": "ברירת מחדל"
+        }
+      }
+    };
+
+    // Example: Add your real models here
+    translations.en.models = {
+      "HiveShelf90cm": "HiveShelf90cm",
+      "Cat": "Cat",
+      "Dog": "Dog"
+    };
+    translations.he.models = {
+      "HiveShelf90cm": "כוורת 90 ס\"מ",
+      "Cat": "חתול",
+      "Dog": "כלב"
+    };
+
+    let currentLang = "en";
+    let CATEGORIES = {};
+    let currentCat = "Furniture";
+    let currentModelIdx = 0;
+    let currentColorIdx = 0;
+
+    function getTranslation(type, key) {
+      // Try translation, fallback to key if not found
+      return translations[currentLang][type][key] || key;
+    }
+
+    function renderCategoryDropdown() {
+      const catDropdown = document.getElementById("cat-dropdown");
+      catDropdown.innerHTML = '';
+      Object.keys(CATEGORIES).forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = getTranslation('categories', cat);
+        catDropdown.appendChild(opt);
+      });
+      catDropdown.value = currentCat;
+    }
+
+    function renderModelDropdown(category) {
+      const modelDropdown = document.getElementById("model-dropdown");
+      modelDropdown.innerHTML = '';
+      CATEGORIES[category].forEach((model, i) => {
+        const opt = document.createElement('option');
+        opt.value = String(i);
+        opt.textContent = getTranslation('models', model.name);
+        modelDropdown.appendChild(opt);
+      });
+      modelDropdown.selectedIndex = currentModelIdx;
+    }
+
+    function renderColorDropdown(category, modelIdx) {
+      const colorDropdown = document.getElementById("color-dropdown");
+      colorDropdown.innerHTML = '';
+      const model = CATEGORIES[category][modelIdx];
+      let colors = [{name: "Default", file: model.file}];
+      if (model.colors && Array.isArray(model.colors) && model.colors.length > 0) {
+        colors = model.colors;
+      }
+      colors.forEach((color, i) => {
+        const opt = document.createElement('option');
+        opt.value = String(i);
+        opt.textContent = getTranslation('colors', color.name || "Default");
+        colorDropdown.appendChild(opt);
+      });
+      colorDropdown.selectedIndex = currentColorIdx;
+    }
+
+    function setModel() {
+      const model = CATEGORIES[currentCat][currentModelIdx];
+      let colors = [{name: "Default", file: model.file}];
+      if (model.colors && Array.isArray(model.colors) && model.colors.length > 0) {
+        colors = model.colors;
+      }
+      const color = colors[currentColorIdx] || colors[0];
+      const mv = document.getElementById('viewer');
+      mv.src = color.file;
+      mv.alt = `3D preview of ${getTranslation('models', model.name)} (${getTranslation('colors', color.name || "Default")})`;
+      document.getElementById('viewer-title').textContent = getTranslation('models', model.name);
+      document.getElementById('sum-cat').textContent = getTranslation('categories', currentCat);
+      document.getElementById('sum-model').textContent = getTranslation('models', model.name);
+      document.getElementById('sum-color').textContent = getTranslation('colors', color.name || "Default");
+      document.getElementById('viewer-title').setAttribute('aria-label', getTranslation('models', model.name));
+    }
+
+    function updateLanguage() {
+      const t = translations[currentLang];
+      document.getElementById("main-title").textContent = t.selectModel;
+      document.querySelector("label[for='cat-dropdown']").textContent = t.category;
+      document.querySelector("label[for='model-dropdown']").textContent = t.model;
+      document.querySelector("label[for='color-dropdown']").textContent = t.color;
+      document.getElementById("ar-btn").textContent = t.viewInAR;
+      document.getElementById("screenshot-btn").textContent = t.screenshot;
+      document.getElementById("switcher-btn").textContent = t.switch;
+      document.querySelector("#summary-panel .summary-row:nth-child(1) span").textContent = t.summary.category;
+      document.querySelector("#summary-panel .summary-row:nth-child(2) span").textContent = t.summary.model;
+      document.querySelector("#summary-panel .summary-row:nth-child(3) span").textContent = t.summary.color;
+      const nightBtn = document.getElementById("nightToggle");
+      const isNight = document.body.classList.contains("night");
+      nightBtn.innerHTML = isNight ? t.light : t.night;
+      document.getElementById("langToggle").textContent = t.lang;
+      document.body.dir = (currentLang === "he") ? "rtl" : "ltr";
+      // Update dropdowns and summary with new language
+      renderCategoryDropdown();
+      renderModelDropdown(currentCat);
+      renderColorDropdown(currentCat, currentModelIdx);
+      setModel();
+    }
+
+    document.getElementById("cat-dropdown").addEventListener("change", function() {
+      currentCat = this.value;
+      currentModelIdx = 0;
+      currentColorIdx = 0;
+      renderModelDropdown(currentCat);
+      renderColorDropdown(currentCat, currentModelIdx);
+      setModel();
+    });
+
+    document.getElementById("model-dropdown").addEventListener("change", function() {
+      currentModelIdx = parseInt(this.value, 10);
+      currentColorIdx = 0;
+      renderColorDropdown(currentCat, currentModelIdx);
+      setModel();
+    });
+
+    document.getElementById("color-dropdown").addEventListener("change", function() {
+      currentColorIdx = parseInt(this.value, 10);
+      setModel();
+    });
+
+    fetch('models.json')
+      .then(r => r.json())
+      .then(data => {
+        CATEGORIES = data;
+        renderCategoryDropdown();
+        renderModelDropdown(currentCat);
+        renderColorDropdown(currentCat, currentModelIdx);
+        setModel();
+        updateLanguage();
+      });
+
+    document.getElementById("ar-btn").onclick = () => {
+      document.getElementById("viewer").activateAR();
+    };
+
+    document.getElementById("screenshot-btn").onclick = async function () {
+      const viewer = document.getElementById("viewer");
+      if (!viewer.loaded) await viewer.updateComplete;
+      const blob = await viewer.toBlob({ idealAspect: true });
+      const modelName = document.getElementById("viewer-title").textContent.replace(/\s+/g,'_');
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = modelName + "_screenshot.png";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        URL.revokeObjectURL(a.href);
+        a.remove();
+      }, 500);
+    };
+
+    document.getElementById("switcher-btn").onclick = function (e) {
+      const models = CATEGORIES[currentCat];
+      if (models.length < 2) return;
+      if (e && e.shiftKey) {
+        currentModelIdx = (currentModelIdx - 1 + models.length) % models.length;
+      } else {
+        currentModelIdx = (currentModelIdx + 1) % models.length;
+      }
+      document.getElementById("model-dropdown").selectedIndex = currentModelIdx;
+      currentColorIdx = 0;
+      renderColorDropdown(currentCat, currentModelIdx);
+      setModel();
+      document.getElementById('viewer-title').focus();
+    };
+
+    document.getElementById("switcher-btn").addEventListener("keydown", function(e) {
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        this.dispatchEvent(new MouseEvent("click", { shiftKey: true }));
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        this.dispatchEvent(new MouseEvent("click"));
+      }
+    });
+
+    ["cat-dropdown", "model-dropdown", "color-dropdown"].forEach(id => {
+      document.getElementById(id).addEventListener('focus', function() {
+        this.setAttribute('aria-activedescendant', this.options[this.selectedIndex].id || '');
+      });
+    });
+
+    const nightBtn = document.getElementById("nightToggle");
+    nightBtn.addEventListener("click", function() {
+      document.body.classList.toggle("night");
+      const isNight = document.body.classList.contains("night");
+      nightBtn.innerHTML = isNight ? translations[currentLang].light : translations[currentLang].night;
+      nightBtn.setAttribute("aria-pressed", isNight);
+    });
+
+    document.getElementById("langToggle").addEventListener("click", function() {
+      currentLang = (currentLang === "en") ? "he" : "en";
+      updateLanguage();
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "SELECT" || document.activeElement.isContentEditable) return;
+      if (e.key === "m") {
+        document.getElementById("switcher-btn").click();
+      } else if (e.key === "M") {
+        document.getElementById("switcher-btn").dispatchEvent(new MouseEvent("click", { shiftKey: true }));
+      }
+    });
+
+    document.getElementById("screenshot-btn").addEventListener("click", function() {
+      const panel = document.getElementById("summary-panel");
+      panel.setAttribute("aria-live", "assertive");
+      panel.innerHTML += "<div style='font-size:0.95em;color:green;'>" + 
+        (currentLang === "he" ? "צילום נשמר!" : "Screenshot downloaded!") +
+        "</div>";
+      setTimeout(() => {
+        panel.setAttribute("aria-live", "polite");
+        const last = panel.querySelector("div:last-child");
+        if (last && (last.textContent.includes("Screenshot downloaded!") || last.textContent.includes("צילום נשמר"))) last.remove();
+      }, 1800);
+    });
+  </script>
+</body>
+</html>
