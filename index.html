@@ -77,7 +77,7 @@
       overflow: hidden;
       position: relative;
       margin-bottom: 2em;
-      transition: background 0.35s, box-shadow 0.35s, height 0.3s;
+      transition: background 0.35s, box-shadow 0.35s, height 0.3s, width 0.3s;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -150,7 +150,6 @@
     #bgUpload, #clearBgBtn {
       font-size: 1em;
       margin: 0;
-      /* Center via flex in .bg-controls */
     }
   </style>
 </head>
@@ -196,19 +195,23 @@
       const aspectRatio = 9 / 16; // 16:9 ratio
       const width = wrapper.offsetWidth;
       let height = width * aspectRatio;
-      // Clamp to min/max heights from CSS
       if (height < 220) height = 220;
       if (height > 600) height = 600;
       wrapper.style.height = height + 'px';
     }
-    window.addEventListener('resize', adjustViewerHeight);
+    window.addEventListener('resize', function() {
+      if (!document.getElementById('viewer-wrapper').classList.contains('bg-has-img')) {
+        adjustViewerHeight();
+      }
+    });
     window.addEventListener('DOMContentLoaded', adjustViewerHeight);
 
-    // Make zoom in/out less aggressive
+    // Make zoom in/out EXTREMELY gentle (many steps)
     function setGentleZoomStep() {
       const viewer = document.getElementById('viewer');
+      // cameraControls is available only after model loads
       if (viewer && viewer.cameraControls) {
-        viewer.cameraControls.dollyStep = 0.2;
+        viewer.cameraControls.dollyStep = 0.02; // much gentler than before
       }
     }
     document.getElementById('viewer').addEventListener('load', setGentleZoomStep);
@@ -287,7 +290,6 @@
       document.getElementById('langSwitch').textContent = translations[lang].lang;
       document.getElementById('langSwitch').setAttribute('aria-label',
         lang === "en" ? "Switch to Hebrew" : "Switch to English");
-      // Night/Light button
       const isNight = document.body.classList.contains('night');
       document.getElementById('nightSwitch').textContent = isNight ? translations[lang].light : translations[lang].night;
       document.getElementById('nightSwitch').setAttribute('aria-label',
@@ -395,7 +397,7 @@
       safeSetGentleZoomStep();
     };
 
-    // Option 2: When uploading a background, resize viewer window to fit the image's aspect ratio
+    // When uploading a background, crop window to image aspect ratio
     document.getElementById('bgUpload').addEventListener('change', function(event) {
       const file = event.target.files && event.target.files[0];
       if (!file) return;
@@ -405,12 +407,24 @@
         const wrapper = document.getElementById('viewer-wrapper');
         const img = new Image();
         img.onload = function() {
-          const width = wrapper.offsetWidth;
+          // Get viewport width for responsive design
+          let viewportWidth = Math.min(window.innerWidth, 1200) * 0.85;
+          if (window.innerWidth < 900) {
+            viewportWidth = window.innerWidth * 0.99;
+          }
+          // Calculate new height based on image aspect ratio and wrapper width
           const aspect = img.height / img.width;
+          let width = viewportWidth;
           let height = width * aspect;
-          // Clamp to min/max heights from CSS
+
+          // Clamp width/height to CSS min/max
+          if (width < 250) width = 250;
+          if (width > 1200) width = 1200;
           if (height < 220) height = 220;
           if (height > 600) height = 600;
+
+          // Actually set the width/height for a perfect fit, and set background
+          wrapper.style.width = width + 'px';
           wrapper.style.height = height + 'px';
           wrapper.classList.add('bg-has-img');
           wrapper.style.backgroundImage = `url('${e.target.result}')`;
@@ -424,7 +438,9 @@
       wrapper.classList.remove('bg-has-img');
       wrapper.style.backgroundImage = '';
       document.getElementById('bgUpload').value = '';
-      // Restore responsive height
+      // Restore responsive width/height
+      wrapper.style.width = '';
+      wrapper.style.height = '';
       adjustViewerHeight();
     };
 
