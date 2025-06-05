@@ -6,18 +6,43 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
   <style>
+    :root {
+      --main-bg: #f5f7fa;
+      --viewer-bg: #fff;
+      --text-main: #222;
+      --primary: #1976d2;
+      --select-bg: #fff;
+      --select-border: #bbb;
+      --select-color: #222;
+      --desc-color: #333;
+      --shadow: 0 2px 16px #0001;
+    }
+    body.night {
+      --main-bg: #181e28;
+      --viewer-bg: #232b39;
+      --text-main: #f3f6fa;
+      --primary: #5caaff;
+      --select-bg: #232b39;
+      --select-border: #5caaff;
+      --select-color: #f3f6fa;
+      --desc-color: #a0bbd6;
+      --shadow: 0 2px 16px #0004;
+    }
     body {
       font-family: sans-serif;
-      background: #f5f7fa;
+      background: var(--main-bg);
       margin: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
       padding: 2em 0;
+      color: var(--text-main);
+      transition: background 0.35s, color 0.35s;
     }
     h1 {
-      color: #1976d2;
+      color: var(--primary);
       margin-bottom: 1em;
+      transition: color 0.35s;
     }
     .controls {
       margin-bottom: 1.5em;
@@ -34,37 +59,77 @@
       font-size: 1em;
       padding: 0.3em 0.7em;
       border-radius: 6px;
-      border: 1px solid #bbb;
-      background: #fff;
+      border: 1px solid var(--select-border);
+      background: var(--select-bg);
+      color: var(--select-color);
+      transition: background 0.35s, color 0.35s, border 0.35s;
     }
     model-viewer {
       width: 600px;
       height: 350px;
-      background: #fff;
+      background: var(--viewer-bg);
       border-radius: 12px;
-      box-shadow: 0 2px 16px #0001;
+      box-shadow: var(--shadow);
       margin-bottom: 2em;
       min-width: 250px;
+      transition: background 0.35s, box-shadow 0.35s;
     }
     @media (max-width: 700px) {
       model-viewer { width: 99vw; height: 220px; }
     }
     .desc {
       font-size: 1.1em;
-      color: #333;
+      color: var(--desc-color);
       margin-bottom: 2em;
+      transition: color 0.35s;
+    }
+    .btn-bar {
+      display: flex;
+      gap: 1em;
+      margin-bottom: 1.2em;
+      justify-content: center;
+    }
+    .switch-btn {
+      padding: 0.4em 1.2em;
+      font-size: 1em;
+      border-radius: 30px;
+      border: 1.5px solid var(--primary);
+      background: var(--viewer-bg);
+      color: var(--primary);
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, border 0.2s;
+      outline: none;
+      box-shadow: 0 1px 4px #0002;
+    }
+    .switch-btn:active, .switch-btn:focus {
+      background: var(--primary);
+      color: var(--viewer-bg);
+    }
+    body.night .switch-btn {
+      background: var(--viewer-bg);
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+    body.night .switch-btn:active, body.night .switch-btn:focus {
+      background: var(--primary);
+      color: var(--viewer-bg);
     }
   </style>
 </head>
 <body>
-  <h1>3D Model Showcase</h1>
+  <h1 id="title">3D Model Showcase</h1>
+  <div class="btn-bar">
+    <button class="switch-btn" id="langSwitch" aria-label="Switch to Hebrew">🇮🇱 עברית</button>
+    <button class="switch-btn" id="nightSwitch" aria-label="Switch to Night Mode">🌙 Night Mode</button>
+  </div>
   <div class="controls">
     <div>
-      <label for="category">Category:</label>
+      <label for="category" id="label-category">Category:</label>
       <select id="category"></select>
     </div>
     <div>
-      <label for="model">Model:</label>
+      <label for="model" id="label-model">Model:</label>
       <select id="model"></select>
     </div>
   </div>
@@ -79,34 +144,129 @@
   </model-viewer>
   <div class="desc" id="desc"></div>
   <script>
+    // Translations
+    const translations = {
+      en: {
+        title: "3D Model Showcase",
+        category: "Category:",
+        model: "Model:",
+        night: "🌙 Night Mode",
+        light: "☀️ Light Mode",
+        lang: "🇮🇱 עברית",
+        desc: (cat, model) => `Category: ${cat} | Model: ${model}`,
+        pretty: (str) => str.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+      },
+      he: {
+        title: "תצוגת מודלים בתלת-ממד",
+        category: "קטגוריה:",
+        model: "מודל:",
+        night: "🌙 מצב לילה",
+        light: "☀️ מצב יום",
+        lang: "🇬🇧 English",
+        desc: (cat, model) => `קטגוריה: ${cat} | מודל: ${model}`,
+        pretty: (str) => {
+          // Hebrew pretty translation for known categories/models
+          const cats = {
+            "Cabinets": "ארונות",
+            "Lamps": "מנורות",
+            "Sofas": "ספות",
+            "Tables": "שולחנות"
+          };
+          const mods = {
+            "bookcase": "כוננית",
+            "closet_oak_white": "ארון עץ לבן",
+            "ikea_alex_drawer": "מגירות אלכס איקאה",
+            "floor_lamp": "מנורת רצפה",
+            "mario_floor_lamp": "מנורת מריו",
+            "sweep_floor_lamp_black": "מנורת Sweep שחורה",
+            "BLACKSofa": "ספה שחורה",
+            "dolton_armchair_hudson_grey": "כורסא דולטון הדסון אפור",
+            "sofawood": "ספת עץ",
+            "wassily_chair": "כיסא ואסילי",
+            "kumo_white_coffee_table": "שולחן קפה לבן קומו",
+            "noguchi_coffee_table": "שולחן קפה נגוצ'י"
+          };
+          return cats[str] || mods[str] ||
+            str.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        }
+      }
+    };
+    let lang = "en";
     let modelsData = {};
     let currentCategory = "";
     let currentModelIndex = 0;
 
-    // Helper: Capitalize and make nice name from snake_case
-    function prettyName(str) {
-      return str
-        .replace(/_/g, ' ')
-        .replace(/\b\w/g, l => l.toUpperCase());
+    function setLanguage(newLang) {
+      lang = newLang;
+      // Update all labels/texts
+      document.getElementById('title').textContent = translations[lang].title;
+      document.getElementById('label-category').textContent = translations[lang].category;
+      document.getElementById('label-model').textContent = translations[lang].model;
+      document.getElementById('langSwitch').textContent = translations[lang].lang;
+      document.getElementById('langSwitch').setAttribute('aria-label',
+        lang === "en" ? "Switch to Hebrew" : "Switch to English");
+      // Night/Light button
+      const isNight = document.body.classList.contains('night');
+      document.getElementById('nightSwitch').textContent = isNight ? translations[lang].light : translations[lang].night;
+      document.getElementById('nightSwitch').setAttribute('aria-label',
+        isNight ? (lang === "en" ? "Switch to Light Mode" : "החלף למצב יום") :
+                  (lang === "en" ? "Switch to Night Mode" : "החלף למצב לילה"));
+      // Re-render dropdowns and desc
+      renderCategoryDropdown();
+      renderModelDropdown();
+      updateViewer();
+      // Direction for Hebrew
+      document.body.dir = (lang === "he") ? "rtl" : "ltr";
     }
 
-    fetch('models.json')
-      .then(r => r.json())
-      .then(data => {
-        modelsData = data;
-        // Populate categories
-        const catSel = document.getElementById('category');
-        catSel.innerHTML = '';
-        Object.keys(modelsData).forEach(cat => {
-          const opt = document.createElement('option');
-          opt.value = cat;
-          opt.textContent = prettyName(cat);
-          catSel.appendChild(opt);
-        });
-        currentCategory = Object.keys(modelsData)[0];
-        renderModelDropdown();
-        updateViewer();
+    function renderCategoryDropdown() {
+      const catSel = document.getElementById('category');
+      const cats = Object.keys(modelsData);
+      catSel.innerHTML = '';
+      cats.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = translations[lang].pretty(cat);
+        catSel.appendChild(opt);
       });
+      catSel.value = currentCategory;
+    }
+
+    function renderModelDropdown() {
+      const modelSel = document.getElementById('model');
+      if (!modelsData[currentCategory]) return;
+      modelSel.innerHTML = '';
+      modelsData[currentCategory].forEach((model, i) => {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = translations[lang].pretty(model.name);
+        modelSel.appendChild(opt);
+      });
+      modelSel.selectedIndex = currentModelIndex;
+    }
+
+    function updateViewer() {
+      const viewer = document.getElementById('viewer');
+      const desc = document.getElementById('desc');
+      const modelObj = modelsData[currentCategory][currentModelIndex];
+      viewer.src = modelObj.file;
+      viewer.alt = translations[lang].pretty(modelObj.name);
+      desc.textContent = translations[lang].desc(
+        translations[lang].pretty(currentCategory),
+        translations[lang].pretty(modelObj.name)
+      );
+    }
+
+    document.getElementById('langSwitch').onclick = function() {
+      setLanguage(lang === "en" ? "he" : "en");
+    };
+
+    document.getElementById('nightSwitch').onclick = function() {
+      document.body.classList.toggle('night');
+      // Update button text for the active language
+      const isNight = document.body.classList.contains('night');
+      document.getElementById('nightSwitch').textContent = isNight ? translations[lang].light : translations[lang].night;
+    };
 
     document.getElementById('category').addEventListener('change', function() {
       currentCategory = this.value;
@@ -120,26 +280,16 @@
       updateViewer();
     });
 
-    function renderModelDropdown() {
-      const modelSel = document.getElementById('model');
-      modelSel.innerHTML = '';
-      modelsData[currentCategory].forEach((model, i) => {
-        const opt = document.createElement('option');
-        opt.value = i;
-        opt.textContent = prettyName(model.name);
-        modelSel.appendChild(opt);
+    // Initial fetch and boot
+    fetch('models.json')
+      .then(r => r.json())
+      .then(data => {
+        modelsData = data;
+        // Set defaults
+        currentCategory = Object.keys(modelsData)[0];
+        currentModelIndex = 0;
+        setLanguage(lang);
       });
-      modelSel.selectedIndex = 0;
-    }
-
-    function updateViewer() {
-      const viewer = document.getElementById('viewer');
-      const desc = document.getElementById('desc');
-      const modelObj = modelsData[currentCategory][currentModelIndex];
-      viewer.src = modelObj.file;
-      viewer.alt = prettyName(modelObj.name);
-      desc.textContent = `Category: ${prettyName(currentCategory)} | Model: ${prettyName(modelObj.name)}`;
-    }
   </script>
 </body>
 </html>
