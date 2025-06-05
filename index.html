@@ -308,10 +308,9 @@
       document.getElementById('contrastRange').value = 1.0;
       updateFilters();
     });
-    // Reset filter when model reloads
     document.getElementById('viewer').addEventListener('load', updateFilters);
 
-    // --- The rest of your viewer JS follows (unchanged except for filter logic above) ---
+    // --- Viewer Logic ---
     function adjustViewerHeight() {
       const wrapper = document.getElementById('viewer-wrapper');
       const aspectRatio = 9 / 16;
@@ -321,7 +320,6 @@
       if (height > 600) height = 600;
       wrapper.style.height = height + 'px';
     }
-
     window.addEventListener('resize', function() {
       if (!document.getElementById('viewer-wrapper').classList.contains('bg-has-img')) {
         adjustViewerHeight();
@@ -329,7 +327,6 @@
     });
     window.addEventListener('DOMContentLoaded', adjustViewerHeight);
 
-    // Ultra gentle zoom
     function setGentleZoomStep() {
       const viewer = document.getElementById('viewer');
       if (viewer && viewer.cameraControls) {
@@ -361,8 +358,176 @@
       viewer.removeAttribute('disable-pan');
     }
 
-    // --- Your translations, categoryLabels, availableFiles, prettyCategory, prettyModel, prettyVariant, setLanguage, renderCategoryDropdown, renderModelDropdown, updateViewer, etc. ---
-    // (Omitted for brevity but unchanged from previous full code)
+    // Translations
+    const translations = {
+      en: {
+        title: "3D Model Showcase",
+        category: "Category:",
+        model: "Model:",
+        night: "🌙 Night Mode",
+        light: "☀️ Light Mode",
+        lang: "🇮🇱 עברית",
+        switchTo: "Switch to",
+        desc: (cat, model, variant) => `Category: ${cat} | Model: ${model}${variant ? ' (' + variant + ')' : ''}`,
+        resetView: "🔄 Reset View"
+      },
+      he: {
+        title: "תצוגת מודלים בתלת-ממד",
+        category: "קטגוריה:",
+        model: "מודל:",
+        night: "🌙 מצב לילה",
+        light: "☀️ מצב יום",
+        lang: "🇬🇧 English",
+        switchTo: "החלף ל",
+        desc: (cat, model, variant) => `קטגוריה: ${cat} | מודל: ${model}${variant ? ' (' + variant + ')' : ''}`,
+        resetView: "🔄 איפוס תצוגה"
+      }
+    };
+    const categoryLabels = {
+      "Cabinets": { en: "Cabinets", he: "ארונות" },
+      "Lamps": { en: "Lamps", he: "מנורות" },
+      "Sofas": { en: "Sofas", he: "ספות" },
+      "Tables": { en: "Tables", he: "שולחנות" }
+    };
+    let lang = "en";
+    let modelsData = {};
+    let currentCategory = "";
+    let currentModelIndex = 0;
+    let currentVariantIndex = 0;
+
+    function prettyCategory(cat) {
+      return (categoryLabels[cat] && categoryLabels[cat][lang]) ? categoryLabels[cat][lang] : cat;
+    }
+    function prettyModel(modelObj) {
+      if (!modelObj) return "";
+      return lang === "he" ? (modelObj.label_he || modelObj.label_en || modelObj.name) : (modelObj.label_en || modelObj.name);
+    }
+    function prettyVariant(variantObj) {
+      if (!variantObj) return "";
+      return lang === "he" ? (variantObj.label_he || variantObj.label) : (variantObj.label || variantObj.label_he);
+    }
+
+    function setLanguage(newLang) {
+      lang = newLang;
+      document.getElementById('title').textContent = translations[lang].title;
+      document.getElementById('label-category').textContent = translations[lang].category;
+      document.getElementById('label-model').textContent = translations[lang].model;
+      document.getElementById('langSwitch').textContent = translations[lang].lang;
+      document.getElementById('langSwitch').setAttribute('aria-label',
+        lang === "en" ? "Switch to Hebrew" : "Switch to English");
+      const isNight = document.body.classList.contains('night');
+      document.getElementById('nightSwitch').textContent = isNight ? translations[lang].light : translations[lang].night;
+      document.getElementById('nightSwitch').setAttribute('aria-label',
+        isNight ? (lang === "en" ? "Switch to Light Mode" : "החלף למצב יום") :
+                  (lang === "en" ? "Switch to Night Mode" : "החלף למצב לילה"));
+      document.getElementById('resetViewBtn').textContent = translations[lang].resetView;
+      renderCategoryDropdown();
+      renderModelDropdown();
+      updateViewer();
+      document.body.dir = (lang === "he") ? "rtl" : "ltr";
+    }
+    function renderCategoryDropdown() {
+      const catSel = document.getElementById('category');
+      const cats = Object.keys(modelsData);
+      catSel.innerHTML = '';
+      cats.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = prettyCategory(cat);
+        catSel.appendChild(opt);
+      });
+      catSel.value = currentCategory;
+    }
+    function renderModelDropdown() {
+      const modelSel = document.getElementById('model');
+      if (!modelsData[currentCategory]) return;
+      modelSel.innerHTML = '';
+      modelsData[currentCategory].forEach((model, i) => {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = prettyModel(model);
+        modelSel.appendChild(opt);
+      });
+      modelSel.selectedIndex = currentModelIndex;
+    }
+    function updateViewer() {
+      const viewer = document.getElementById('viewer');
+      const desc = document.getElementById('desc');
+      const variantSwitch = document.getElementById('variantSwitch');
+      const modelObj = modelsData[currentCategory][currentModelIndex];
+      let modelFile = modelObj.file;
+      let variantLabel = "";
+
+      let hasValidVariants = false;
+      let validVariants = [];
+      if (modelObj.variants && Array.isArray(modelObj.variants)) {
+        validVariants = modelObj.variants.filter(v => v.file);
+        hasValidVariants = validVariants.length >= 2;
+        if (hasValidVariants) {
+          if (currentVariantIndex >= validVariants.length) currentVariantIndex = 0;
+          const variantObj = validVariants[currentVariantIndex];
+          modelFile = variantObj.file;
+          variantLabel = prettyVariant(variantObj);
+          variantSwitch.style.display = '';
+          const nextVariantObj = validVariants[(currentVariantIndex + 1) % validVariants.length];
+          variantSwitch.textContent = translations[lang].switchTo + ' ' + prettyVariant(nextVariantObj);
+        } else {
+          currentVariantIndex = 0;
+          variantSwitch.style.display = 'none';
+        }
+      } else {
+        currentVariantIndex = 0;
+        variantSwitch.style.display = 'none';
+      }
+      viewer.src = modelFile;
+      viewer.alt = prettyModel(modelObj);
+
+      // Always enforce extreme zoom out (unless bg image, see lock/unlock)
+      if (!document.getElementById('viewer-wrapper').classList.contains('bg-has-img')) {
+        unlockModelZoom();
+      }
+
+      desc.textContent = translations[lang].desc(
+        prettyCategory(currentCategory),
+        prettyModel(modelObj),
+        variantLabel
+      );
+      safeSetGentleZoomStep();
+    }
+
+    document.getElementById('langSwitch').onclick = function() {
+      setLanguage(lang === "en" ? "he" : "en");
+      safeSetGentleZoomStep();
+    };
+    document.getElementById('nightSwitch').onclick = function() {
+      document.body.classList.toggle('night');
+      const isNight = document.body.classList.contains('night');
+      document.getElementById('nightSwitch').textContent = isNight ? translations[lang].light : translations[lang].night;
+      safeSetGentleZoomStep();
+    };
+    document.getElementById('category').addEventListener('change', function() {
+      currentCategory = this.value;
+      currentModelIndex = 0;
+      currentVariantIndex = 0;
+      renderModelDropdown();
+      updateViewer();
+      safeSetGentleZoomStep();
+    });
+    document.getElementById('model').addEventListener('change', function() {
+      currentModelIndex = +this.value;
+      currentVariantIndex = 0;
+      updateViewer();
+      safeSetGentleZoomStep();
+    });
+    document.getElementById('variantSwitch').onclick = function () {
+      const modelObj = modelsData[currentCategory][currentModelIndex];
+      if (!modelObj.variants || !Array.isArray(modelObj.variants)) return;
+      const validVariants = modelObj.variants.filter(v => v.file);
+      if (validVariants.length < 2) return;
+      currentVariantIndex = (currentVariantIndex + 1) % validVariants.length;
+      updateViewer();
+      safeSetGentleZoomStep();
+    };
 
     // When uploading a background, crop window to image aspect ratio and allow rotation but restrict zoom/pan
     document.getElementById('bgUpload').addEventListener('change', function(event) {
@@ -425,8 +590,22 @@
       }
     });
 
-    // ...fetch models.json and initial setup as before...
-    // (Omitted for brevity, unchanged from previous code)
+    // Load models.json and initialize
+    fetch('models.json')
+      .then(r => r.json())
+      .then(data => {
+        modelsData = data;
+        currentCategory = Object.keys(modelsData)[0];
+        currentModelIndex = 0;
+        currentVariantIndex = 0;
+        setLanguage(lang);
+        adjustViewerHeight();
+        safeSetGentleZoomStep();
+      })
+      .catch(err => {
+        document.getElementById('desc').textContent =
+          "Failed to load models.json. Please check that it exists and is valid.";
+      });
   </script>
 </body>
 </html>
