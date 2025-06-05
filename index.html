@@ -122,6 +122,7 @@
   <div class="btn-bar">
     <button class="switch-btn" id="langSwitch" aria-label="Switch to Hebrew">🇮🇱 עברית</button>
     <button class="switch-btn" id="nightSwitch" aria-label="Switch to Night Mode">🌙 Night Mode</button>
+    <button class="switch-btn" id="variantSwitch" style="display:none"></button>
   </div>
   <div class="controls">
     <div>
@@ -153,6 +154,7 @@
         night: "🌙 Night Mode",
         light: "☀️ Light Mode",
         lang: "🇮🇱 עברית",
+        switchTo: "Switch to",
         desc: (cat, model) => `Category: ${cat} | Model: ${model}`,
         pretty: (str) => str.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
       },
@@ -163,6 +165,7 @@
         night: "🌙 מצב לילה",
         light: "☀️ מצב יום",
         lang: "🇬🇧 English",
+        switchTo: "החלף ל",
         desc: (cat, model) => `קטגוריה: ${cat} | מודל: ${model}`,
         pretty: (str) => {
           // Hebrew pretty translation for known categories/models
@@ -176,6 +179,9 @@
             "bookcase": "כוננית",
             "closet_oak_white": "ארון עץ לבן",
             "ikea_alex_drawer": "מגירות אלכס איקאה",
+            "slimcloset": "ארון דק",
+            "slimcloset_closed": "ארון דק סגור",
+            "slimcloset_open": "ארון דק פתוח",
             "floor_lamp": "מנורת רצפה",
             "mario_floor_lamp": "מנורת מריו",
             "sweep_floor_lamp_black": "מנורת Sweep שחורה",
@@ -184,7 +190,9 @@
             "sofawood": "ספת עץ",
             "wassily_chair": "כיסא ואסילי",
             "kumo_white_coffee_table": "שולחן קפה לבן קומו",
-            "noguchi_coffee_table": "שולחן קפה נגוצ'י"
+            "noguchi_coffee_table": "שולחן קפה נגוצ'י",
+            "Closed": "סגור",
+            "Open": "פתוח"
           };
           return cats[str] || mods[str] ||
             str.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
@@ -195,10 +203,10 @@
     let modelsData = {};
     let currentCategory = "";
     let currentModelIndex = 0;
+    let currentVariantIndex = 0;
 
     function setLanguage(newLang) {
       lang = newLang;
-      // Update all labels/texts
       document.getElementById('title').textContent = translations[lang].title;
       document.getElementById('label-category').textContent = translations[lang].category;
       document.getElementById('label-model').textContent = translations[lang].model;
@@ -211,11 +219,9 @@
       document.getElementById('nightSwitch').setAttribute('aria-label',
         isNight ? (lang === "en" ? "Switch to Light Mode" : "החלף למצב יום") :
                   (lang === "en" ? "Switch to Night Mode" : "החלף למצב לילה"));
-      // Re-render dropdowns and desc
       renderCategoryDropdown();
       renderModelDropdown();
       updateViewer();
-      // Direction for Hebrew
       document.body.dir = (lang === "he") ? "rtl" : "ltr";
     }
 
@@ -249,11 +255,26 @@
       const viewer = document.getElementById('viewer');
       const desc = document.getElementById('desc');
       const modelObj = modelsData[currentCategory][currentModelIndex];
-      viewer.src = modelObj.file;
+      const variantSwitch = document.getElementById('variantSwitch');
+      let modelFile = modelObj.file;
+
+      if (modelObj.variants && modelObj.variants.length > 1) {
+        modelFile = modelObj.variants[currentVariantIndex].file;
+        variantSwitch.style.display = '';
+        variantSwitch.textContent = translations[lang].switchTo + ' ' +
+          translations[lang].pretty(modelObj.variants[(currentVariantIndex + 1) % modelObj.variants.length].label);
+      } else {
+        currentVariantIndex = 0;
+        variantSwitch.style.display = 'none';
+      }
+      viewer.src = modelFile;
       viewer.alt = translations[lang].pretty(modelObj.name);
       desc.textContent = translations[lang].desc(
         translations[lang].pretty(currentCategory),
-        translations[lang].pretty(modelObj.name)
+        translations[lang].pretty(modelObj.name) +
+          (modelObj.variants && modelObj.variants.length > 1
+            ? ' (' + translations[lang].pretty(modelObj.variants[currentVariantIndex].label) + ')'
+            : '')
       );
     }
 
@@ -263,7 +284,6 @@
 
     document.getElementById('nightSwitch').onclick = function() {
       document.body.classList.toggle('night');
-      // Update button text for the active language
       const isNight = document.body.classList.contains('night');
       document.getElementById('nightSwitch').textContent = isNight ? translations[lang].light : translations[lang].night;
     };
@@ -271,23 +291,31 @@
     document.getElementById('category').addEventListener('change', function() {
       currentCategory = this.value;
       currentModelIndex = 0;
+      currentVariantIndex = 0;
       renderModelDropdown();
       updateViewer();
     });
 
     document.getElementById('model').addEventListener('change', function() {
       currentModelIndex = +this.value;
+      currentVariantIndex = 0;
       updateViewer();
     });
+
+    document.getElementById('variantSwitch').onclick = function () {
+      const modelObj = modelsData[currentCategory][currentModelIndex];
+      currentVariantIndex = (currentVariantIndex + 1) % modelObj.variants.length;
+      updateViewer();
+    };
 
     // Initial fetch and boot
     fetch('models.json')
       .then(r => r.json())
       .then(data => {
         modelsData = data;
-        // Set defaults
         currentCategory = Object.keys(modelsData)[0];
         currentModelIndex = 0;
+        currentVariantIndex = 0;
         setLanguage(lang);
       });
   </script>
