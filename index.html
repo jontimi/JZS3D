@@ -65,15 +65,18 @@
       transition: background 0.35s, color 0.35s, border 0.35s;
     }
     #viewer-wrapper {
-      width: 600px;
-      height: 350px;
+      width: 85vw;
+      max-width: 1200px;
+      min-width: 250px;
+      height: 48vw;
+      max-height: 600px;
+      min-height: 220px;
       background: var(--viewer-bg);
       border-radius: 12px;
       box-shadow: var(--shadow);
       overflow: hidden;
       position: relative;
       margin-bottom: 2em;
-      min-width: 250px;
       transition: background 0.35s, box-shadow 0.35s;
       display: flex;
       align-items: center;
@@ -89,8 +92,13 @@
       height: 100%;
       background: transparent;
     }
-    @media (max-width: 700px) {
-      #viewer-wrapper { width: 99vw; height: 220px; }
+    @media (max-width: 900px) {
+      #viewer-wrapper {
+        width: 99vw;
+        height: 220px;
+        max-width: 100vw;
+        max-height: 350px;
+      }
     }
     .desc {
       font-size: 1.1em;
@@ -182,6 +190,20 @@
   </div>
   <div class="desc" id="desc"></div>
   <script>
+    // Responsive aspect ratio for the viewer window
+    function adjustViewerHeight() {
+      const wrapper = document.getElementById('viewer-wrapper');
+      const aspectRatio = 9 / 16; // 16:9 ratio
+      const width = wrapper.offsetWidth;
+      let height = width * aspectRatio;
+      // Clamp to min/max heights from CSS
+      if (height < 220) height = 220;
+      if (height > 600) height = 600;
+      wrapper.style.height = height + 'px';
+    }
+    window.addEventListener('resize', adjustViewerHeight);
+    window.addEventListener('DOMContentLoaded', adjustViewerHeight);
+
     // Translations
     const translations = {
       en: {
@@ -404,6 +426,7 @@
         currentModelIndex = 0;
         currentVariantIndex = 0;
         setLanguage(lang);
+        adjustViewerHeight();
       });
   </script>
 </body>
