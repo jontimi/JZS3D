@@ -204,6 +204,21 @@
     window.addEventListener('resize', adjustViewerHeight);
     window.addEventListener('DOMContentLoaded', adjustViewerHeight);
 
+    // Make zoom in/out less aggressive
+    function setGentleZoomStep() {
+      const viewer = document.getElementById('viewer');
+      // cameraControls is available only after model loads
+      if (viewer && viewer.cameraControls) {
+        viewer.cameraControls.dollyStep = 0.2; // Default is 1, smaller = gentler
+      }
+    }
+    // Set on load
+    document.getElementById('viewer').addEventListener('load', setGentleZoomStep);
+    // Also set after every model/variant change for safety
+    function safeSetGentleZoomStep() {
+      setTimeout(setGentleZoomStep, 100); // Give the model-viewer time to update
+    }
+
     // Translations
     const translations = {
       en: {
@@ -360,16 +375,19 @@
         prettyModel(modelObj),
         variantLabel
       );
+      safeSetGentleZoomStep();
     }
 
     document.getElementById('langSwitch').onclick = function() {
       setLanguage(lang === "en" ? "he" : "en");
+      safeSetGentleZoomStep();
     };
 
     document.getElementById('nightSwitch').onclick = function() {
       document.body.classList.toggle('night');
       const isNight = document.body.classList.contains('night');
       document.getElementById('nightSwitch').textContent = isNight ? translations[lang].light : translations[lang].night;
+      safeSetGentleZoomStep();
     };
 
     document.getElementById('category').addEventListener('change', function() {
@@ -378,12 +396,14 @@
       currentVariantIndex = 0;
       renderModelDropdown();
       updateViewer();
+      safeSetGentleZoomStep();
     });
 
     document.getElementById('model').addEventListener('change', function() {
       currentModelIndex = +this.value;
       currentVariantIndex = 0;
       updateViewer();
+      safeSetGentleZoomStep();
     });
 
     document.getElementById('variantSwitch').onclick = function () {
@@ -394,6 +414,7 @@
       if (validVariants.length < 2) return;
       currentVariantIndex = (currentVariantIndex + 1) % validVariants.length;
       updateViewer();
+      safeSetGentleZoomStep();
     };
 
     // Background image upload
@@ -427,6 +448,7 @@
         currentVariantIndex = 0;
         setLanguage(lang);
         adjustViewerHeight();
+        safeSetGentleZoomStep();
       });
   </script>
 </body>
