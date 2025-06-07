@@ -556,6 +556,28 @@
       return 'https://jontimi.github.io/JZS-AR-SHOWCASE/' + src;
     }
 
+    function getCurrentModelViewerUrl() {
+      // Get the relative model file path as used in models.json (e.g., Tables/Indu_table.glb)
+      const viewer = document.getElementById('viewer');
+      let src = viewer.src;
+      // If src is a full URL, extract the path after the repo root
+      if (src.match(/^https?:\/\//)) {
+        const url = new URL(src);
+        // Find the repo root in the path
+        const repoRoot = '/JZS-AR-SHOWCASE/';
+        const idx = url.pathname.indexOf(repoRoot);
+        if (idx !== -1) {
+          src = url.pathname.substring(idx + repoRoot.length);
+        } else {
+          src = url.pathname.replace(/^\//, '');
+        }
+      }
+      // If src is relative and starts with a slash, remove it
+      if (src.startsWith('/')) src = src.substring(1);
+      // Do not double-encode the model param
+      return 'https://jontimi.github.io/JZS-AR-SHOWCASE/viewer.html?model=' + src;
+    }
+
     function getCurrentModelQueryUrl() {
       // Get the relative model file path
       const viewer = document.getElementById('viewer');
@@ -575,8 +597,8 @@
     function showArDialog() {
       arDialog.style.display = 'flex';
       arQrContainer.innerHTML = '';
-      // Generate QR code for the main site with ?model=... param
-      const modelUrl = getCurrentModelQueryUrl();
+      // Generate QR code for the minimal viewer page with ?model=... param
+      const modelUrl = getCurrentModelViewerUrl();
       const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(modelUrl)}&size=200x200`;
       const img = new Image();
       img.src = qrCodeUrl;
