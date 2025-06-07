@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
         brightnessValue.textContent = brightness;
         contrastValue.textContent = contrast;
 
-        mainViewer.style.filter = `brightness(<span class="math-inline">\{brightness\}\) contrast\(</span>{contrast})`;
+        mainViewer.style.filter = `brightness(${brightness}) contrast(${contrast})`;
     }
 
     // --- Generate QR Code for AR ---
@@ -154,6 +154,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const currentUrl = window.location.href.split('?')[0].split('#')[0];
             const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1);
             const absoluteModelUrl = new URL(modelUrl, baseUrl).href;
+
+            console.log('Attempting to generate QR code for URL:', absoluteModelUrl); // This line helps us check the URL!
 
             QrCode.toCanvas(qrCanvas, absoluteModelUrl, { width: 256, errorCorrectionLevel: 'H' }, function (error) {
                 if (error) {
@@ -203,14 +205,14 @@ document.addEventListener('DOMContentLoaded', () => {
         contrastValue.textContent = '1.00';   // Update displayed value
     });
 
-    // AR Button
+    // AR Button - This is important for showing the QR code!
     arBtn.addEventListener('click', () => {
         filterControls.classList.remove('visible'); // Hide filter controls if open
 
         const currentModel = modelsData[parseInt(modelSelect.value)];
         if (currentModel && currentModel.src) {
             arDialog.style.display = 'flex'; // Show AR dialog
-            generateQrCode(currentModel.src);
+            generateQrCode(currentModel.src); // Call the function to make the QR code
         } else {
             console.error('No model selected or model source is missing for AR.');
             alert('Please select a model to view in AR first.');
@@ -241,7 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
     applyTheme(localStorage.getItem(LOCAL_STORAGE_THEME_KEY) || 'light');
 
     // Ensure AR dialog is hidden on initial load
-    arDialog.style.display = 'none'; 
+    arDialog.style.display = 'none';
 
     loadModelsData(); // Start by loading models
 });
