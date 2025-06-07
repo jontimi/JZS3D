@@ -14,10 +14,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const arDialog = document.getElementById('arDialog');
     const qrCanvas = document.getElementById('qrCanvas');
     const closeArDialogBtn = document.getElementById('closeArDialogBtn');
-    const loadingOverlay = document.getElementById('loadingOverlay'); // This is the new overlay within model-viewer's slot
+    const loadingOverlay = document.getElementById('loadingOverlay');
     const nightModeToggle = document.getElementById('nightModeToggle');
 
-    let modelsData = []; // This will now be a simple array of models
+    let modelsData = [];
     const LOCAL_STORAGE_THEME_KEY = 'jzs-3d-showcase-theme';
 
     // --- Helper Functions ---
@@ -40,16 +40,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showLoadingOverlay() {
-        // The `loadingOverlay` is slotted into <model-viewer> and displayed via CSS `display: flex`
-        // We ensure it's visible by not setting display:none here directly,
-        // model-viewer handles its default hide/show behavior for progress-bar slot.
-        // We can add a class for custom styling during loading
+        // Check if the loading overlay is part of the shadow DOM (recommended for model-viewer)
+        // or if it's directly in the light DOM
+        const mvProgressBar = mainViewer.shadowRoot ? mainViewer.shadowRoot.querySelector('.loading-overlay') : null;
+
+        if (mvProgressBar) {
+            mvProgressBar.style.display = 'flex';
+            mvProgressBar.style.opacity = '1';
+        } else if (loadingOverlay) { // Fallback if not using slot or element is outside model-viewer
+            loadingOverlay.style.display = 'flex';
+            loadingOverlay.style.opacity = '1';
+        }
+        // Add a class to mainViewer to signify loading state for CSS adjustments
         mainViewer.classList.add('is-loading');
     }
 
     function hideLoadingOverlay() {
+        const mvProgressBar = mainViewer.shadowRoot ? mainViewer.shadowRoot.querySelector('.loading-overlay') : null;
+
+        if (mvProgressBar) {
+            mvProgressBar.style.opacity = '0';
+            setTimeout(() => { // Hide after transition
+                mvProgressBar.style.display = 'none';
+            }, 300); // Match CSS transition duration
+        } else if (loadingOverlay) { // Fallback
+            loadingOverlay.style.opacity = '0';
+            setTimeout(() => {
+                loadingOverlay.style.display = 'none';
+            }, 300);
+        }
         mainViewer.classList.remove('is-loading');
     }
+
 
     // --- Load Models Data ---
     async function loadModelsData() {
@@ -89,6 +111,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function loadModel(index) {
         if (index < 0 || index >= modelsData.length) {
             console.error('Invalid model index:', index);
+            mainViewer.src = ''; // Clear the viewer if index is invalid
+            hideLoadingOverlay();
             return;
         }
 
@@ -106,9 +130,9 @@ document.addEventListener('DOMContentLoaded', () => {
         contrastRange.value = 1;
         updateModelFilters();
 
-        // Update the AR dialog QR code link if it's open
+        // If AR dialog is somehow open, re-generate QR code for the new model
         if (arDialog.style.display !== 'none') {
-            generateQrCode(model.src);
+            generateQrCode(model.src); // Use model.src here, which is the currently loaded model's path
         }
     }
 
@@ -120,37 +144,22 @@ document.addEventListener('DOMContentLoaded', () => {
         brightnessValue.textContent = brightness;
         contrastValue.textContent = contrast;
 
-        mainViewer.style.filter = `brightness(${brightness}) contrast(${contrast})`;
+        mainViewer.style.filter = `brightness(<span class="math-inline">\{brightness\}\) contrast\(</span>{contrast})`;
     }
 
     // --- Generate QR Code for AR ---
     function generateQrCode(modelUrl) {
-        // Check if QrCode library is available. It should be, due to script order.
+        // Ensure QrCode library is available
         if (typeof QrCode !== 'undefined' && modelUrl) {
-            // Get the current base URL to create an absolute path for the model
             const currentUrl = window.location.href.split('?')[0].split('#')[0];
             const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1);
-            const absoluteModelUrl = new URL(modelUrl, baseUrl).href; // Ensures it's an absolute URL
+            const absoluteModelUrl = new URL(modelUrl, baseUrl).href;
 
-            // The 'ar' attribute of model-viewer requires specific URLs for different platforms.
-            // For general QR codes, a direct link to the GLB/GLTF is often sufficient,
-            // or a more sophisticated AR link might be needed.
-            // model-viewer.generateObjectUrl is useful for native AR links, but
-            // for general QR codes, a simple URL to the GLB is usually enough.
-            // Let's use the absoluteModelUrl directly for the QR code for simplicity.
-
-            // If you find AR isn't working perfectly on iOS/Android, you might need to
-            // use a more robust AR deep-link generator or host your files on a server
-            // that supports .usdz for iOS. For now, a direct GLB link is the simplest.
-            const qrLink = absoluteModelUrl; 
-
-            // Ensure the link starts with https for iOS Quick Look, if hosted on HTTP
-            // If your Live Server is HTTP, this will just make the QR fail on iOS for AR.
-            // For proper iOS AR, you need HTTPS hosting and .usdz files.
-            // const safeQrLink = qrLink.startsWith('http://') ? qrLink.replace('http://', 'https://') : qrLink;
-
-            QrCode.toCanvas(qrCanvas, qrLink, { width: 256, errorCorrectionLevel: 'H' }, function (error) {
-                if (error) console.error('QR Code generation failed:', error);
+            QrCode.toCanvas(qrCanvas, absoluteModelUrl, { width: 256, errorCorrectionLevel: 'H' }, function (error) {
+                if (error) {
+                    console.error('QR Code generation failed:', error);
+                    // Optionally, show a message in the AR dialog that QR failed
+                }
             });
         } else {
             console.error('QR Code library not loaded or modelUrl missing for AR.');
@@ -183,21 +192,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Reset View Button
     resetViewBtn.addEventListener('click', () => {
-        mainViewer.cameraOrbit = '0deg 75deg 105%'; // Reset default orbit
-        mainViewer.fieldOfView = '30deg'; // Reset default FOV
-        mainViewer.exposure = '1'; // Reset exposure
-        mainViewer.shadowIntensity = '1'; // Reset shadow intensity
-        mainViewer.style.filter = 'none'; // Clear brightness/contrast filters
-        brightnessRange.value = 1; // Reset range inputs
-        contrastRange.value = 1;
-        brightnessValue.textContent = '1.00';
-        contrastValue.textContent = '1.00';
+        mainViewer.cameraOrbit = '0deg 75deg 105%';
+        mainViewer.fieldOfView = '30deg';
+        mainViewer.exposure = '1';
+        mainViewer.shadowIntensity = '1';
+        mainViewer.style.filter = 'none'; // Clear CSS filter
+        brightnessRange.value = 1; // Reset range input
+        contrastRange.value = 1;   // Reset range input
+        brightnessValue.textContent = '1.00'; // Update displayed value
+        contrastValue.textContent = '1.00';   // Update displayed value
     });
 
     // AR Button
     arBtn.addEventListener('click', () => {
-        // Hide filter controls if open
-        filterControls.classList.remove('visible');
+        filterControls.classList.remove('visible'); // Hide filter controls if open
 
         const currentModel = modelsData[parseInt(modelSelect.value)];
         if (currentModel && currentModel.src) {
@@ -215,20 +223,25 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Handle model-viewer loading state
-    // Use the slot="progress-bar" functionality, which model-viewer manages
-    mainViewer.addEventListener('loadstart', showLoadingOverlay); // Called when model starts loading
+    mainViewer.addEventListener('loadstart', showLoadingOverlay);
     mainViewer.addEventListener('progress', (event) => {
         // You can use event.detail.totalProgress for a progress bar if needed
         // console.log(`Loading progress: ${event.detail.totalProgress.toFixed(2)}%`);
     });
-    mainViewer.addEventListener('load', hideLoadingOverlay); // Called when model is fully loaded and rendered
+    mainViewer.addEventListener('load', hideLoadingOverlay);
     mainViewer.addEventListener('error', (event) => {
         console.error('Model Viewer Error:', event.detail);
         alert('Failed to load 3D model. Please check the model file and console for details.');
         hideLoadingOverlay();
+        // If there's an error, clear the current model to avoid a broken state
+        mainViewer.src = '';
     });
 
     // --- Initial Setup ---
-    applyTheme(localStorage.getItem(LOCAL_STORAGE_THEME_KEY) || 'light'); // Apply saved theme or default
+    applyTheme(localStorage.getItem(LOCAL_STORAGE_THEME_KEY) || 'light');
+
+    // Ensure AR dialog is hidden on initial load
+    arDialog.style.display = 'none'; 
+
     loadModelsData(); // Start by loading models
 });
