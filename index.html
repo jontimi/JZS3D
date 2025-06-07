@@ -2261,6 +2261,209 @@
       background: #5caaff;
       color: #232b39;
     }
+    body {
+      font-family: sans-serif;
+      background: var(--main-bg);
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2em 0;
+      color: var(--text-main);
+      transition: background 0.35s, color 0.35s;
+    }
+    h1 {
+      color: var(--primary);
+      margin-bottom: 1em;
+      transition: color 0.35s;
+    }
+    .controls {
+      margin-bottom: 1.5em;
+      display: flex;
+      gap: 1em;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    label {
+      font-weight: bold;
+      margin-right: 0.5em;
+    }
+    select {
+      font-size: 1em;
+      padding: 0.3em 0.7em;
+      border-radius: 6px;
+      border: 1px solid var(--select-border);
+      background: var(--select-bg);
+      color: var(--select-color);
+      transition: background 0.35s, color 0.35s, border 0.35s;
+    }
+    #viewer-wrapper {
+      width: 85vw;
+      max-width: 1200px;
+      min-width: 250px;
+      height: 48vw;
+      max-height: 600px;
+      min-height: 220px;
+      background: var(--viewer-bg);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+      margin-bottom: 2em;
+      transition: background 0.35s, box-shadow 0.35s, height 0.3s, width 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #viewer-wrapper.bg-has-img {
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    model-viewer {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      transition: filter 0.2s;
+      pointer-events: auto;
+    }
+    /* Ensure AR button is not overlapped */
+    model-viewer .container {
+      pointer-events: none;
+    }
+    model-viewer .container * {
+      pointer-events: auto;
+    }
+    /* Hide the default model-viewer AR button */
+    model-viewer::part(default-ar-button) {
+      display: none !important;
+    }
+    /* Brightness/Contrast Controls as Popup */
+    .filter-controls {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      z-index: 1001;
+      background: rgba(255,255,255,0.97);
+      border-radius: 13px;
+      box-shadow: 0 4px 24px #0003;
+      padding: 18px 22px 16px 22px;
+      display: none;
+      flex-direction: row;
+      gap: 18px;
+      min-width: 220px;
+      user-select: none;
+      font-size: 1.05em;
+      align-items: flex-start;
+      transition: opacity 0.2s, visibility 0.2s;
+    }
+    .filter-controls.visible {
+      display: flex;
+    }
+    .filter-controls .filter-slider-row {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+      min-width: 90px;
+    }
+    .filter-controls label {
+      font-weight: normal;
+      font-size: 1em;
+      margin-right: 0.5em;
+      margin-bottom: 2px;
+    }
+    .filter-controls input[type=range] {
+      width: 90px;
+      margin: 0 0 2px 0;
+      accent-color: var(--primary);
+      height: 2px;
+    }
+    .filter-value {
+      min-width: 30px;
+      text-align: right;
+      font-size: 0.95em;
+      opacity: 0.7;
+      margin-left: 3px;
+      font-variant-numeric: tabular-nums;
+    }
+    .filter-controls button {
+      align-self: flex-end;
+      margin-left: 10px;
+      margin-top: 0;
+    }
+    .filter-popup-btn {
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      z-index: 1002;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.45em 1.2em;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #0002;
+      opacity: 0.93;
+      transition: background 0.2s, color 0.2s, opacity 0.2s;
+    }
+    .filter-popup-btn:hover, .filter-popup-btn:focus {
+      background: #1e8fff;
+      opacity: 1;
+    }
+    @media (max-width: 600px) {
+      .filter-controls {
+        min-width: 120px;
+        padding: 10px 8px 10px 8px;
+        font-size: 0.97em;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .filter-controls .filter-slider-row {
+        min-width: 0;
+        width: 100%;
+      }
+      .filter-controls input[type=range] {
+        width: 100%;
+      }
+      .filter-popup-btn {
+        top: 10px;
+        left: 10px;
+        padding: 0.35em 0.9em;
+        font-size: 0.95em;
+      }
+    }
+    #resetViewBtn {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      z-index: 30;
+      padding: 0.5em 1.1em;
+      border-radius: 24px;
+      border: none;
+      font-size: 1em;
+      font-weight: 600;
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 2px 8px #0003;
+      cursor: pointer;
+      opacity: 0.93;
+      transition: background 0.2s, color 0.2s, opacity 0.2s;
+    }
+    #resetViewBtn:hover, #resetViewBtn:focus {
+      background: #1e8fff;
+      opacity: 1;
+    }
+    body.night #resetViewBtn {
+      background: #4098ff;
+      color: #181e28;
+    }
+    body.night #resetViewBtn:hover, body.night #resetViewBtn:focus {
+      background: #5caaff;
+      color: #232b39;
+    }
   </style>
 </head>
 <body>
@@ -2350,6 +2553,40 @@
       modelViewer.style.setProperty('--brightness', brightness);
       modelViewer.style.setProperty('--contrast', contrast);
       modelViewer.style.setProperty('--saturation', saturation);
+    }
+
+    function isArSupported() {
+      // Use model-viewer's AR support detection
+      const viewer = document.getElementById('viewer');
+      // model-viewer exposes a static method for AR support
+      if (window.customElements && customElements.get('model-viewer')) {
+        const ModelViewerElement = customElements.get('model-viewer');
+        if (typeof ModelViewerElement.isARSupported === 'function') {
+          return ModelViewerElement.isARSupported();
+        }
+      }
+      // Fallback: check for Android/iOS and WebXR
+      const ua = navigator.userAgent.toLowerCase();
+      const isAndroid = ua.includes('android');
+      const isIOS = /iphone|ipad|ipod/.test(ua);
+      // Scene Viewer (Android) or Quick Look (iOS)
+      return (isAndroid || isIOS);
+    }
+
+    forceArBtn.onclick = async function() {
+      // Only show QR dialog if AR is not supported
+      let supported = false;
+      if (typeof isArSupported === 'function') {
+        try {
+          const result = isArSupported();
+          supported = (typeof result.then === 'function') ? await result : result;
+        } catch (e) { supported = false; }
+      }
+      if (supported) {
+        document.getElementById('viewer').activateAR();
+      } else {
+        showArDialog();
+      }
     }
   </script>
 </body>
