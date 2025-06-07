@@ -73,10 +73,10 @@
       "file": "Tables/kumo_white_coffee_table.glb"
     },
     {
-      "name": "noguchi_coffee_table",
-      "label_en": "Noguchi Coffee Table",
-      "label_he": "שולחן קפה נגוצ'י",
-      "file": "Tables/noguchi_coffee_table.glb"
+      "name": "Indu_table",
+      "label_en": "Indu Table",
+      "label_he": "שולחן אינדו",
+      "file": "Tables/Indu_table.glb"
     }
   ]
 }

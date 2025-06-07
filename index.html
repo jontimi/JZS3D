@@ -92,42 +92,53 @@
       height: 100%;
       background: transparent;
       transition: filter 0.2s;
+      pointer-events: auto;
     }
-    /* Brightness/Contrast Controls */
+    /* Ensure AR button is not overlapped */
+    model-viewer .container {
+      pointer-events: none;
+    }
+    model-viewer .container * {
+      pointer-events: auto;
+    }
+    /* Brightness/Contrast Controls as Popup */
     .filter-controls {
       position: absolute;
-      top: 18px;
-      left: 14px;
-      z-index: 20;
-      background: rgba(255,255,255,0.85);
-      border-radius: 11px;
-      box-shadow: 0 1px 7px #0002;
-      padding: 10px 14px 10px 14px;
+      top: 16px;
+      left: 16px;
+      z-index: 1001;
+      background: rgba(255,255,255,0.97);
+      border-radius: 13px;
+      box-shadow: 0 4px 24px #0003;
+      padding: 18px 22px 16px 22px;
+      display: none;
+      flex-direction: row;
+      gap: 18px;
+      min-width: 220px;
+      user-select: none;
+      font-size: 1.05em;
+      align-items: flex-start;
+      transition: opacity 0.2s, visibility 0.2s;
+    }
+    .filter-controls.visible {
+      display: flex;
+    }
+    .filter-controls .filter-slider-row {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      min-width: 170px;
-      user-select: none;
-      font-size: 0.97em;
-    }
-    body.night .filter-controls {
-      background: rgba(35,43,57,0.92);
-      color: #e3f1ff;
-      box-shadow: 0 1px 7px #0006;
+      align-items: flex-start;
+      gap: 2px;
+      min-width: 90px;
     }
     .filter-controls label {
       font-weight: normal;
       font-size: 1em;
       margin-right: 0.5em;
-    }
-    .filter-slider-row {
-      display: flex;
-      align-items: center;
-      gap: 7px;
+      margin-bottom: 2px;
     }
     .filter-controls input[type=range] {
-      flex: 1;
-      margin: 0 5px;
+      width: 90px;
+      margin: 0 0 2px 0;
       accent-color: var(--primary);
       height: 2px;
     }
@@ -139,84 +150,59 @@
       margin-left: 3px;
       font-variant-numeric: tabular-nums;
     }
+    .filter-controls button {
+      align-self: flex-end;
+      margin-left: 10px;
+      margin-top: 0;
+    }
+    .filter-popup-btn {
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      z-index: 1002;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.45em 1.2em;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #0002;
+      opacity: 0.93;
+      transition: background 0.2s, color 0.2s, opacity 0.2s;
+    }
+    .filter-popup-btn:hover, .filter-popup-btn:focus {
+      background: #1e8fff;
+      opacity: 1;
+    }
     @media (max-width: 600px) {
       .filter-controls {
         min-width: 120px;
-        padding: 5px 6px 5px 6px;
-        font-size: 0.93em;
+        padding: 10px 8px 10px 8px;
+        font-size: 0.97em;
+        flex-direction: column;
+        gap: 8px;
       }
-      .filter-controls label {
-        font-size: 0.98em;
+      .filter-controls .filter-slider-row {
+        min-width: 0;
+        width: 100%;
       }
-      .filter-value {
-        min-width: 22px;
-        font-size: 0.88em;
+      .filter-controls input[type=range] {
+        width: 100%;
       }
-    }
-    @media (max-width: 900px) {
-      #viewer-wrapper {
-        width: 99vw;
-        height: 220px;
-        max-width: 100vw;
-        max-height: 350px;
+      .filter-popup-btn {
+        top: 10px;
+        left: 10px;
+        padding: 0.35em 0.9em;
+        font-size: 0.95em;
       }
-    }
-    .desc {
-      font-size: 1.1em;
-      color: var(--desc-color);
-      margin-bottom: 2em;
-      transition: color 0.35s;
-      text-align: center;
-    }
-    .btn-bar {
-      display: flex;
-      gap: 1em;
-      margin-bottom: 1.2em;
-      justify-content: center;
-    }
-    .switch-btn {
-      padding: 0.4em 1.2em;
-      font-size: 1em;
-      border-radius: 30px;
-      border: 1.5px solid var(--primary);
-      background: var(--viewer-bg);
-      color: var(--primary);
-      font-weight: 700;
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s, border 0.2s;
-      outline: none;
-      box-shadow: 0 1px 4px #0002;
-    }
-    .switch-btn:active, .switch-btn:focus {
-      background: var(--primary);
-      color: var(--viewer-bg);
-    }
-    body.night .switch-btn {
-      background: var(--viewer-bg);
-      color: var(--primary);
-      border-color: var(--primary);
-    }
-    body.night .switch-btn:active, body.night .switch-btn:focus {
-      background: var(--primary);
-      color: var(--viewer-bg);
-    }
-    .bg-controls {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5em;
-      margin-bottom: 1.2em;
-      width: 100%;
-    }
-    #bgUpload, #clearBgBtn {
-      font-size: 1em;
-      margin: 0;
     }
     #resetViewBtn {
       position: absolute;
       bottom: 16px;
       right: 16px;
-      z-index: 10;
+      z-index: 30;
       padding: 0.5em 1.1em;
       border-radius: 24px;
       border: none;
@@ -241,6 +227,187 @@
       background: #5caaff;
       color: #232b39;
     }
+    body {
+      font-family: sans-serif;
+      background: var(--main-bg);
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2em 0;
+      color: var(--text-main);
+      transition: background 0.35s, color 0.35s;
+    }
+    h1 {
+      color: var(--primary);
+      margin-bottom: 1em;
+      transition: color 0.35s;
+    }
+    .controls {
+      margin-bottom: 1.5em;
+      display: flex;
+      gap: 1em;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    label {
+      font-weight: bold;
+      margin-right: 0.5em;
+    }
+    select {
+      font-size: 1em;
+      padding: 0.3em 0.7em;
+      border-radius: 6px;
+      border: 1px solid var(--select-border);
+      background: var(--select-bg);
+      color: var(--select-color);
+      transition: background 0.35s, color 0.35s, border 0.35s;
+    }
+    #viewer-wrapper {
+      width: 85vw;
+      max-width: 1200px;
+      min-width: 250px;
+      height: 48vw;
+      max-height: 600px;
+      min-height: 220px;
+      background: var(--viewer-bg);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+      margin-bottom: 2em;
+      transition: background 0.35s, box-shadow 0.35s, height 0.3s, width 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #viewer-wrapper.bg-has-img {
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    model-viewer {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      transition: filter 0.2s;
+      pointer-events: auto;
+    }
+    /* Ensure AR button is not overlapped */
+    model-viewer .container {
+      pointer-events: none;
+    }
+    model-viewer .container * {
+      pointer-events: auto;
+    }
+    model-viewer::part(default-ar-button) {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      z-index: 31;
+      /* Style to match reset button */
+      background: var(--primary);
+      color: #fff;
+      border-radius: 24px;
+      padding: 0.5em 1.1em;
+      font-size: 1em;
+      font-weight: 600;
+      box-shadow: 0 2px 8px #0003;
+      opacity: 0.93;
+      border: none;
+      transition: background 0.2s, color 0.2s, opacity 0.2s;
+    }
+    model-viewer::part(default-ar-button):hover, model-viewer::part(default-ar-button):focus {
+      background: #1e8fff;
+      opacity: 1;
+    }
+    body.night model-viewer::part(default-ar-button) {
+      background: #4098ff;
+      color: #181e28;
+    }
+    body.night model-viewer::part(default-ar-button):hover, body.night model-viewer::part(default-ar-button):focus {
+      background: #5caaff;
+      color: #232b39;
+    }
+    @media (max-width: 600px) {
+      .filter-controls {
+        min-width: 120px;
+        padding: 5px 6px 5px 6px;
+        font-size: 0.93em;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .filter-controls .filter-slider-row {
+        min-width: 0;
+        width: 100%;
+      }
+      .filter-controls input[type=range] {
+        width: 100%;
+      }
+    }
+    #forceArBtn {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      z-index: 32;
+      padding: 0.5em 1.1em;
+      border-radius: 24px;
+      border: none;
+      font-size: 1em;
+      font-weight: 600;
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 2px 8px #0003;
+      cursor: pointer;
+      opacity: 0.93;
+      transition: background 0.2s, color 0.2s, opacity 0.2s;
+    }
+    #forceArBtn:hover, #forceArBtn:focus {
+      background: #1e8fff;
+      opacity: 1;
+    }
+    #arDialog {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.55);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+    #arDialog > div {
+      background: #fff;
+      padding: 2em 2.5em;
+      border-radius: 18px;
+      box-shadow: 0 4px 32px #0005;
+      max-width: 95vw;
+      text-align: center;
+      position: relative;
+    }
+    #arDialog h2 {
+      margin-top: 0;
+    }
+    #arDialog p {
+      font-size: 1.1em;
+      max-width: 350px;
+      margin: auto;
+    }
+    #arQrContainer {
+      margin: 1.5em auto 0 auto;
+      display: block;
+    }
+    #closeArDialog {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 1.5em;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -261,18 +428,7 @@
     </div>
   </div>
   <div id="viewer-wrapper">
-    <model-viewer
-      id="viewer"
-      camera-controls
-      auto-rotate
-      alt="3D model preview"
-      shadow-intensity="1"
-      ar
-      ar-modes="scene-viewer webxr quick-look"
-      max-camera-orbit="auto auto 24m">
-    </model-viewer>
-    <button id="resetViewBtn" title="Reset View" aria-label="Reset View">🔄 Reset View</button>
-    <!-- Brightness/Contrast Controls -->
+    <button class="filter-popup-btn" id="filterPopupBtn" title="Show Brightness/Contrast" aria-label="Show Brightness/Contrast">⚙️</button>
     <div class="filter-controls" id="filterControls">
       <div class="filter-slider-row">
         <label for="brightnessRange">Brightness</label>
@@ -286,12 +442,36 @@
       </div>
       <button type="button" style="margin-top:6px;font-size:0.95em;padding:0.2em 0.7em;border-radius:8px;border:1px solid #bbb;cursor:pointer" id="resetFiltersBtn">Reset</button>
     </div>
+    <model-viewer
+      id="viewer"
+      camera-controls
+      auto-rotate
+      alt="3D model preview"
+      shadow-intensity="1"
+      ar
+      ar-modes="scene-viewer webxr quick-look"
+      max-camera-orbit="auto auto 100m"
+      min-camera-orbit="auto auto 0.5m"
+      camera-orbit="0deg 75deg 2.5m"
+      field-of-view="45deg">
+    </model-viewer>
+    <button id="resetViewBtn" title="Reset View" aria-label="Reset View">🔄 Reset View</button>
+    <button id="forceArBtn" class="switch-btn" style="position:absolute;bottom:16px;left:16px;z-index:32;">AR</button>
   </div>
   <div class="bg-controls">
     <input type="file" id="bgUpload" accept="image/*">
     <button type="button" id="clearBgBtn">Clear Background</button>
   </div>
   <div class="desc" id="desc"></div>
+  <div id="arDialog" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.55);z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:#fff;padding:2em 2.5em;border-radius:18px;box-shadow:0 4px 32px #0005;max-width:95vw;text-align:center;position:relative;">
+      <button id="closeArDialog" style="position:absolute;top:10px;right:10px;font-size:1.5em;background:none;border:none;cursor:pointer;">✖</button>
+      <h2 style="margin-top:0">AR Not Supported</h2>
+      <p style="font-size:1.1em;max-width:350px;margin:auto;">This device does not support AR. To view this model in AR, scan the QR code below with your phone or tablet.</p>
+      <div id="arQrContainer" style="margin:1.5em auto 0 auto;display:block;"></div>
+      <div style="margin-top:1.2em;font-size:0.98em;color:#555;">Open this page on your mobile device to use AR.</div>
+    </div>
+  </div>
   <script>
     // --- Brightness and Contrast Controls ---
     function updateFilters() {
@@ -342,11 +522,162 @@
       if (viewer) {
         viewer.resetTurntableRotation();
         viewer.jumpCameraToGoal();
+        if (typeof viewer.resetCameraOrbit === 'function') {
+          viewer.resetCameraOrbit();
+        } else {
+          // Fallback: set camera-orbit to default if resetCameraOrbit is not available
+          viewer.removeAttribute('camera-orbit');
+        }
       }
     };
 
     // DO NOT lock pan/zoom when background image is present!
     // Instead, always allow camera-controls, zoom, pan, etc.
+
+    // --- AR Button and Dialog Logic ---
+    const forceArBtn = document.getElementById('forceArBtn');
+    const arDialog = document.getElementById('arDialog');
+    const closeArDialog = document.getElementById('closeArDialog');
+    const arQrContainer = document.getElementById('arQrContainer');
+
+    function getCurrentModelUrl() {
+      // Always return the production URL for the current model file
+      const viewer = document.getElementById('viewer');
+      let src = viewer.src;
+      // Remove any leading slashes
+      if (src.startsWith('/')) src = src.substring(1);
+      // If src is a full URL already, extract the path after the domain
+      if (src.match(/^https?:\/\//)) {
+        const url = new URL(src);
+        src = url.pathname;
+        if (src.startsWith('/')) src = src.substring(1);
+      }
+      // Return the production URL (update this if your production domain changes)
+      return 'https://jontimi.github.io/JZS-AR-SHOWCASE/' + src;
+    }
+
+    function getCurrentModelQueryUrl() {
+      // Get the relative model file path
+      const viewer = document.getElementById('viewer');
+      let src = viewer.src;
+      // If src is a full URL, extract the path after the domain
+      if (src.match(/^https?:\/\//)) {
+        const url = new URL(src);
+        src = url.pathname;
+        if (src.startsWith('/')) src = src.substring(1);
+      }
+      // If src is relative and starts with a slash, remove it
+      if (src.startsWith('/')) src = src.substring(1);
+      // Return the main site URL with ?model=...
+      return 'https://jontimi.github.io/JZS-AR-SHOWCASE/?model=' + encodeURIComponent(src);
+    }
+
+    function showArDialog() {
+      arDialog.style.display = 'flex';
+      arQrContainer.innerHTML = '';
+      // Generate QR code for the main site with ?model=... param
+      const modelUrl = getCurrentModelQueryUrl();
+      const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(modelUrl)}&size=200x200`;
+      const img = new Image();
+      img.src = qrCodeUrl;
+      img.alt = 'QR code to open this model on your phone';
+      img.style.display = 'block';
+      img.style.margin = '0 auto';
+      img.width = 200;
+      img.height = 200;
+      arQrContainer.appendChild(img);
+    }
+
+    forceArBtn.onclick = function() {
+      showArDialog();
+    };
+    closeArDialog.onclick = function() {
+      arDialog.style.display = 'none';
+    };
+    // Hide AR dialog on outside click
+    // (use event delegation to avoid closing when clicking inside dialog)
+    document.addEventListener('mousedown', function(e) {
+      if (arDialog.style.display === 'flex' && !arDialog.contains(e.target) && e.target !== forceArBtn) {
+        arDialog.style.display = 'none';
+      }
+    });
+    // Hide AR dialog on ESC
+    document.addEventListener('keydown', function(e) {
+      if (arDialog.style.display === 'flex' && (e.key === 'Escape' || e.key === 'Esc')) {
+        arDialog.style.display = 'none';
+      }
+    });
+
+    // --- Brightness/Contrast Popup Logic ---
+    const filterPopupBtn = document.getElementById('filterPopupBtn');
+    const filterControls = document.getElementById('filterControls');
+    let filterPopupOpen = false;
+    function toggleFilterPopup(force) {
+      filterPopupOpen = typeof force === 'boolean' ? force : !filterPopupOpen;
+      if (filterPopupOpen) {
+        filterControls.classList.add('visible');
+        filterPopupBtn.setAttribute('aria-label', 'Hide Brightness/Contrast');
+        filterPopupBtn.textContent = '✖';
+      } else {
+        filterControls.classList.remove('visible');
+        filterPopupBtn.setAttribute('aria-label', 'Show Brightness/Contrast');
+        filterPopupBtn.textContent = '⚙️';
+      }
+    }
+    filterPopupBtn.onclick = function(e) {
+      e.stopPropagation();
+      toggleFilterPopup();
+    };
+    // Hide popup if click outside
+    document.addEventListener('mousedown', function(e) {
+      if (filterPopupOpen && !filterControls.contains(e.target) && e.target !== filterPopupBtn) {
+        toggleFilterPopup(false);
+      }
+    });
+    // Hide popup on ESC
+    document.addEventListener('keydown', function(e) {
+      if (filterPopupOpen && (e.key === 'Escape' || e.key === 'Esc')) {
+        toggleFilterPopup(false);
+      }
+    });
+    // Set initial icon for filter popup button to gear
+    filterPopupBtn.textContent = '⚙️';
+    filterPopupBtn.title = 'Show Brightness/Contrast';
+    filterPopupBtn.setAttribute('aria-label', 'Show Brightness/Contrast');
+
+    // --- AR Button Logic ---
+    function isArSupported() {
+      // model-viewer AR support detection
+      const a = document.createElement('a');
+      return (
+        navigator.userAgent.match(/android|iphone|ipad|ipod/i) &&
+        (a.relList && a.relList.supports && a.relList.supports('ar'))
+      ) || (window.navigator.xr && navigator.userAgent.match(/android|iphone|ipad|ipod/i));
+    }
+    function getArUrl() {
+      // Compose the AR intent URL for Android/iOS
+      const viewer = document.getElementById('viewer');
+      const src = viewer.src;
+      // Android Scene Viewer
+      if (navigator.userAgent.match(/android/i)) {
+        return `intent://arvr.google.com/scene-viewer/1.0?file=${location.origin + '/' + src}&mode=ar_preferred#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${location.href};end;`;
+      }
+      // iOS Quick Look
+      if (navigator.userAgent.match(/iphone|ipad|ipod/i)) {
+        return location.origin + '/' + src;
+      }
+      // Fallback: just link to the model
+      return location.origin + '/' + src;
+    }
+
+    // Load QRious for QR code generation
+    (function(){
+      if (!window.QRious) {
+        var s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js';
+        document.head.appendChild(s);
+      }
+    })();
 
     // Translations and support code (unchanged)
     const translations = {
@@ -474,7 +805,8 @@
 
       // Always allow zoom and pan
       viewer.removeAttribute('min-camera-orbit');
-      viewer.setAttribute('max-camera-orbit', 'auto auto 24m');
+      viewer.setAttribute('max-camera-orbit', 'auto auto 100m');
+      viewer.setAttribute('min-camera-orbit', 'auto auto 0.5m');
       viewer.removeAttribute('disable-pan');
 
       desc.textContent = translations[lang].desc(
@@ -598,6 +930,48 @@
         document.getElementById('desc').textContent =
           "Failed to load models.json. Please check that it exists and is valid.";
       });
+
+    document.getElementById('viewer').addEventListener('load', function() {
+      const viewer = document.getElementById('viewer');
+      if (viewer.model && viewer.model.materials) {
+        viewer.model.materials.forEach(mat => {
+          mat.doubleSided = true;
+        });
+      }
+    });
+
+    // Toggle filter controls popup
+    document.getElementById('filterPopupBtn').onclick = function() {
+      const filterControls = document.getElementById('filterControls');
+      filterControls.classList.toggle('visible');
+    };
+
+    // On page load, check for ?model=... and load that model if present
+    window.addEventListener('DOMContentLoaded', function() {
+      const params = new URLSearchParams(window.location.search);
+      const modelParam = params.get('model');
+      if (modelParam) {
+        // Find the category and model index for this file
+        fetch('models.json')
+          .then(r => r.json())
+          .then(data => {
+            let found = false;
+            for (const cat in data) {
+              const idx = data[cat].findIndex(m => m.file === modelParam);
+              if (idx !== -1) {
+                currentCategory = cat;
+                currentModelIndex = idx;
+                currentVariantIndex = 0;
+                found = true;
+                break;
+              }
+            }
+            if (found) {
+              setLanguage(lang); // re-render UI
+            }
+          });
+      }
+    });
   </script>
 </body>
 </html>
