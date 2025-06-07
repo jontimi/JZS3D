@@ -1,82 +1,86 @@
-{
-  "Cabinets": [
-    {
-      "name": "bookcase",
-      "label_en": "Bookcase",
-      "label_he": "כוננית",
-      "file": "Cabinets/bookcase.glb"
-    },
-    {
-      "name": "closet_oak_white",
-      "label_en": "Closet Oak White",
-      "label_he": "ארון עץ לבן",
-      "file": "Cabinets/closet_oak_white.glb"
-    },
-    {
-      "name": "ikea_alex_drawer",
-      "label_en": "IKEA Alex Drawer",
-      "label_he": "מגירות אלכס איקאה",
-      "file": "Cabinets/ikea_alex_drawer.glb"
-    }
-  ],
-  "Lamps": [
-    {
-      "name": "floor_lamp",
-      "label_en": "Floor Lamp",
-      "label_he": "מנורת רצפה",
-      "file": "Lamps/floor_lamp.glb"
-    },
-    {
-      "name": "mario_floor_lamp",
-      "label_en": "Mario Floor Lamp",
-      "label_he": "מנורת מריו",
-      "file": "Lamps/mario_floor_lamp.glb"
-    },
-    {
-      "name": "sweep_floor_lamp_black",
-      "label_en": "Sweep Floor Lamp Black",
-      "label_he": "מנורת Sweep שחורה",
-      "file": "Lamps/sweep_floor_lamp_black.glb"
-    }
-  ],
-  "Sofas": [
-    {
-      "name": "BLACKSofa",
-      "label_en": "Black Sofa",
-      "label_he": "ספה שחורה",
-      "file": "Sofas/BLACKSofa.glb"
-    },
-    {
-      "name": "dolton_armchair_hudson_grey",
-      "label_en": "Dolton Armchair Hudson Grey",
-      "label_he": "כורסא דולטון הדסון אפור",
-      "file": "Sofas/dolton_armchair_hudson_grey.glb"
-    },
-    {
-      "name": "sofawood",
-      "label_en": "Wood Sofa",
-      "label_he": "ספת עץ",
-      "file": "Sofas/sofawood.glb"
-    },
-    {
-      "name": "wassily_chair",
-      "label_en": "Wassily Chair",
-      "label_he": "כיסא ואסילי",
-      "file": "Sofas/wassily_chair.glb"
-    }
-  ],
-  "Tables": [
-    {
-      "name": "kumo_white_coffee_table",
-      "label_en": "Kumo White Coffee Table",
-      "label_he": "שולחן קפה לבן קומו",
-      "file": "Tables/kumo_white_coffee_table.glb"
-    },
-    {
-      "name": "Indu_table",
-      "label_en": "Indu Table",
-      "label_he": "שולחן אינדו",
-      "file": "Tables/Indu_table.glb"
-    }
-  ]
-}
+[
+  {
+    "category": "Cabinets",
+    "name": "bookcase",
+    "label_en": "Bookcase",
+    "label_he": "קוננית",
+    "file": "Cabinets/bookcase.glb"
+  },
+  {
+    "category": "Cabinets",
+    "name": "closet_oak_white",
+    "label_en": "Closet Oak White",
+    "label_he": "ארון עץ לבן",
+    "file": "Cabinets/closet_oak_white.glb"
+  },
+  {
+    "category": "Cabinets",
+    "name": "ikea_alex_drawer",
+    "label_en": "IKEA Alex Drawer",
+    "label_he": "מגירות אלכס איקאה",
+    "file": "Cabinets/ikea_alex_drawer.glb"
+  },
+  {
+    "category": "Lamps",
+    "name": "floor_lamp",
+    "label_en": "Floor Lamp",
+    "label_he": "מנורת רצפה",
+    "file": "Lamps/floor_lamp.glb"
+  },
+  {
+    "category": "Lamps",
+    "name": "mario_floor_lamp",
+    "label_en": "Mario Floor Lamp",
+    "label_he": "מנורת מריו",
+    "file": "Lamps/mario_floor_lamp.glb"
+  },
+  {
+    "category": "Lamps",
+    "name": "sweep_floor_lamp_black",
+    "label_en": "Sweep Floor Lamp Black",
+    "label_he": "מנורת Sweep שחורה",
+    "file": "Lamps/sweep_floor_lamp_black.glb"
+  },
+  {
+    "category": "Sofas",
+    "name": "BLACKSofa",
+    "label_en": "Black Sofa",
+    "label_he": "ספה שחורה",
+    "file": "Sofas/BLACKSofa.glb"
+  },
+  {
+    "category": "Sofas",
+    "name": "dolton_armchair_hudson_grey",
+    "label_en": "Dolton Armchair Hudson Grey",
+    "label_he": "כורסא דולטון הדסון אפור",
+    "file": "Sofas/dolton_armchair_hudson_grey.glb"
+  },
+  {
+    "category": "Sofas",
+    "name": "sofawood",
+    "label_en": "Wood Sofa",
+    "label_he": "ספת עץ",
+    "file": "Sofas/sofawood.glb"
+  },
+  {
+    "category": "Sofas",
+    "name": "wassily_chair",
+    "label_en": "Wassily Chair",
+    "label_he": "כיסא ואסילי",
+    "file": "Sofas/wassily_chair.glb"
+  },
+  {
+    "category": "Tables",
+    "name": "kumo_white_coffee_table",
+    "label_en": "Kumo White Coffee Table",
+    "label_he": "שולחן קפה לבן קומו",
+    "file": "Tables/kumo_white_coffee_table.glb"
+  },
+  {
+    "category": "Tables",
+    "name": "Indu_table",
+    "label_en": "Indu Table",
+    "label_he": "שולחן אינדו",
+    "file": "Tables/Indu_table.glb"
+  }
+]
