@@ -1,279 +1,151 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- DOM Elements ---
-    const modelSelect = document.getElementById('modelSelect');
-    const mainViewer = document.getElementById('mainViewer');
-    const filterPopupBtn = document.getElementById('filterPopupBtn');
-    const filterControls = document.getElementById('filterControls');
-    const brightnessRange = document.getElementById('brightnessRange');
-    const brightnessValue = document.getElementById('brightnessValue');
-    const contrastRange = document.getElementById('contrastRange');
-    const contrastValue = document.getElementById('contrastValue');
-    const closeFilterBtn = document.getElementById('closeFilterBtn');
-    const arBtn = document.getElementById('arBtn');
-    const resetViewBtn = document.getElementById('resetViewBtn');
-    const arDialog = document.getElementById('arDialog');
-    const qrCanvas = document.getElementById('qrCanvas');
-    const closeArDialogBtn = document.getElementById('closeArDialogBtn');
-    const loadingOverlay = document.getElementById('loadingOverlay');
-    const nightModeToggle = document.getElementById('nightModeToggle');
+    const modelSelect = document.getElementById('model-select');
+    const modelViewer = document.querySelector('.model-viewer');
+    const arButtonContainer = document.getElementById('ar-button-container');
+    const arButton = document.querySelector('.ar-button');
+    const qrCodeContainer = document.getElementById('qr-code-container');
+    const qrCodeCanvas = document.getElementById('qr-code-canvas');
+    const closeQrButton = document.getElementById('close-qr');
+    const filterArButton = document.getElementById('filter-ar');
+    const resetViewButton = document.getElementById('reset-view');
+    const toggleLightModeButton = document.getElementById('toggle-light-mode');
 
-    let modelsData = [];
-    const LOCAL_STORAGE_THEME_KEY = 'jzs-3d-showcase-theme';
+    let models = [];
+    let currentModelViewerSrc = '';
+    let currentModelViewerName = '';
+    let qr; // Declare qr variable globally within this scope
 
-    // --- Helper Functions ---
-
-    function applyTheme(theme) {
-        if (theme === 'night') {
-            document.body.classList.add('night');
-            nightModeToggle.textContent = 'Toggle Light Mode';
-        } else {
-            document.body.classList.remove('night');
-            nightModeToggle.textContent = 'Toggle Night Mode';
-        }
-    }
-
-    function toggleTheme() {
-        const currentTheme = document.body.classList.contains('night') ? 'night' : 'light';
-        const newTheme = currentTheme === 'night' ? 'light' : 'night';
-        localStorage.setItem(LOCAL_STORAGE_THEME_KEY, newTheme);
-        applyTheme(newTheme);
-    }
-
-    function showLoadingOverlay() {
-        const mvProgressBar = mainViewer.shadowRoot ? mainViewer.shadowRoot.querySelector('.loading-overlay') : null;
-
-        if (mvProgressBar) {
-            mvProgressBar.style.display = 'flex';
-            mvProgressBar.style.opacity = '1';
-        } else if (loadingOverlay) {
-            loadingOverlay.style.display = 'flex';
-            loadingOverlay.style.opacity = '1';
-        }
-        mainViewer.classList.add('is-loading');
-    }
-
-    function hideLoadingOverlay() {
-        const mvProgressBar = mainViewer.shadowRoot ? mainViewer.shadowRoot.querySelector('.loading-overlay') : null;
-
-        if (mvProgressBar) {
-            mvProgressBar.style.opacity = '0';
-            setTimeout(() => {
-                mvProgressBar.style.display = 'none';
-            }, 300);
-        } else if (loadingOverlay) {
-            loadingOverlay.style.opacity = '0';
-            setTimeout(() => {
-                loadingOverlay.style.display = 'none';
-            }, 300);
-        }
-        mainViewer.classList.remove('is-loading');
-    }
-
-
-    // --- Load Models Data ---
-    async function loadModelsData() {
-        showLoadingOverlay();
-        try {
-            const response = await fetch('models.json');
+    // --- Fetch models.json ---
+    fetch('models.json')
+        .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            modelsData = await response.json();
-            populateModelSelect();
-
-            // Check URL for pre-selected model (e.g., from QR code scan)
-            const urlParams = new URLSearchParams(window.location.search);
-            const modelIndexFromUrl = urlParams.get('model');
-            let initialModelIndex = 0; // Default to first model
-
-            if (modelIndexFromUrl !== null && !isNaN(parseInt(modelIndexFromUrl))) {
-                const parsedIndex = parseInt(modelIndexFromUrl);
-                if (parsedIndex >= 0 && parsedIndex < modelsData.length) {
-                    initialModelIndex = parsedIndex;
-                }
+            return response.json();
+        })
+        .then(data => {
+            if (!Array.isArray(data) || data.length === 0) {
+                console.error('models.json is empty or not an array:', data);
+                alert('Error: models data is empty or invalid. Please check models.json.');
+                return;
             }
-            
-            if (modelsData.length > 0) {
-                modelSelect.value = initialModelIndex; // Set dropdown to selected index
-                loadModel(initialModelIndex); // Load the model
-            } else {
-                console.warn('No models found in models.json');
+            models = data;
+            populateDropdown(models);
+            // Initial model load after dropdown is populated
+            if (models.length > 0) {
+                updateModel(models[0].src, models[0].name);
             }
-            hideLoadingOverlay(); // Hide overlay after models.json is processed
-        } catch (error) {
-            console.error('Failed to load models data:', error);
+        })
+        .catch(error => {
+            console.error('Error loading models.json:', error);
             alert(`Error loading models data: ${error.message}. Please ensure models.json is valid and accessible.`);
-            hideLoadingOverlay();
-        }
-    }
+        });
 
-    // --- Populate Model Select Dropdown ---
-    function populateModelSelect() {
+    // --- Dropdown Population ---
+    function populateDropdown(modelsArray) {
         modelSelect.innerHTML = ''; // Clear existing options
-        modelsData.forEach((model, index) => {
+        modelsArray.forEach(model => {
             const option = document.createElement('option');
-            option.value = index;
+            option.value = model.src;
             option.textContent = model.name;
             modelSelect.appendChild(option);
         });
     }
 
-    // --- Load Selected Model ---
-    function loadModel(index) {
-        if (index < 0 || index >= modelsData.length) {
-            console.error('Invalid model index:', index);
-            mainViewer.src = ''; // Clear the viewer if index is invalid
-            hideLoadingOverlay();
-            return;
-        }
-
-        const model = modelsData[index];
-        mainViewer.src = model.src; // This is the path from models.json (e.g., "Sofas/BLACKSofa.glb")
-        mainViewer.alt = model.name;
-
-        // Reset camera orbit to default on new model load
-        mainViewer.cameraOrbit = '0deg 75deg 105%';
-        mainViewer.fieldOfView = '30deg';
-
-        // Reset brightness/contrast filters
-        brightnessRange.value = 1;
-        contrastRange.value = 1;
-        updateModelFilters();
-
-        // If AR dialog is somehow open, re-generate QR code for the new model
-        // The QR code now points to the page itself, not the model GLB
-        if (arDialog.style.display !== 'none' && typeof QRious !== 'undefined') {
-            const currentPageUrl = window.location.origin + window.location.pathname + `?model=${index}`;
-            generateQrCode(currentPageUrl);
-        }
-    }
-
-    // --- Update Model Filters (Brightness/Contrast) ---
-    function updateModelFilters() {
-        const brightness = parseFloat(brightnessRange.value).toFixed(2);
-        const contrast = parseFloat(contrastRange.value).toFixed(2);
-
-        brightnessValue.textContent = brightness;
-        contrastValue.textContent = contrast;
-
-        mainViewer.style.filter = `brightness(${brightness}) contrast(${contrast})`;
-    }
-
-    // --- Generate QR Code for AR (Using QRious) ---
-    function generateQrCode(url) { // Now takes the full URL to encode
-        if (typeof QRious !== 'undefined' && url) {
-            console.log('Attempting to generate QR code for URL (using QRious):', url);
-
-            new QRious({
-                element: qrCanvas,
-                value: url,
-                size: 256,
-                level: 'H'
-            });
-            console.log('QR Code generated with QRious for URL:', url);
-
+    // --- Model Update Function ---
+    function updateModel(modelSrc, modelName) {
+        if (modelViewer) { // Ensure modelViewer exists before trying to set src
+            modelViewer.src = modelSrc;
+            modelViewer.alt = `A 3D model of ${modelName}`;
+            modelViewer.poster = `images/${modelSrc.split('/').pop().replace('.glb', '')}.webp`; // Adjust poster path if needed
+            currentModelViewerSrc = modelSrc;
+            currentModelViewerName = modelName;
+            
+            // Generate QR code for the new model
+            generateQRCode(window.location.origin + window.location.pathname + '?model=' + encodeURIComponent(modelSrc));
         } else {
-            console.error('QRious library is not available or URL is missing. Check index.html script order.');
+            console.error("model-viewer element not found!");
+            alert("Error: 3D viewer not initialized. Page structure problem.");
         }
     }
 
     // --- Event Listeners ---
-
-    // Model selection change
     modelSelect.addEventListener('change', (event) => {
-        const selectedIndex = parseInt(event.target.value);
-        loadModel(selectedIndex);
-    });
-
-    // Toggle Night Mode
-    nightModeToggle.addEventListener('click', toggleTheme);
-
-    // Show/Hide Filter Controls
-    filterPopupBtn.addEventListener('click', () => {
-        filterControls.classList.toggle('visible');
-    });
-
-    closeFilterBtn.addEventListener('click', () => {
-        filterControls.classList.remove('visible');
-    });
-
-    // Brightness and Contrast Changes
-    brightnessRange.addEventListener('input', updateModelFilters);
-    contrastRange.addEventListener('input', updateModelFilters);
-
-    // Reset View Button
-    resetViewBtn.addEventListener('click', () => {
-        mainViewer.cameraOrbit = '0deg 75deg 105%';
-        mainViewer.fieldOfView = '30deg';
-        mainViewer.exposure = '1';
-        mainViewer.shadowIntensity = '1';
-        mainViewer.style.filter = 'none'; // Clear CSS filter
-        brightnessRange.value = 1;
-        contrastRange.value = 1;
-        brightnessValue.textContent = '1.00';
-        contrastValue.textContent = '1.00';
-    });
-
-    // AR Button
-    arBtn.addEventListener('click', async () => {
-        filterControls.classList.remove('visible'); // Hide filter controls if open
-
-        const currentModelIndex = parseInt(modelSelect.value);
-        const currentModel = modelsData[currentModelIndex];
-
-        if (currentModel && currentModel.src) {
-            // First, display the QR code for the current page + model index
-            arDialog.style.display = 'flex';
-            const currentPageUrl = window.location.origin + window.location.pathname + `?model=${currentModelIndex}`;
-            generateQrCode(currentPageUrl);
-
-            // Then, attempt to activate AR directly on the device
-            // This is the model-viewer's built-in AR activation
-            if (mainViewer.hasAttribute('ar-modes') && mainViewer.activateAR) {
-                console.log("Attempting to activate AR directly with model-viewer...");
-                try {
-                    await mainViewer.activateAR(); // This will launch AR on compatible devices
-                    // If AR launches successfully, the dialog might not need to be shown
-                    // but we keep it for devices that can't launch AR directly (e.g. desktop)
-                    // or for manual QR scan later.
-                } catch (error) {
-                    console.error("Error activating AR:", error);
-                    // If AR fails to activate directly, the QR code remains for manual scan
-                    alert("Could not directly launch AR. Please scan the QR code to view on your device.");
-                }
-            } else {
-                console.warn("AR support not available via model-viewer or activateAR method missing.");
-                alert("AR not directly supported on this device/browser. Please scan the QR code to view on your mobile device.");
-            }
-        } else {
-            console.error('No model selected or model source is missing for AR.');
-            alert('Please select a model to view in AR first.');
-            arDialog.style.display = 'none';
+        const selectedSrc = event.target.value;
+        const selectedModel = models.find(m => m.src === selectedSrc);
+        if (selectedModel) {
+            updateModel(selectedModel.src, selectedModel.name);
         }
     });
 
-    closeArDialogBtn.addEventListener('click', () => {
-        arDialog.style.display = 'none';
+    // Reset Camera View
+    resetViewButton.addEventListener('click', () => {
+        modelViewer.cameraOrbit = '0deg 75deg 105%'; // Default orbit
+        modelViewer.fieldOfView = '45deg'; // Default FOV
+        modelViewer.cameraTarget = '0 0 0'; // Center target
     });
 
-    // Handle model-viewer loading state
-    mainViewer.addEventListener('loadstart', showLoadingOverlay);
-    mainViewer.addEventListener('progress', (event) => {
-        // You can use event.detail.totalProgress for a progress bar if needed
-    });
-    mainViewer.addEventListener('load', hideLoadingOverlay);
-    mainViewer.addEventListener('error', (event) => {
-        console.error('Model Viewer Error:', event.detail);
-        alert('Failed to load 3D model. Please check the model file and console for details.');
-        hideLoadingOverlay();
-        mainViewer.src = ''; // Clear the model viewer content on error
+    // AR Button Logic (QR code generation)
+    filterArButton.addEventListener('click', () => {
+        // Hide model viewer and show QR code container
+        modelViewer.style.display = 'none';
+        qrCodeContainer.style.display = 'flex';
+        closeQrButton.style.display = 'block';
+
+        // Ensure QR code is generated for the current model
+        generateQRCode(window.location.origin + window.location.pathname + '?model=' + encodeURIComponent(currentModelViewerSrc));
     });
 
-    // --- Initial Setup ---
-    applyTheme(localStorage.getItem(LOCAL_STORAGE_THEME_KEY) || 'light');
+    closeQrButton.addEventListener('click', () => {
+        // Show model viewer and hide QR code container
+        modelViewer.style.display = 'block';
+        qrCodeContainer.style.display = 'none';
+        closeQrButton.style.display = 'none';
+    });
 
-    // Ensure AR dialog is hidden on initial load
-    arDialog.style.display = 'none';
+    // Toggle Light Mode
+    toggleLightModeButton.addEventListener('click', () => {
+        document.body.classList.toggle('light-mode');
+        if (document.body.classList.contains('light-mode')) {
+            modelViewer.style.backgroundColor = '#ffffff'; // Light mode background for viewer
+            modelViewer.shadowIntensity = '0.5'; // Adjust shadow intensity
+        } else {
+            modelViewer.style.backgroundColor = '#f0f0f0'; // Default background (or your dark mode equivalent)
+            modelViewer.shadowIntensity = '1'; // Default shadow intensity
+        }
+    });
 
-    loadModelsData(); // Start by loading models
+    // --- QR Code Generation Function ---
+    function generateQRCode(data) {
+        if (qrCodeCanvas) {
+            if (!qr) {
+                qr = new QRious({
+                    element: qrCodeCanvas,
+                    size: 200,
+                    padding: 10,
+                    value: data
+                });
+            } else {
+                qr.value = data;
+            }
+        } else {
+            console.error("QR code canvas element not found!");
+        }
+    }
+
+    // Handle incoming URL parameters for AR links (if shared)
+    const urlParams = new URLSearchParams(window.location.search);
+    const modelParam = urlParams.get('model');
+    if (modelParam) {
+        const decodedModelSrc = decodeURIComponent(modelParam);
+        // Find the model in your data and set it
+        const initialModel = models.find(m => m.src === decodedModelSrc);
+        if (initialModel) {
+            // Update model viewer and set dropdown
+            modelSelect.value = initialModel.src;
+            updateModel(initialModel.src, initialModel.name);
+        } else {
+            console.warn(`Model not found for URL parameter: ${decodedModelSrc}`);
+        }
+    }
 });
