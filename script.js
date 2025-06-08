@@ -81,11 +81,13 @@ document.addEventListener('DOMContentLoaded', () => {
             modelsData = await response.json();
             populateModelSelect();
             if (modelsData.length > 0) {
-                modelSelect.value = 0;
+                // The first model is already loaded via HTML src attribute
+                // Ensure dropdown matches the first model
+                modelSelect.value = 0; 
             } else {
                 console.warn('No models found in models.json');
             }
-            hideLoadingOverlay();
+            hideLoadingOverlay(); // Hide overlay after models.json is processed
         } catch (error) {
             console.error('Failed to load models data:', error);
             alert(`Error loading models data: ${error.message}. Please ensure models.json is valid and accessible.`);
@@ -95,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Populate Model Select Dropdown ---
     function populateModelSelect() {
-        modelSelect.innerHTML = '';
+        modelSelect.innerHTML = ''; // Clear existing options
         modelsData.forEach((model, index) => {
             const option = document.createElement('option');
             option.value = index;
@@ -108,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function loadModel(index) {
         if (index < 0 || index >= modelsData.length) {
             console.error('Invalid model index:', index);
-            mainViewer.src = '';
+            mainViewer.src = ''; // Clear the viewer if index is invalid
             hideLoadingOverlay();
             return;
         }
@@ -117,13 +119,16 @@ document.addEventListener('DOMContentLoaded', () => {
         mainViewer.src = model.src;
         mainViewer.alt = model.name;
 
+        // Reset camera orbit to default on new model load
         mainViewer.cameraOrbit = '0deg 75deg 105%';
         mainViewer.fieldOfView = '30deg';
 
+        // Reset brightness/contrast filters
         brightnessRange.value = 1;
         contrastRange.value = 1;
         updateModelFilters();
 
+        // If AR dialog is somehow open, re-generate QR code for the new model
         if (arDialog.style.display !== 'none' && typeof QRious !== 'undefined') {
             generateQrCode(model.src);
         }
@@ -137,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
         brightnessValue.textContent = brightness;
         contrastValue.textContent = contrast;
 
-        mainViewer.style.filter = `brightness(<span class="math-inline">\{brightness\}\) contrast\(</span>{contrast})`;
+        mainViewer.style.filter = `brightness(${brightness}) contrast(${contrast})`;
     }
 
     // --- Generate QR Code for AR (Using QRious) ---
@@ -164,13 +169,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Event Listeners ---
 
+    // Model selection change
     modelSelect.addEventListener('change', (event) => {
         const selectedIndex = parseInt(event.target.value);
         loadModel(selectedIndex);
     });
 
+    // Toggle Night Mode
     nightModeToggle.addEventListener('click', toggleTheme);
 
+    // Show/Hide Filter Controls
     filterPopupBtn.addEventListener('click', () => {
         filterControls.classList.toggle('visible');
     });
@@ -179,23 +187,26 @@ document.addEventListener('DOMContentLoaded', () => {
         filterControls.classList.remove('visible');
     });
 
+    // Brightness and Contrast Changes
     brightnessRange.addEventListener('input', updateModelFilters);
     contrastRange.addEventListener('input', updateModelFilters);
 
+    // Reset View Button
     resetViewBtn.addEventListener('click', () => {
         mainViewer.cameraOrbit = '0deg 75deg 105%';
         mainViewer.fieldOfView = '30deg';
         mainViewer.exposure = '1';
         mainViewer.shadowIntensity = '1';
-        mainViewer.style.filter = 'none';
+        mainViewer.style.filter = 'none'; // Clear CSS filter
         brightnessRange.value = 1;
         contrastRange.value = 1;
         brightnessValue.textContent = '1.00';
         contrastValue.textContent = '1.00';
     });
 
+    // AR Button
     arBtn.addEventListener('click', () => {
-        filterControls.classList.remove('visible');
+        filterControls.classList.remove('visible'); // Hide filter controls if open
 
         const currentModel = modelsData[parseInt(modelSelect.value)];
         if (currentModel && currentModel.src) {
@@ -212,6 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
         arDialog.style.display = 'none';
     });
 
+    // Handle model-viewer loading state
     mainViewer.addEventListener('loadstart', showLoadingOverlay);
     mainViewer.addEventListener('progress', (event) => {
         // You can use event.detail.totalProgress for a progress bar if needed
@@ -221,13 +233,14 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('Model Viewer Error:', event.detail);
         alert('Failed to load 3D model. Please check the model file and console for details.');
         hideLoadingOverlay();
-        mainViewer.src = '';
+        mainViewer.src = ''; // Clear the model viewer content on error
     });
 
     // --- Initial Setup ---
     applyTheme(localStorage.getItem(LOCAL_STORAGE_THEME_KEY) || 'light');
 
+    // Ensure AR dialog is hidden on initial load
     arDialog.style.display = 'none';
 
-    loadModelsData();
+    loadModelsData(); // Start by loading models
 });
