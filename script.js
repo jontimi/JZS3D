@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const model = modelsData[index];
-        mainViewer.src = model.src;
+        mainViewer.src = model.src; // This is the path from models.json (e.g., "Sodas/BLACKSofa.glb")
         mainViewer.alt = model.name;
 
         // Reset camera orbit to default on new model load
@@ -229,7 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Then, attempt to activate AR directly on the device
             // This is the model-viewer's built-in AR activation
-            if (mainViewer.hasAttribute('ar-modes') && mainViewer.activateAR) { // Corrected check
+            if (mainViewer.hasAttribute('ar-modes') && mainViewer.activateAR) {
                 console.log("Attempting to activate AR directly with model-viewer...");
                 try {
                     await mainViewer.activateAR(); // This will launch AR on compatible devices
