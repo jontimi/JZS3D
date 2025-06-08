@@ -229,7 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Then, attempt to activate AR directly on the device
             // This is the model-viewer's built-in AR activation
-            if (mainViewer.has><model-viewer-ar-support> && mainViewer.activateAR) {
+            if (mainViewer.hasAttribute('ar-modes') && mainViewer.activateAR) { // Corrected check
                 console.log("Attempting to activate AR directly with model-viewer...");
                 try {
                     await mainViewer.activateAR(); // This will launch AR on compatible devices
