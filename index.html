@@ -3,37 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Model Showcase</title>
+    <title>3D Model Showcase (Basic)</title>
     <link rel="stylesheet" href="style.css">
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>3D Model Showcase</h1>
+        <h1>3D Model Showcase (Basic)</h1>
 
         <div class="model-controls">
             <label for="model-select">Select Model:</label>
             <select id="model-select"></select>
-            <button id="toggle-light-mode">Toggle Light Mode</button>
         </div>
 
         <div class="viewer-container">
-            <model-viewer class="model-viewer" camera-controls touch-action="pan-y" ar ar-modes="webxr scene-viewer quick-look" exposure="1" shadow-intensity="1" auto-rotate alt="A 3D model" style="width: 100%; height: 500px;">
-                <div id="ar-button-container" slot="ar-button">
-                    <button class="ar-button">Filter</button>
-                </div>
-            </model-viewer>
-            <div id="qr-code-container">
-                <canvas id="qr-code-canvas"></canvas>
-                <p>Scan to View in AR</p>
-                <p>Ensure you have Google Play Services for AR/ARCore on Android, or View in Safari on iOS.</p>
-                <button id="close-qr" style="display:none;">Close</button>
-            </div>
-            <div class="model-actions">
-                <button id="filter-ar">AR</button>
-                <button id="reset-view">Reset View</button>
-            </div>
+            <model-viewer class="model-viewer" camera-controls touch-action="pan-y" exposure="1" shadow-intensity="1" auto-rotate alt="A 3D model" style="width: 100%; height: 500px;"></model-viewer>
         </div>
     </div>
     <script src="script.js"></script>
