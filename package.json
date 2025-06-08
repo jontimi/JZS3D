@@ -1,0 +1,22 @@
+{
+  "name": "jzs-ar-showcase",
+  "version": "1.0.0",
+  "description": "AR Furniture",
+  "main": "qrcode.min.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jontimi/JZS-AR-SHOWCASE.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jontimi/JZS-AR-SHOWCASE/issues"
+  },
+  "homepage": "https://github.com/jontimi/JZS-AR-SHOWCASE#readme",
+  "dependencies": {
+  }
+}

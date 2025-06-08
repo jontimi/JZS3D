@@ -40,18 +40,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showLoadingOverlay() {
-        // Check if the loading overlay is part of the shadow DOM (recommended for model-viewer)
-        // or if it's directly in the light DOM
         const mvProgressBar = mainViewer.shadowRoot ? mainViewer.shadowRoot.querySelector('.loading-overlay') : null;
 
         if (mvProgressBar) {
             mvProgressBar.style.display = 'flex';
             mvProgressBar.style.opacity = '1';
-        } else if (loadingOverlay) { // Fallback if not using slot or element is outside model-viewer
+        } else if (loadingOverlay) {
             loadingOverlay.style.display = 'flex';
             loadingOverlay.style.opacity = '1';
         }
-        // Add a class to mainViewer to signify loading state for CSS adjustments
         mainViewer.classList.add('is-loading');
     }
 
@@ -60,10 +57,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (mvProgressBar) {
             mvProgressBar.style.opacity = '0';
-            setTimeout(() => { // Hide after transition
+            setTimeout(() => {
                 mvProgressBar.style.display = 'none';
-            }, 300); // Match CSS transition duration
-        } else if (loadingOverlay) { // Fallback
+            }, 300);
+        } else if (loadingOverlay) {
             loadingOverlay.style.opacity = '0';
             setTimeout(() => {
                 loadingOverlay.style.display = 'none';
@@ -84,10 +81,11 @@ document.addEventListener('DOMContentLoaded', () => {
             modelsData = await response.json();
             populateModelSelect();
             if (modelsData.length > 0) {
-                loadModel(0); // Load the first model by default
+                // Load the first model immediately after populating the dropdown
+                loadModel(0);
+                modelSelect.value = 0;
             } else {
                 console.warn('No models found in models.json');
-                hideLoadingOverlay();
             }
         } catch (error) {
             console.error('Failed to load models data:', error);
@@ -111,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function loadModel(index) {
         if (index < 0 || index >= modelsData.length) {
             console.error('Invalid model index:', index);
-            mainViewer.src = ''; // Clear the viewer if index is invalid
+            mainViewer.src = '';
             hideLoadingOverlay();
             return;
         }
@@ -119,21 +117,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const model = modelsData[index];
         mainViewer.src = model.src;
         mainViewer.alt = model.name;
-        mainViewer.poster = model.poster || ''; // Set poster if available
-
-        // Reset camera orbit to default on new model load
+        mainViewer.poster = model.poster || '';
         mainViewer.cameraOrbit = '0deg 75deg 105%';
-        mainViewer.fieldOfView = '30deg'; // Standard field of view
-
-        // Reset brightness/contrast filters
+        mainViewer.fieldOfView = '30deg';
         brightnessRange.value = 1;
         contrastRange.value = 1;
         updateModelFilters();
-
-        // If AR dialog is somehow open, re-generate QR code for the new model
-        if (arDialog.style.display !== 'none') {
-            generateQrCode(model.src); // Use model.src here, which is the currently loaded model's path
-        }
     }
 
     // --- Update Model Filters (Brightness/Contrast) ---
@@ -145,31 +134,6 @@ document.addEventListener('DOMContentLoaded', () => {
         contrastValue.textContent = contrast;
 
         mainViewer.style.filter = `brightness(${brightness}) contrast(${contrast})`;
-    }
-
-    // --- Generate QR Code for AR ---
-    function generateQrCode(modelUrl) {
-        // Use QRCode library from CDN (QRCode is a global function, not an object)
-        if (typeof QRCode !== 'undefined' && modelUrl) {
-            const currentUrl = window.location.href.split('?')[0].split('#')[0];
-            const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1);
-            const absoluteModelUrl = new URL(modelUrl, baseUrl).href;
-
-            console.log('Attempting to generate QR code for URL:', absoluteModelUrl);
-
-            // Clear the canvas before drawing
-            const ctx = qrCanvas.getContext('2d');
-            ctx.clearRect(0, 0, qrCanvas.width, qrCanvas.height);
-
-            // Use the QRCode function from the CDN
-            window.QRCode.toCanvas(qrCanvas, absoluteModelUrl, { width: 256, errorCorrectionLevel: 'H' }, function (error) {
-                if (error) {
-                    console.error('QR Code generation failed:', error);
-                }
-            });
-        } else {
-            console.error('QR Code library not loaded or modelUrl missing for AR.');
-        }
     }
 
     // --- Event Listeners ---
@@ -203,44 +167,41 @@ document.addEventListener('DOMContentLoaded', () => {
         mainViewer.exposure = '1';
         mainViewer.shadowIntensity = '1';
         mainViewer.style.filter = 'none'; // Clear CSS filter
-        brightnessRange.value = 1; // Reset range input
-        contrastRange.value = 1;   // Reset range input
-        brightnessValue.textContent = '1.00'; // Update displayed value
-        contrastValue.textContent = '1.00';   // Update displayed value
+        brightnessRange.value = 1;
+        contrastRange.value = 1;
+        brightnessValue.textContent = '1.00';
+        contrastValue.textContent = '1.00';
     });
 
-    // AR Button - This is important for showing the QR code!
+    // AR Button
     arBtn.addEventListener('click', () => {
         filterControls.classList.remove('visible'); // Hide filter controls if open
 
         const currentModel = modelsData[parseInt(modelSelect.value)];
         if (currentModel && currentModel.src) {
-            arDialog.style.display = 'flex'; // Show AR dialog
-            generateQrCode(currentModel.src); // Call the function to make the QR code
+            arDialog.style.display = 'flex';
         } else {
             console.error('No model selected or model source is missing for AR.');
             alert('Please select a model to view in AR first.');
-            arDialog.style.display = 'none'; // Hide dialog if no model
+            arDialog.style.display = 'none';
         }
     });
 
     closeArDialogBtn.addEventListener('click', () => {
-        arDialog.style.display = 'none'; // Hide AR dialog
+        arDialog.style.display = 'none';
     });
 
     // Handle model-viewer loading state
     mainViewer.addEventListener('loadstart', showLoadingOverlay);
     mainViewer.addEventListener('progress', (event) => {
         // You can use event.detail.totalProgress for a progress bar if needed
-        // console.log(`Loading progress: ${event.detail.totalProgress.toFixed(2)}%`);
     });
     mainViewer.addEventListener('load', hideLoadingOverlay);
     mainViewer.addEventListener('error', (event) => {
         console.error('Model Viewer Error:', event.detail);
         alert('Failed to load 3D model. Please check the model file and console for details.');
         hideLoadingOverlay();
-        // If there's an error, clear the current model to avoid a broken state
-        mainViewer.src = '';
+        mainViewer.src = ''; // Clear the model viewer content on error
     });
 
     // --- Initial Setup ---
@@ -251,8 +212,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadModelsData(); // Start by loading models
 });
-
-// Load QRCode library from CDN
-const script = document.createElement('script');
-script.src = 'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js';
-document.head.appendChild(script);
