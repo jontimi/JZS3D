@@ -251,3 +251,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadModelsData(); // Start by loading models
 });
+
+// Load QRCode library from CDN
+const script = document.createElement('script');
+script.src = 'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js';
+document.head.appendChild(script);
