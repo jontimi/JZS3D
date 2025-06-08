@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
             modelViewer.poster = `images/${modelSrc.split('/').pop().replace('.glb', '')}.webp`; // Adjust poster path if needed
             currentModelViewerSrc = modelSrc;
             currentModelViewerName = modelName;
-            
+
             // Generate QR code for the new model
             generateQRCode(window.location.origin + window.location.pathname + '?model=' + encodeURIComponent(modelSrc));
         } else {
