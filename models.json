@@ -8,20 +8,28 @@
         "src": "Sofas/dolton_armchair_hudson_grey.glb"
     },
     {
-        "name": "Softwood Sofa",
-        "src": "Sofas/softwood.glb"
+        "name": "Sofawood Sofa",
+        "src": "Sofas/sofawood.glb"
+    },
+    {
+        "name": "Wasily Chair",
+        "src": "Sofas/wasily_chair.glb"
     },
     {
         "name": "Bookshelf",
-        "src": "Cabinets/bookshelfg.glb"
+        "src": "Cabinets/bookcase.glb"
     },
     {
         "name": "Closed Oak White Cabinet",
-        "src": "Cabinets/closet_oak_whiteg.glb"
+        "src": "Cabinets/closet_oak_white.glb"
     },
     {
         "name": "IKEA Alex Drawer",
         "src": "Cabinets/ikea_alex_drawer.glb"
+    },
+    {
+        "name": "Floor Lamp",
+        "src": "Lamps/floor_lamp.glb"
     },
     {
         "name": "Floor Lamp (Mario)",
@@ -32,27 +40,11 @@
         "src": "Lamps/sweep_floor_lamp_black.glb"
     },
     {
-        "name": "Floor Lamp",
-        "src": "Lamps/floor_lamp.glb"
-    },
-    {
-        "name": "INDUL Table",
-        "src": "Tables/indul_table.glb"
+        "name": "Indu Table",
+        "src": "Tables/Indu_table.glb"
     },
     {
         "name": "Kumo White Coffee Table",
         "src": "Tables/kumo_white_coffee_table.glb"
-    },
-    {
-        "name": "Solid Wood Table",
-        "src": "Tables/solidwood.glb"
-    },
-    {
-        "name": "Wavy Chair",
-        "src": "Tables/wavy_chair.glb"
-    },
-    {
-        "name": "Black Chair",
-        "src": "Tables/blackchair.glb"
     }
 ]
