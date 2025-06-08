@@ -80,10 +80,22 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             modelsData = await response.json();
             populateModelSelect();
+
+            // Check URL for pre-selected model (e.g., from QR code scan)
+            const urlParams = new URLSearchParams(window.location.search);
+            const modelIndexFromUrl = urlParams.get('model');
+            let initialModelIndex = 0; // Default to first model
+
+            if (modelIndexFromUrl !== null && !isNaN(parseInt(modelIndexFromUrl))) {
+                const parsedIndex = parseInt(modelIndexFromUrl);
+                if (parsedIndex >= 0 && parsedIndex < modelsData.length) {
+                    initialModelIndex = parsedIndex;
+                }
+            }
+            
             if (modelsData.length > 0) {
-                // The first model is already loaded via HTML src attribute
-                // Ensure dropdown matches the first model
-                modelSelect.value = 0; 
+                modelSelect.value = initialModelIndex; // Set dropdown to selected index
+                loadModel(initialModelIndex); // Load the model
             } else {
                 console.warn('No models found in models.json');
             }
@@ -129,8 +141,10 @@ document.addEventListener('DOMContentLoaded', () => {
         updateModelFilters();
 
         // If AR dialog is somehow open, re-generate QR code for the new model
+        // The QR code now points to the page itself, not the model GLB
         if (arDialog.style.display !== 'none' && typeof QRious !== 'undefined') {
-            generateQrCode(model.src);
+            const currentPageUrl = window.location.origin + window.location.pathname + `?model=${index}`;
+            generateQrCode(currentPageUrl);
         }
     }
 
@@ -146,24 +160,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Generate QR Code for AR (Using QRious) ---
-    function generateQrCode(modelUrl) {
-        if (typeof QRious !== 'undefined' && modelUrl) {
-            const currentUrl = window.location.href.split('?')[0].split('#')[0];
-            const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1);
-            const absoluteModelUrl = new URL(modelUrl, baseUrl).href;
-
-            console.log('Attempting to generate QR code for URL (using QRious):', absoluteModelUrl);
+    function generateQrCode(url) { // Now takes the full URL to encode
+        if (typeof QRious !== 'undefined' && url) {
+            console.log('Attempting to generate QR code for URL (using QRious):', url);
 
             new QRious({
                 element: qrCanvas,
-                value: absoluteModelUrl,
+                value: url,
                 size: 256,
                 level: 'H'
             });
-            console.log('QR Code generated with QRious!');
+            console.log('QR Code generated with QRious for URL:', url);
 
         } else {
-            console.error('QRious library is not available or modelUrl is missing. Check index.html script order.');
+            console.error('QRious library is not available or URL is missing. Check index.html script order.');
         }
     }
 
@@ -205,13 +215,36 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // AR Button
-    arBtn.addEventListener('click', () => {
+    arBtn.addEventListener('click', async () => {
         filterControls.classList.remove('visible'); // Hide filter controls if open
 
-        const currentModel = modelsData[parseInt(modelSelect.value)];
+        const currentModelIndex = parseInt(modelSelect.value);
+        const currentModel = modelsData[currentModelIndex];
+
         if (currentModel && currentModel.src) {
+            // First, display the QR code for the current page + model index
             arDialog.style.display = 'flex';
-            generateQrCode(currentModel.src);
+            const currentPageUrl = window.location.origin + window.location.pathname + `?model=${currentModelIndex}`;
+            generateQrCode(currentPageUrl);
+
+            // Then, attempt to activate AR directly on the device
+            // This is the model-viewer's built-in AR activation
+            if (mainViewer.has><model-viewer-ar-support> && mainViewer.activateAR) {
+                console.log("Attempting to activate AR directly with model-viewer...");
+                try {
+                    await mainViewer.activateAR(); // This will launch AR on compatible devices
+                    // If AR launches successfully, the dialog might not need to be shown
+                    // but we keep it for devices that can't launch AR directly (e.g. desktop)
+                    // or for manual QR scan later.
+                } catch (error) {
+                    console.error("Error activating AR:", error);
+                    // If AR fails to activate directly, the QR code remains for manual scan
+                    alert("Could not directly launch AR. Please scan the QR code to view on your device.");
+                }
+            } else {
+                console.warn("AR support not available via model-viewer or activateAR method missing.");
+                alert("AR not directly supported on this device/browser. Please scan the QR code to view on your mobile device.");
+            }
         } else {
             console.error('No model selected or model source is missing for AR.');
             alert('Please select a model to view in AR first.');
