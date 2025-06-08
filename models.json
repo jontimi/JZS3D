@@ -1,50 +1,50 @@
 [
-  {
-    "name": "BLACK Sofa",
-    "src": "Sofas/BLACKSofa.glb"
-  },
-  {
-    "name": "Dolton Armchair Hudson Grey",
-    "src": "Sofas/dolton_armchair_hudson_grey.glb"
-  },
-  {
-    "name": "Sofa Fwood",
-    "src": "Sofas/sofawood.glb"
-  },
-  {
-    "name": "Wasily Chair",
-    "src": "Sofas/wasily_chair.glb"
-  },
-  {
-    "name": "Indy Table",
-    "src": "Tables/indu_table.glb"
-  },
-  {
-    "name": "Kumo White Coffee Table",
-    "src": "Tables/kumo_white_coffee_table.glb"
-  },
-  {
-    "name": "Floor Lamp",
-    "src": "Lamps/floor_lamp.glb"
-  },
-  {
-    "name": "Mario Floor Lamp",
-    "src": "Lamps/mario_floor_lamp.glb"
-  },
-  {
-    "name": "Sweep Floor Lamp Black",
-    "src": "Lamps/sweep_floor_lamp_black.glb"
-  },
-  {
-    "name": "Bookcase",
-    "src": "Cabinets/bookcase.glb"
-  },
-  {
-    "name": "Oak White Closet",
-    "src": "Cabinets/closet_oak_white.glb"
-  },
-  {
-    "name": "IKEA Alex Drawer",
-    "src": "Cabinets/ikea_alex_drawer.glb"
-  }
+    {
+        "name": "BLACK Sofa",
+        "src": "Sodas/BLACKSofa.glb"
+    },
+    {
+        "name": "Bookshelf",
+        "src": "Cabinets/bookshelfg.glb"
+    },
+    {
+        "name": "Closed Oak White Cabinet",
+        "src": "Cabinets/closet_oak_whiteg.glb"
+    },
+    {
+        "name": "IKEA Alex Drawer",
+        "src": "Cabinets/ikea_alex_drawer.glb"
+    },
+    {
+        "name": "Floor Lamp (Mario)",
+        "src": "Lamps/mario_floor_lamp.glb"
+    },
+    {
+        "name": "Sweep Floor Lamp (Black)",
+        "src": "Lamps/sweep_floor_lamp_black.glb"
+    },
+    {
+        "name": "Floor Lamp",
+        "src": "Lamps/floor_lamp.glb"
+    },
+    {
+        "name": "INDUL Table",
+        "src": "Tables/indul_table.glb"
+    },
+    {
+        "name": "Kumo White Coffee Table",
+        "src": "Tables/kumo_white_coffee_table.glb"
+    },
+    {
+        "name": "Solid Wood Table",
+        "src": "Tables/solidwood.glb"
+    },
+    {
+        "name": "Wavy Chair",
+        "src": "Tables/wavy_chair.glb"
+    },
+    {
+        "name": "Black Chair",
+        "src": "Tables/blackchair.glb"
+    }
 ]
