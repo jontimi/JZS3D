@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     initialModelIndex = parsedIndex;
                 }
             }
-            
+
             if (modelsData.length > 0) {
                 modelSelect.value = initialModelIndex; // Set dropdown to selected index
                 loadModel(initialModelIndex); // Load the model
@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const model = modelsData[index];
-        mainViewer.src = model.src; // This is the path from models.json (e.g., "Sodas/BLACKSofa.glb")
+        mainViewer.src = model.src; // This is the path from models.json (e.g., "Sofas/BLACKSofa.glb")
         mainViewer.alt = model.name;
 
         // Reset camera orbit to default on new model load
@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
         brightnessValue.textContent = brightness;
         contrastValue.textContent = contrast;
 
-        mainViewer.style.filter = `brightness(${brightness}) contrast(${contrast})`;
+        mainViewer.style.filter = `brightness(<span class="math-inline">\{brightness\}\) contrast\(</span>{contrast})`;
     }
 
     // --- Generate QR Code for AR (Using QRious) ---
