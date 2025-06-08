@@ -149,18 +149,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Generate QR Code for AR ---
     function generateQrCode(modelUrl) {
-        // Ensure QrCode library is available
-        if (typeof QrCode !== 'undefined' && modelUrl) {
+        // Use QRCode library from CDN (QRCode is a global function, not an object)
+        if (typeof QRCode !== 'undefined' && modelUrl) {
             const currentUrl = window.location.href.split('?')[0].split('#')[0];
             const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1);
             const absoluteModelUrl = new URL(modelUrl, baseUrl).href;
 
-            console.log('Attempting to generate QR code for URL:', absoluteModelUrl); // This line helps us check the URL!
+            console.log('Attempting to generate QR code for URL:', absoluteModelUrl);
 
-            QrCode.toCanvas(qrCanvas, absoluteModelUrl, { width: 256, errorCorrectionLevel: 'H' }, function (error) {
+            // Clear the canvas before drawing
+            const ctx = qrCanvas.getContext('2d');
+            ctx.clearRect(0, 0, qrCanvas.width, qrCanvas.height);
+
+            // Use the QRCode function from the CDN
+            window.QRCode.toCanvas(qrCanvas, absoluteModelUrl, { width: 256, errorCorrectionLevel: 'H' }, function (error) {
                 if (error) {
                     console.error('QR Code generation failed:', error);
-                    // Optionally, show a message in the AR dialog that QR failed
                 }
             });
         } else {
