@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     initialModelIndex = parsedIndex;
                 }
             }
-
+            
             if (modelsData.length > 0) {
                 modelSelect.value = initialModelIndex; // Set dropdown to selected index
                 loadModel(initialModelIndex); // Load the model
@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
         brightnessValue.textContent = brightness;
         contrastValue.textContent = contrast;
 
-        mainViewer.style.filter = `brightness(<span class="math-inline">\{brightness\}\) contrast\(</span>{contrast})`;
+        mainViewer.style.filter = `brightness(${brightness}) contrast(${contrast})`;
     }
 
     // --- Generate QR Code for AR (Using QRious) ---
