@@ -1,7 +1,15 @@
 [
     {
         "name": "BLACK Sofa",
-        "src": "Sodas/BLACKSofa.glb"
+        "src": "Sofas/BLACKSofa.glb"
+    },
+    {
+        "name": "Dolton Armchair Hudson Grey",
+        "src": "Sofas/dolton_armchair_hudson_grey.glb"
+    },
+    {
+        "name": "Softwood Sofa",
+        "src": "Sofas/softwood.glb"
     },
     {
         "name": "Bookshelf",
