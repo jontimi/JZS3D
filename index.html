@@ -27,6 +27,8 @@
         ar
         ar-modes="webxr scene-viewer quick-look"
         camera-controls
+        min-camera-orbit="auto auto 0.5m"
+        max-camera-orbit="auto auto 10m"
         auto-rotate
         alt="3D Model">
         <div id="loadingOverlay" slot="progress-bar">
@@ -34,6 +36,7 @@
           <p>Loading Model...</p>
         </div>
       </model-viewer>
+      <!-- QR code AR button for desktop -->
       <div id="ar-qr-container" style="text-align:center; margin-top:1em;">
         <button id="showQR">View in AR on Mobile</button>
         <div id="qrCode" style="display:none; margin-top:1em;"></div>
