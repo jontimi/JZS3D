@@ -2,46 +2,55 @@ document.addEventListener('DOMContentLoaded', () => {
     const modelSelect = document.getElementById('modelSelect');
     const mainViewer = document.getElementById('mainViewer');
     const nightModeToggle = document.getElementById('nightModeToggle');
-    const LOCAL_STORAGE_THEME_KEY = 'theme';
+    const body = document.body;
 
-    // Load models.json and populate dropdown
     fetch('models.json')
         .then(res => res.json())
         .then(models => {
-            models.forEach((model, i) => {
-                const option = document.createElement('option');
-                option.value = i;
-                option.textContent = model.name;
-                modelSelect.appendChild(option);
+            // Group models by category
+            const categories = {};
+            models.forEach(model => {
+                if (!categories[model.category]) categories[model.category] = [];
+                categories[model.category].push(model);
             });
-            // Set initial model
-            if (models.length > 0) {
-                mainViewer.src = models[0].src;
+
+            // Populate dropdown with optgroups
+            for (const category in categories) {
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = category;
+                categories[category].forEach(model => {
+                    const option = document.createElement('option');
+                    option.value = model.path;
+                    option.textContent = model.name;
+                    optgroup.appendChild(option);
+                });
+                modelSelect.appendChild(optgroup);
             }
-            modelSelect.addEventListener('change', () => {
-                mainViewer.src = models[modelSelect.value].src;
-            });
+
+            // Set the first model as default
+            const firstModel = models[0];
+            if (firstModel) {
+                mainViewer.src = firstModel.path;
+            }
         });
 
-    // Night mode toggle
-    function applyTheme(theme) {
-        if (theme === 'night') {
-            document.body.classList.add('night');
-            nightModeToggle.textContent = 'Toggle Light Mode';
-        } else {
-            document.body.classList.remove('night');
-            nightModeToggle.textContent = 'Toggle Night Mode';
-        }
-    }
-    function toggleTheme() {
-        const currentTheme = document.body.classList.contains('night') ? 'night' : 'light';
-        const newTheme = currentTheme === 'night' ? 'light' : 'night';
-        localStorage.setItem(LOCAL_STORAGE_THEME_KEY, newTheme);
-        applyTheme(newTheme);
-    }
-    nightModeToggle.addEventListener('click', toggleTheme);
+    modelSelect.addEventListener('change', () => {
+        mainViewer.src = modelSelect.value;
+    });
 
-    // Apply saved theme on load
-    const savedTheme = localStorage.getItem(LOCAL_STORAGE_THEME_KEY) || 'light';
-    applyTheme(savedTheme);
+    nightModeToggle.addEventListener('click', () => {
+        body.classList.toggle('night');
+        nightModeToggle.textContent = body.classList.contains('night') ? 'Toggle Light Mode' : 'Toggle Night Mode';
+    });
+
+    // Show QR code for AR on mobile
+    document.getElementById('showQR').onclick = function() {
+        const modelUrl = document.getElementById('mainViewer').src;
+        const qrDiv = document.getElementById('qrCode');
+        qrDiv.innerHTML = '';
+        const img = document.createElement('img');
+        img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(window.location.origin + '/' + modelUrl);
+        qrDiv.appendChild(img);
+        qrDiv.style.display = 'block';
+    };
 });

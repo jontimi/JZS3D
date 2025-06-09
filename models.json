@@ -1,50 +1,65 @@
 [
   {
-    "name": "BLACK Sofa",
-    "src": "Sofas/BLACKSofa.glb"
+    "name": "Bookcase",
+    "path": "models/Cabinets/bookcase.glb",
+    "category": "Cabinets"
   },
   {
-    "name": "Dolton Armchair Hudson Grey",
-    "src": "Sofas/dolton_armchair_hudson_grey.glb"
+    "name": "Closet Oak White",
+    "path": "models/Cabinets/closet_oak_white.glb",
+    "category": "Cabinets"
   },
   {
-    "name": "Sofa Fwood",
-    "src": "Sofas/sofawood.glb"
+    "name": "Ikea Alex Drawer",
+    "path": "models/Cabinets/ikea_alex_drawer.glb",
+    "category": "Cabinets"
   },
-  {
-    "name": "Wasily Chair",
-    "src": "Sofas/wasily_chair.glb"
-  },
-  {
-    "name": "Indy Table",
-    "src": "Tables/indu_table.glb"
-  },
-  {
-    "name": "Kumo White Coffee Table",
-    "src": "Tables/kumo_white_coffee_table.glb"
-  },
+
   {
     "name": "Floor Lamp",
-    "src": "Lamps/floor_lamp.glb"
+    "path": "models/Lamps/floor_lamp.glb",
+    "category": "Lamps"
   },
   {
     "name": "Mario Floor Lamp",
-    "src": "Lamps/mario_floor_lamp.glb"
+    "path": "models/Lamps/mario_floor_lamp.glb",
+    "category": "Lamps"
   },
   {
     "name": "Sweep Floor Lamp Black",
-    "src": "Lamps/sweep_floor_lamp_black.glb"
+    "path": "models/Lamps/sweep_floor_lamp_black.glb",
+    "category": "Lamps"
+  },
+
+  {
+    "name": "BLACK Sofa",
+    "path": "models/Sofas/BLACKSofa.glb",
+    "category": "Sofas"
   },
   {
-    "name": "Bookcase",
-    "src": "Cabinets/bookcase.glb"
+    "name": "Dolton Armchair Hudson Grey",
+    "path": "models/Sofas/dolton_armchair_hudson_grey.glb",
+    "category": "Sofas"
   },
   {
-    "name": "Oak White Closet",
-    "src": "Cabinets/closet_oak_white.glb"
+    "name": "Sofawood",
+    "path": "models/Sofas/sofawood.glb",
+    "category": "Sofas"
   },
   {
-    "name": "IKEA Alex Drawer",
-    "src": "Cabinets/ikea_alex_drawer.glb"
+    "name": "Wasily Chair",
+    "path": "models/Sofas/wasily_chair.glb",
+    "category": "Sofas"
+  },
+
+  {
+    "name": "Indu Table",
+    "path": "models/Tables/Indu_table.glb",
+    "category": "Tables"
+  },
+  {
+    "name": "Kumo White Coffee Table",
+    "path": "models/Tables/kumo_white_coffee_table.glb",
+    "category": "Tables"
   }
 ]

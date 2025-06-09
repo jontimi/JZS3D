@@ -118,7 +118,7 @@ body.night .control-btn:hover {
 .viewer-card {
     position: relative;
     width: 100%;
-    max-width: 800px;
+    max-width: 900px;
     height: 500px; /* Fixed height for the viewer */
     margin: 0 auto 30px;
     border-radius: 12px;
@@ -415,6 +415,58 @@ body.night .ar-dialog-content h2 {
 
 body.night .ar-dialog-content p {
     color: #bbb;
+}
+
+/* Model viewer background for light and dark mode */
+model-viewer#mainViewer {
+  background: #f5f6fa;
+}
+body.night model-viewer#mainViewer {
+  background: #222831;
+}
+
+/* Make viewer-card and model-viewer match */
+.viewer-card {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  background: #f5f6fa;
+  border-radius: 16px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+}
+body.night .viewer-card {
+  background: #222831;
+}
+
+model-viewer#mainViewer {
+  width: 100%;
+  max-width: 900px;
+  aspect-ratio: 16/9;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  display: block;
+}
+
+/* Always show AR button */
+model-viewer::part(ar-button) {
+  display: block !important;
+  opacity: 1 !important;
+  z-index: 10;
+}
+
+/* Optional: Make AR button more visible */
+model-viewer::part(ar-button) {
+  background-color: #1976d2 !important;
+  color: #fff !important;
+  border-radius: 6px !important;
+  font-size: 1rem !important;
+  padding: 0.5em 1.2em !important;
+  border: none !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
 /* Responsive adjustments */
