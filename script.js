@@ -27,15 +27,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 modelSelect.appendChild(optgroup);
             }
 
-            // Set the first model as default
+            // Set the first model as default and fit it
             const firstModel = models[0];
             if (firstModel) {
                 mainViewer.src = firstModel.path;
+                mainViewer.addEventListener('load', function handler() {
+                    mainViewer.reset();
+                    mainViewer.removeEventListener('load', handler);
+                });
             }
         });
 
     modelSelect.addEventListener('change', () => {
         mainViewer.src = modelSelect.value;
+        mainViewer.addEventListener('load', function handler() {
+            mainViewer.reset();
+            mainViewer.removeEventListener('load', handler);
+        });
     });
 
     nightModeToggle.addEventListener('click', () => {

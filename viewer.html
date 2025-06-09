@@ -31,8 +31,6 @@
     ar
     ar-modes="webxr scene-viewer quick-look"
     camera-controls
-    min-camera-orbit="auto auto 0.5m"
-    max-camera-orbit="auto auto 10m"
     auto-rotate
     alt="3D Model">
   </model-viewer>
@@ -40,8 +38,13 @@
     // Get model URL from query string
     const params = new URLSearchParams(window.location.search);
     const modelUrl = params.get('model');
+    const arViewer = document.getElementById('arViewer');
     if (modelUrl) {
-      document.getElementById('arViewer').src = modelUrl;
+      arViewer.src = modelUrl;
+      arViewer.addEventListener('load', function handler() {
+        arViewer.reset();
+        arViewer.removeEventListener('load', handler);
+      });
     }
   </script>
 </body>
