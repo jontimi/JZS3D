@@ -48,8 +48,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const modelUrl = document.getElementById('mainViewer').src;
         const qrDiv = document.getElementById('qrCode');
         qrDiv.innerHTML = '';
+        const viewerUrl = window.location.origin + '/viewer.html?model=' + encodeURIComponent(modelUrl);
         const img = document.createElement('img');
-        img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(window.location.origin + '/' + modelUrl);
+        img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(viewerUrl);
         qrDiv.appendChild(img);
         qrDiv.style.display = 'block';
     };
