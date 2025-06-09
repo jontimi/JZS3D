@@ -64,4 +64,16 @@ document.addEventListener('DOMContentLoaded', () => {
       qrDiv.appendChild(img);
       qrDiv.style.display = 'block';
     };
+
+    // Show AR info popup when AR button is clicked
+    document.addEventListener('DOMContentLoaded', () => {
+      const mainViewer = document.getElementById('mainViewer');
+      if (mainViewer) {
+        mainViewer.addEventListener('ar-status', (event) => {
+          if (event.detail.status === 'failed') {
+            document.getElementById('arInfoPopup').style.display = 'flex';
+          }
+        });
+      }
+    });
 });

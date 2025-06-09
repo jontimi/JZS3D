@@ -26,6 +26,7 @@
         src=""
         ar
         ar-modes="webxr scene-viewer quick-look"
+        ar-button-text="AR"
         camera-controls
         auto-rotate
         max-camera-orbit="auto auto 1000m"
@@ -40,6 +41,14 @@
         <button id="showQR">View in AR on Mobile</button>
         <div id="qrCode" style="display:none; margin-top:1em;"></div>
       </div>
+    </div>
+  </div>
+  <!-- AR Info Popup -->
+  <div id="arInfoPopup" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
+    <div style="background:#fff; color:#222; padding:2em; border-radius:12px; max-width:90vw; text-align:center;">
+      <p><strong>AR Mode</strong></p>
+      <p>Only AR-supporting devices (like Android Chrome or iOS Safari) can use AR mode.</p>
+      <button onclick="document.getElementById('arInfoPopup').style.display='none'" style="margin-top:1em; padding:0.5em 1.5em; border-radius:6px; border:none; background:#007bff; color:#fff; font-size:1em;">OK</button>
     </div>
   </div>
   <script src="script.js"></script>src="script.js"></script>
