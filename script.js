@@ -45,13 +45,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Show QR code for AR on mobile
     document.getElementById('showQR').onclick = function() {
-        // Use the relative path, not the full URL
         const modelUrl = document.getElementById('mainViewer').src;
         // Remove the origin if present
         const relModelUrl = modelUrl.replace(window.location.origin + '/', '');
         const qrDiv = document.getElementById('qrCode');
         qrDiv.innerHTML = '';
-        const viewerUrl = window.location.origin + '/viewer.html?model=' + encodeURIComponent(relModelUrl);
+        // Get the base path up to the repo (works both locally and on GitHub Pages)
+        const basePath = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '');
+        const viewerUrl = basePath + '/viewer.html?model=' + encodeURIComponent(relModelUrl);
         const img = document.createElement('img');
         img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(viewerUrl);
         qrDiv.appendChild(img);
