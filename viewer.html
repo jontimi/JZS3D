@@ -22,27 +22,6 @@
       cursor: pointer;
       box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     }
-    /* AR Info Popup Styles */
-    #arInfoPopup {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-    }
-    #arInfoPopup > div {
-      background: #fff;
-      color: #222;
-      padding: 2em;
-      border-radius: 12px;
-      max-width: 90vw;
-      text-align: center;
-    }
   </style>
 </head>
 <body>
@@ -52,55 +31,15 @@
     ar-modes="webxr scene-viewer quick-look"
     camera-controls
     auto-rotate
-    max-camera-orbit="auto auto 1000m"
     alt="3D Model">
   </model-viewer>
-
-  <!-- AR Info Popup -->
-  <div id="arInfoPopup">
-    <div>
-      <p><strong>AR Mode</strong></p>
-      <p>Only AR-supporting devices (like Android Chrome or iOS Safari) can use AR mode.</p>
-      <button onclick="document.getElementById('arInfoPopup').style.display='none'" style="margin-top:1em; padding:0.5em 1.5em; border-radius:6px; border:none; background:#007bff; color:#fff; font-size:1em;">OK</button>
-    </div>
-  </div>
-
   <script>
     // Get model URL from query string
     const params = new URLSearchParams(window.location.search);
     const modelUrl = params.get('model');
     const arViewer = document.getElementById('arViewer');
-    const arInfoPopup = document.getElementById('arInfoPopup');
-
-    // Utility: Check if device supports AR (basic check for WebXR or iOS Quick Look)
-    function isARSupported() {
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-      const isAndroid = /Android/.test(navigator.userAgent);
-      const isChrome = /Chrome/.test(navigator.userAgent);
-      // iOS Safari or Android Chrome support AR
-      return ((isIOS && isSafari) || (isAndroid && isChrome));
-    }
-
     if (modelUrl) {
       arViewer.src = modelUrl;
-      arViewer.addEventListener('load', function handler() {
-        arViewer.reset();
-        arViewer.removeEventListener('load', handler);
-      });
-    }
-
-    // Show AR info popup if AR is not supported
-    if (!isARSupported()) {
-      arInfoPopup.style.display = 'flex';
-    }
-
-    if (arViewer) {
-      arViewer.addEventListener('ar-status', (event) => {
-        if (event.detail.status === 'failed') {
-          document.getElementById('arInfoPopup').style.display = 'flex';
-        }
-      });
     }
   </script>
 </body>

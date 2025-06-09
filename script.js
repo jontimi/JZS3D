@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 modelSelect.appendChild(optgroup);
             }
 
-            // Set the first model as default and fit it
+            // Set the first model as default
             const firstModel = models[0];
             if (firstModel) {
                 mainViewer.src = firstModel.path;
