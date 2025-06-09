@@ -1,3 +1,4 @@
+<script type="module" src="https://unpkg.com/@google/model-viewer@3.4.0/dist/model-viewer.min.js"></script>
 document.addEventListener('DOMContentLoaded', () => {
     const modelSelect = document.getElementById('modelSelect');
     const mainViewer = document.getElementById('mainViewer');
@@ -31,19 +32,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const firstModel = models[0];
             if (firstModel) {
                 mainViewer.src = firstModel.path;
-                mainViewer.addEventListener('load', function handler() {
-                    mainViewer.reset();
-                    mainViewer.removeEventListener('load', handler);
-                });
             }
         });
 
     modelSelect.addEventListener('change', () => {
         mainViewer.src = modelSelect.value;
-        mainViewer.addEventListener('load', function handler() {
-            mainViewer.reset();
-            mainViewer.removeEventListener('load', handler);
-        });
     });
 
     nightModeToggle.addEventListener('click', () => {
@@ -51,29 +44,23 @@ document.addEventListener('DOMContentLoaded', () => {
         nightModeToggle.textContent = body.classList.contains('night') ? 'Toggle Light Mode' : 'Toggle Night Mode';
     });
 
-    // QR code AR button for desktop - always use the currently selected model
-    document.getElementById('showQR').onclick = function() {
-      const modelUrl = document.getElementById('modelSelect').value;
-      const qrDiv = document.getElementById('qrCode');
-      qrDiv.innerHTML = '';
-      // Build the viewer URL using the current site base
-      const basePath = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '');
-      const viewerUrl = basePath + '/viewer.html?model=' + encodeURIComponent(modelUrl);
-      const img = document.createElement('img');
-      img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(viewerUrl);
-      qrDiv.appendChild(img);
-      qrDiv.style.display = 'block';
-    };
-
-    // Show AR info popup when AR button is clicked
-    document.addEventListener('DOMContentLoaded', () => {
-      const mainViewer = document.getElementById('mainViewer');
-      if (mainViewer) {
-        mainViewer.addEventListener('ar-status', (event) => {
-          if (event.detail.status === 'failed') {
-            document.getElementById('arInfoPopup').style.display = 'flex';
-          }
+    // Built-in model-viewer AR button: Show QR code on desktop
+    if (mainViewer) {
+        mainViewer.addEventListener('ar-button-click', (event) => {
+            // Only show QR on desktop (not on mobile)
+            if (!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                event.preventDefault();
+                // Build the viewer URL for mobile AR
+                const modelUrl = mainViewer.src;
+                const basePath = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '');
+                const viewerUrl = basePath + '/viewer.html?model=' + encodeURIComponent(modelUrl);
+                const qrImg = document.createElement('img');
+                qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(viewerUrl);
+                const qrDiv = document.getElementById('arQrImage');
+                qrDiv.innerHTML = '';
+                qrDiv.appendChild(qrImg);
+                document.getElementById('arQrPopup').style.display = 'flex';
+            }
         });
-      }
-    });
+    }
 });

@@ -48,10 +48,8 @@
 <body>
   <button id="backBtn" onclick="window.location.href='index.html'">⬅ Back to Main Page</button>
   <model-viewer id="arViewer"
-    src=""
     ar
     ar-modes="webxr scene-viewer quick-look"
-    ar-button-text="AR"
     camera-controls
     auto-rotate
     max-camera-orbit="auto auto 1000m"
@@ -74,6 +72,16 @@
     const arViewer = document.getElementById('arViewer');
     const arInfoPopup = document.getElementById('arInfoPopup');
 
+    // Utility: Check if device supports AR (basic check for WebXR or iOS Quick Look)
+    function isARSupported() {
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+      const isAndroid = /Android/.test(navigator.userAgent);
+      const isChrome = /Chrome/.test(navigator.userAgent);
+      // iOS Safari or Android Chrome support AR
+      return ((isIOS && isSafari) || (isAndroid && isChrome));
+    }
+
     if (modelUrl) {
       arViewer.src = modelUrl;
       arViewer.addEventListener('load', function handler() {
@@ -82,17 +90,11 @@
       });
     }
 
-    // Check if device supports AR
-    function isARSupported() {
-      return !!(navigator.xr && navigator.xr.isSessionSupported);
-    }
-
     // Show AR info popup if AR is not supported
     if (!isARSupported()) {
       arInfoPopup.style.display = 'flex';
     }
 
-    const arViewer = document.getElementById('arViewer');
     if (arViewer) {
       arViewer.addEventListener('ar-status', (event) => {
         if (event.detail.status === 'failed') {
