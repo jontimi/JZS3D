@@ -288,6 +288,7 @@ body.night .filter-controls h3 {
 
 .slider-group input[type="range"] {
     flex-grow: 1;
+    appearance: none;
     -webkit-appearance: none;
     height: 8px;
     background: #ddd;
