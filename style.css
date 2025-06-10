@@ -450,11 +450,10 @@ body.night .viewer-card {
 
 model-viewer#mainViewer {
   width: 100%;
-  max-width: 900px;
-  aspect-ratio: 16/9;
-  border-radius: 16px;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  height: 100%;
   display: block;
+  background: #f5f6fa;
+  border-radius: 16px;
 }
 
 /* Always show AR button */
