@@ -431,11 +431,11 @@ body.night model-viewer#mainViewer {
   background: #222831;
 }
 
-/* Make viewer-card and model-viewer match */
+/* Minimal default model-viewer sizing */
 .viewer-card {
   width: 100%;
   max-width: 900px;
-  margin: 0 auto;
+  margin: 0 auto 30px;
   background: #f5f6fa;
   border-radius: 16px;
   box-sizing: border-box;
