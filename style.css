@@ -529,3 +529,12 @@ model-viewer .ar-button {
         bottom: 15px;
     }
 }
+
+/* Make the 3D viewer taller and more visible on mobile */
+@media (max-width: 600px) {
+  model-viewer#mainViewer {
+    height: 80vw !important;
+    min-height: 350px !important;
+    max-height: 80vh !important;
+  }
+}
