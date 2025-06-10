@@ -115,35 +115,31 @@ body.night .control-btn:hover {
     background-color: #4a8cdb;
 }
 
-
 .viewer-card {
     position: relative;
     width: 100%;
     max-width: 900px;
-    height: 500px; /* Fixed height for the viewer */
     margin: 0 auto 30px;
     border-radius: 12px;
     background: #f5f6fa;
     box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
-    overflow: hidden; /* Ensures model-viewer doesn't overflow */
+    overflow: hidden;
     transition: background-color 0.3s;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 1em;
+    padding: 0;
 }
-
 body.night .viewer-card {
     background: #222831;
 }
 
-model-viewer {
+model-viewer#mainViewer {
     width: 100%;
     height: 100%;
-    --progress-bar-color: #007bff; /* Loading bar color */
-    --progress-bar-height: 4px; /* Loading bar height */
-    --progress-bar-offset: 0;
-    --controls-visibility: auto; /* Show/hide controls based on interaction */
+    display: block;
+    background: #f5f6fa;
+    border-radius: 16px;
 }
 
 /* Custom loading overlay */
@@ -160,13 +156,13 @@ model-viewer {
     align-items: center;
     color: white;
     font-size: 1.2em;
-    z-index: 10; /* Ensure it's above the model */
-    opacity: 0; /* Hidden by default */
-    pointer-events: none; /* Allows clicks to pass through when hidden */
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
     transition: opacity 0.3s ease-in-out;
 }
 
-#loadingOverlay.visible { /* This class is added by JS to show it */
+#loadingOverlay.visible {
     opacity: 1;
     pointer-events: all;
 }
@@ -186,301 +182,31 @@ model-viewer {
     100% { transform: rotate(360deg); }
 }
 
-.viewer-actions {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 15px;
-    z-index: 5; /* Above model-viewer, below popups */
-}
-
-.action-btn {
-    background-color: #007bff;
-    color: white;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.1em;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.action-btn.settings-btn {
-    background-color: #6c757d; /* Grey for settings */
-}
-.action-btn.settings-btn:hover {
-    background-color: #5a6268;
-}
-
-.action-btn:hover {
-    background-color: #0056b3;
-    transform: translateY(-2px);
-}
-
-body.night .action-btn {
-    background-color: #6daafc;
-    color: #2c2c2c;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-}
-body.night .action-btn:hover {
-    background-color: #4a8cdb;
-}
-body.night .action-btn.settings-btn {
-    background-color: #929292;
-    color: #2c2c2c;
-}
-body.night .action-btn.settings-btn:hover {
-    background-color: #7a7a7a;
-}
-
-
-/* Filter Controls Popup Styling */
-.filter-controls {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-    z-index: 100;
-    display: none; /* Hidden by default */
-    flex-direction: column;
-    gap: 20px;
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-}
-
-body.night .filter-controls {
-    background-color: #3e3e3e;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-}
-
-.filter-controls.visible {
-    display: flex;
-    opacity: 1;
-    transform: translate(-50%, -50%); /* Ensure it stays centered */
-}
-
-.filter-controls h3 {
-    color: #007bff;
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 1.8em;
-}
-
-body.night .filter-controls h3 {
-    color: #6daafc;
-}
-
-.slider-group {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    width: 100%;
-}
-
-.slider-group label {
-    flex-shrink: 0;
-    min-width: 80px;
-    text-align: left;
-}
-
-.slider-group input[type="range"] {
-    flex-grow: 1;
-    appearance: none;
-    -webkit-appearance: none;
-    height: 8px;
-    background: #ddd;
-    border-radius: 5px;
-    outline: none;
-    transition: background 0.2s ease-in-out;
-}
-
-body.night .slider-group input[type="range"] {
-    background: #666;
-}
-
-.slider-group input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: #007bff;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-body.night .slider-group input[type="range"]::-webkit-slider-thumb {
-    background: #6daafc;
-}
-
-.slider-group input[type="range"]::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: #007bff;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-body.night .slider-group input[type="range"]::-moz-range-thumb {
-    background: #6daafc;
-}
-
-.slider-group span {
-    font-weight: bold;
-    min-width: 40px;
-    text-align: right;
-}
-
-.close-btn {
-    background-color: #dc3545;
-    color: white;
-    align-self: center; /* Center the close button */
-    padding: 10px 25px;
-    margin-top: 20px;
-}
-
-.close-btn:hover {
-    background-color: #c82333;
-}
-
-body.night .close-btn {
-    background-color: #ff7f7f;
-    color: #2c2c2c;
-}
-body.night .close-btn:hover {
-    background-color: #f06060;
-}
-
-/* AR Dialog Styling */
-.ar-dialog {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7); /* Dark overlay */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 200; /* Above everything else */
-    display: none; /* Hidden by default */
-}
-
-.ar-dialog-content {
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-    text-align: center;
-    color: #333;
-    max-width: 400px;
-    width: 90%;
-}
-
-body.night .ar-dialog-content {
-    background-color: #3e3e3e;
-    color: #f0f0f0;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
-}
-
-.ar-dialog-content h2 {
-    color: #007bff;
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 2em;
-}
-
-body.night .ar-dialog-content h2 {
-    color: #6daafc;
-}
-
-#qrCanvas {
-    width: 256px;
-    height: 256px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    margin: 20px auto;
-    display: block; /* Centers the canvas */
-    background-color: white; /* Ensure QR code background is white */
-}
-
-.ar-dialog-content p {
-    font-size: 0.9em;
-    color: #666;
-    margin-bottom: 25px;
-}
-
-body.night .ar-dialog-content p {
-    color: #bbb;
-}
-
-/* Model viewer background for light and dark mode */
-model-viewer#mainViewer {
-  background: #f5f6fa;
-}
-body.night model-viewer#mainViewer {
-  background: #222831;
-}
-
-/* Minimal default model-viewer sizing */
-.viewer-card {
-  width: 100%;
-  max-width: 900px;
-  margin: 0 auto 30px;
-  background: #f5f6fa;
-  border-radius: 16px;
-  box-sizing: border-box;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0;
-}
-body.night .viewer-card {
-  background: #222831;
-}
-
-model-viewer#mainViewer {
-  width: 100%;
-  height: 100%;
-  display: block;
-  background: #f5f6fa;
-  border-radius: 16px;
-}
-
 /* Always show AR button */
 model-viewer::part(ar-button) {
-  display: block !important;
-  opacity: 1 !important;
-  z-index: 10;
+    display: block !important;
+    opacity: 1 !important;
+    z-index: 10;
 }
 
 /* Optional: Make AR button more visible */
 model-viewer::part(ar-button) {
-  background-color: #1976d2 !important;
-  color: #fff !important;
-  border-radius: 6px !important;
-  font-size: 1rem !important;
-  padding: 0.5em 1.2em !important;
-  border: none !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    background-color: #1976d2 !important;
+    color: #fff !important;
+    border-radius: 6px !important;
+    font-size: 1rem !important;
+    padding: 0.5em 1.2em !important;
+    border: none !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
 /* Make the built-in AR button smaller and change its label */
 model-viewer .ar-button {
-  font-size: 0.9em !important;
-  padding: 0.3em 1em !important;
-  border-radius: 6px !important;
-  min-width: 2.5em !important;
-  min-height: 2em !important;
+    font-size: 0.9em !important;
+    padding: 0.3em 1em !important;
+    border-radius: 6px !important;
+    min-width: 2.5em !important;
+    min-height: 2em !important;
 }
 
 /* Responsive adjustments */
@@ -499,17 +225,10 @@ model-viewer .ar-button {
         min-width: unset;
         width: 100%;
     }
-    .viewer-card {
-        height: 400px;
-    }
     .action-btn {
         width: 45px;
         height: 45px;
         font-size: 1em;
-    }
-    .filter-controls {
-        width: 90%;
-        padding: 20px;
     }
 }
 
@@ -520,20 +239,8 @@ model-viewer .ar-button {
     h1 {
         font-size: 1.5em;
     }
-    .viewer-card {
-        height: 300px;
-    }
     .viewer-actions {
         gap: 10px;
         bottom: 15px;
     }
-}
-
-/* Make the 3D viewer taller and more visible on mobile */
-@media (max-width: 600px) {
-  model-viewer#mainViewer {
-    height: 80vw !important;
-    min-height: 350px !important;
-    max-height: 80vh !important;
-  }
 }
