@@ -2,6 +2,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   const select = document.getElementById('modelSelect');
   const viewer = document.getElementById('mainViewer');
   const nightModeToggle = document.getElementById('nightModeToggle');
+  const arQrBtn = document.getElementById('arQrBtn');
+  const qrModal = document.getElementById('qrModal');
+  const qrCanvas = document.getElementById('qrCanvas');
+  const closeQr = document.getElementById('closeQr');
   const body = document.body;
 
   // Load models list from models.json
@@ -35,5 +39,31 @@ document.addEventListener('DOMContentLoaded', async () => {
   nightModeToggle.addEventListener('click', () => {
     body.classList.toggle('night');
     nightModeToggle.textContent = body.classList.contains('night') ? 'Toggle Light Mode' : 'Toggle Night Mode';
+  });
+
+  // AR QR Button logic
+  arQrBtn.addEventListener('click', () => {
+    // Build AR link for mobile (Scene Viewer for Android)
+    const modelUrl = new URL(viewer.src, window.location.origin).href;
+    const arLink = `https://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(modelUrl)}&mode=ar_only`;
+
+    // Generate QR code
+    const qr = new QRious({
+      element: qrCanvas,
+      value: arLink,
+      size: 256,
+      level: 'H'
+    });
+
+    qrModal.style.display = 'flex';
+  });
+
+  closeQr.addEventListener('click', () => {
+    qrModal.style.display = 'none';
+  });
+
+  // Optional: close modal on background click
+  qrModal.addEventListener('click', (e) => {
+    if (e.target === qrModal) qrModal.style.display = 'none';
   });
 });

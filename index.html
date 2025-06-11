@@ -6,6 +6,7 @@
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
   <link rel="stylesheet" href="style.css">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
 </head>
 <body>
   <div class="container">
@@ -16,12 +17,14 @@
         <select id="modelSelect"></select>
       </div>
       <button id="nightModeToggle" class="control-btn">Toggle Night Mode</button>
+      <button id="arQrBtn" class="control-btn">AR on Mobile (QR)</button>
     </div>
     <div class="viewer-card">
       <model-viewer
         id="mainViewer"
         ar
         ar-modes="scene-viewer quick-look webxr"
+        ar-button-mode="fallback"
         camera-controls
         touch-action="pan-y"
         shadow-intensity="1"
@@ -32,6 +35,14 @@
         alt="3D model"
         src=""
       ></model-viewer>
+    </div>
+    <div id="qrModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:1000;">
+      <div style="background:#fff; padding:24px 32px; border-radius:12px; text-align:center; position:relative;">
+        <button id="closeQr" style="position:absolute; top:8px; right:12px; font-size:1.5em; background:none; border:none; cursor:pointer;">&times;</button>
+        <h2>Scan to View in AR</h2>
+        <canvas id="qrCanvas"></canvas>
+        <p style="margin-top:12px;">Open this model in AR on your mobile device.</p>
+      </div>
     </div>
   </div>
   <script src="script.js"></script>
