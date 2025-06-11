@@ -8,25 +8,32 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
 </head>
 <body>
-  <h1>AR Furniture Showcase</h1>
-  <label for="modelSelect">Choose a model:</label>
-  <select id="modelSelect"></select>
-  <button id="nightModeToggle">Toggle Night Mode</button>
-  <br><br>
-  <model-viewer
-    id="mainViewer"
-    ar
-    ar-modes="scene-viewer quick-look webxr"
-    camera-controls
-    touch-action="pan-y"
-    shadow-intensity="1"
-    exposure="1"
-    auto-rotate
-    autoplay
-    style="width: 100%; max-width: 600px; height: 500px; background: #eee;"
-    alt="3D model"
-    src=""
-  ></model-viewer>
+  <div class="container">
+    <h1>AR Furniture Showcase</h1>
+    <div class="controls-container">
+      <div class="control-group">
+        <label for="modelSelect">Choose a model:</label>
+        <select id="modelSelect"></select>
+      </div>
+      <button id="nightModeToggle" class="control-btn">Toggle Night Mode</button>
+    </div>
+    <div class="viewer-card">
+      <model-viewer
+        id="mainViewer"
+        ar
+        ar-modes="scene-viewer quick-look webxr"
+        camera-controls
+        touch-action="pan-y"
+        shadow-intensity="1"
+        exposure="1"
+        auto-rotate
+        autoplay
+        style="width: 100%; max-width: 600px; height: 500px; background: #eee;"
+        alt="3D model"
+        src=""
+      ></model-viewer>
+    </div>
+  </div>
   <script src="script.js"></script>
 </body>
 </html>
