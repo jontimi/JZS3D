@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // when the 'ar' attribute is present.
             modelViewer.setAttribute('ar', ''); 
 
-            // Optional: If you want to specify specific AR modes, uncomment and adjust:
+            // The ar-modes attribute is now in index.html to control default behavior
             // modelViewer.setAttribute('ar-modes', 'webxr scene-viewer quick-look'); 
         } else {
             console.error("model-viewer element not found in the DOM!");
@@ -86,20 +86,27 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Construct the full absolute URL for the GLB model.
-        // This is crucial because the QR code needs a complete URL that a phone
-        // can directly access from anywhere.
-        // Example: https://jontimi.github.io/JZS-AR-SHOWCASE/Sofas/Black_Sofa.glb
+        // Get the base URL of your deployed site (e.g., https://furniturear.netlify.app/)
         const baseUrl = window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-        const modelAbsoluteUrl = `${baseUrl}/${currentModelSrc}`;
+        const modelAbsoluteUrl = `${baseUrl}/${currentModelSrc}`; // This is the direct GLB URL
+
+        // Construct Google Scene Viewer Intent URL for Android
+        // This is the most reliable way to launch AR on Android from a QR code.
+        const sceneViewerIntentUrl = `intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(modelAbsoluteUrl)}&mode=ar_only#Intent;scheme=https;package=com.google.android.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(baseUrl)};end;`;
+
+        // Use the Scene Viewer intent URL for the QR code.
+        // For iOS, direct GLB links often work well with Quick Look,
+        // but Scene Viewer intent URLs are primarily for Android.
+        // We'll use the intent URL as the primary QR code value for broader compatibility.
+        let qrCodeValue = sceneViewerIntentUrl;
         
-        console.log("Generating QR for:", modelAbsoluteUrl);
+        console.log("Generating QR for:", qrCodeValue);
 
         // Generate QR code on the canvas element
         const qr = new QRious({
             element: qrCodeCanvas,
-            value: modelAbsoluteUrl, // The URL the QR code will open
-            size: 256, // Size of the QR code in pixels
+            value: qrCodeValue, // Use the intent URL for better AR launch
+            size: 256,
             background: 'white',
             foreground: 'black'
         });
