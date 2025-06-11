@@ -1,236 +1,163 @@
+/* General styling for body, container, etc. */
 body {
-    font-family: 'Arial', sans-serif;
-    background: #f0f2f5;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Align at the top */
+    min-height: 100vh;
     margin: 0;
-    padding: 0;
-}
-
-body.night {
-    background: #222831;
+    background-color: #f0f0f0;
+    padding: 20px; /* Add some padding around the content */
+    box-sizing: border-box;
 }
 
 .container {
-    max-width: 900px;
-    margin: 30px auto;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-    padding: 30px;
-}
-
-body.night .container {
-    background: #222831;
-    color: #fff;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 800px;
+    text-align: center;
+    box-sizing: border-box;
 }
 
 h1 {
-    color: #007bff;
-    margin-bottom: 25px;
-    font-size: 2.2em;
-    font-weight: 600;
-    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
 }
 
-body.night h1 {
-    color: #6daafc;
-}
-
-.controls-container {
+.model-controls {
+    margin-bottom: 20px;
     display: flex;
+    flex-wrap: wrap; /* Allow items to wrap on smaller screens */
     justify-content: center;
     align-items: center;
-    gap: 20px;
-    margin-bottom: 30px;
-    flex-wrap: wrap;
+    gap: 15px; /* Space between items */
 }
 
-.control-group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+.model-controls label {
+    font-weight: bold;
+    color: #555;
+    margin-right: 5px;
 }
 
-label {
-    font-size: 1.1em;
-    font-weight: 500;
-}
-
-select {
+.model-controls select,
+.model-controls button {
     padding: 10px 15px;
     border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-    font-size: 1em;
-    min-width: 200px;
-    transition: border-color 0.3s, background-color 0.3s;
-}
-
-body.night select {
-    background-color: #555;
-    border-color: #666;
-    color: #f0f0f0;
-}
-
-select:focus {
-    border-color: #007bff;
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
-}
-
-.control-btn, .action-btn, .close-btn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    font-size: 1em;
+    border-radius: 5px;
+    font-size: 16px;
     cursor: pointer;
-    transition: background-color 0.2s, color 0.2s, transform 0.1s ease-in-out;
+    background-color: #e9e9e9;
+    transition: background-color 0.3s ease;
 }
 
-.control-btn {
-    background-color: #007bff;
-    color: white;
+.model-controls button:hover {
+    background-color: #dcdcdc;
 }
 
-.control-btn:hover {
-    background-color: #0056b3;
-    transform: translateY(-2px);
-}
-
-body.night .control-btn {
-    background-color: #6daafc;
-    color: #2c2c2c;
-}
-body.night .control-btn:hover {
-    background-color: #4a8cdb;
-}
-
-.viewer-card {
-    position: relative;
+.viewer-container {
     width: 100%;
-    max-width: 900px;
-    margin: 20px auto 30px;
-    border-radius: 12px;
-    background: #f5f6fa;
-    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-    transition: background-color 0.3s;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0;
-}
-body.night .viewer-card {
-    background: #222831;
+    height: 500px; /* Fixed height for the viewer */
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden; /* Ensures model-viewer doesn't spill out */
 }
 
-model-viewer#mainViewer {
+model-viewer {
     width: 100%;
-    height: 500px;
-    display: block;
-    background: #f5f6fa;
-    border-radius: 16px;
+    height: 100%;
+    --poster-color: #cccccc; /* Example poster background color */
 }
 
-/* Custom loading overlay */
-#loadingOverlay {
-    position: absolute;
+/* --- QR Code Overlay Styling --- */
+.qr-code-overlay {
+    position: fixed; /* Fixed position to cover the whole viewport */
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black background */
+    display: none; /* Hidden by default, shown by JavaScript */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    z-index: 1000; /* Ensure it's on top of other content */
+    backdrop-filter: blur(5px); /* Optional: blur background for modern browsers */
+}
+
+.qr-code-content {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    max-width: 400px; /* Limit QR code content width */
+    width: 90%; /* Responsive width */
+    position: relative; /* For positioning the close button */
+}
+
+.qr-code-content h2 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.qr-code-content canvas {
+    display: block; /* Make canvas a block element */
+    margin: 0 auto 20px auto; /* Center the canvas */
+    border: 1px solid #eee; /* Light border around QR code */
+    max-width: 100%; /* Ensure it's responsive */
+    height: auto; /* Maintain aspect ratio */
+}
+
+.qr-code-content p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+#close-qr {
+    position: absolute; /* Position relative to .qr-code-content */
+    top: 10px;
+    right: 10px;
+    background-color: #f44336; /* Red background */
+    color: white;
+    border: none;
+    border-radius: 50%; /* Make it circular */
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    color: white;
-    font-size: 1.2em;
-    z-index: 10;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease-in-out;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-#loadingOverlay.visible {
-    opacity: 1;
-    pointer-events: all;
-}
-
-.loading-circle {
-    border: 4px solid rgba(255, 255, 255, 0.3);
-    border-top: 4px solid #007bff;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
-    margin-bottom: 10px;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Always show AR button */
-model-viewer::part(ar-button) {
-    display: block !important;
-    opacity: 1 !important;
-    z-index: 10;
-}
-
-/* Optional: Make AR button more visible */
-model-viewer::part(ar-button) {
-    background-color: #1976d2 !important;
-    color: #fff !important;
-    border-radius: 6px !important;
-    font-size: 1rem !important;
-    padding: 0.5em 1.2em !important;
-    border: none !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-}
-
-/* Make the built-in AR button smaller and change its label */
-model-viewer .ar-button {
-    font-size: 0.9em !important;
-    padding: 0.3em 1em !important;
-    border-radius: 6px !important;
-    min-width: 2.5em !important;
-    min-height: 2em !important;
+#close-qr:hover {
+    background-color: #d32f2f;
 }
 
 /* Responsive adjustments */
-@media (max-width: 768px) {
-    .container {
-        padding: 20px;
-    }
-    h1 {
-        font-size: 1.8em;
-    }
-    .controls-container {
-        flex-direction: column;
-        gap: 15px;
-    }
-    select {
-        min-width: unset;
-        width: 100%;
-    }
-    .action-btn {
-        width: 45px;
-        height: 45px;
-        font-size: 1em;
-    }
-}
-
-@media (max-width: 480px) {
+@media (max-width: 600px) {
     .container {
         padding: 15px;
     }
-    h1 {
-        font-size: 1.5em;
+
+    .model-controls {
+        flex-direction: column; /* Stack controls vertically */
+        align-items: stretch; /* Stretch items to full width */
     }
-    .viewer-actions {
-        gap: 10px;
-        bottom: 15px;
+
+    .model-controls select,
+    .model-controls button {
+        width: 100%; /* Full width for select and button */
+        margin-bottom: 10px; /* Add space between stacked items */
+    }
+
+    .model-controls label {
+        margin-right: 0;
+        margin-bottom: 5px;
     }
 }
