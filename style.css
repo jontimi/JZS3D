@@ -1,15 +1,8 @@
 body {
     font-family: 'Arial', sans-serif;
+    background: #f0f2f5;
     margin: 0;
-    padding: 20px;
-    background-color: #f0f2f5;
-    color: #333;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
-    box-sizing: border-box;
-    transition: background-color 0.3s, color 0.3s;
+    padding: 0;
 }
 
 body.night {
@@ -17,15 +10,12 @@ body.night {
 }
 
 .container {
+    max-width: 900px;
+    margin: 30px auto;
     background: #fff;
-    padding: 30px;
     border-radius: 12px;
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    max-width: 900px;
-    width: 100%;
-    box-sizing: border-box;
-    transition: background-color 0.3s, box-shadow 0.3s;
+    padding: 30px;
 }
 
 body.night .container {
@@ -119,7 +109,7 @@ body.night .control-btn:hover {
     position: relative;
     width: 100%;
     max-width: 900px;
-    margin: 0 auto 30px;
+    margin: 20px auto 30px;
     border-radius: 12px;
     background: #f5f6fa;
     box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
@@ -136,7 +126,7 @@ body.night .viewer-card {
 
 model-viewer#mainViewer {
     width: 100%;
-    height: 100%;
+    height: 500px;
     display: block;
     background: #f5f6fa;
     border-radius: 16px;
