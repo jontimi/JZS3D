@@ -43,11 +43,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // AR QR Button logic
   arQrBtn.addEventListener('click', () => {
-    // Build AR link for mobile (Scene Viewer for Android)
     const modelUrl = new URL(viewer.src, window.location.origin).href;
+    // Always use Scene Viewer intent for Android and most devices
     const arLink = `https://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(modelUrl)}&mode=ar_only`;
 
-    // Generate QR code
     const qr = new QRious({
       element: qrCanvas,
       value: arLink,
