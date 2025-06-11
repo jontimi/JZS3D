@@ -1,34 +1,50 @@
 [
-  {
-    "category": "Cabinets",
-    "models": [
-      { "name": "Bookcase", "url": "models/Cabinets/bookcase.glb" },
-      { "name": "Closet Oak White", "url": "models/Cabinets/closet_oak_white.glb" },
-      { "name": "IKEA Alex Drawer", "url": "models/Cabinets/ikea_alex_drawer.glb" }
-    ]
-  },
-  {
-    "category": "Lamps",
-    "models": [
-      { "name": "Floor Lamp", "url": "models/Lamps/floor_lamp.glb" },
-      { "name": "Mario Floor Lamp", "url": "models/Lamps/mario_floor_lamp.glb" },
-      { "name": "Sweep Floor Lamp Black", "url": "models/Lamps/sweep_floor_lamp_black.glb" }
-    ]
-  },
-  {
-    "category": "Sofas",
-    "models": [
-      { "name": "BLACKSofa", "url": "models/Sofas/BLACKSofa.glb" },
-      { "name": "Dolton Armchair Hudson Grey", "url": "models/Sofas/dolton_armchair_hudson_grey.glb" },
-      { "name": "Sofawood", "url": "models/Sofas/sofawood.glb" },
-      { "name": "Wasily Chair", "url": "models/Sofas/wasily_chair.glb" }
-    ]
-  },
-  {
-    "category": "Tables",
-    "models": [
-      { "name": "Indu Table", "url": "models/Tables/Indu_table.glb" },
-      { "name": "Kumo White Coffee Table", "url": "models/Tables/kumo_white_coffee_table.glb" }
-    ]
-  }
+    {
+        "name": "BLACK Sofa",
+        "src": "models/Sofas/BLACKSofa.glb"
+    },
+    {
+        "name": "Dolton Armchair",
+        "src": "models/Sofas/dolton_armchair_h_res.glb"
+    },
+    {
+        "name": "Sofawood",
+        "src": "models/Sofas/sofawood.glb"
+    },
+    {
+        "name": "Wasily Chair",
+        "src": "models/Sofas/wasily_chair.glb"
+    },
+    {
+        "name": "Floor Lamp",
+        "src": "models/Lamps/floor_lamp.glb"
+    },
+    {
+        "name": "Mario Floor Lamp",
+        "src": "models/Lamps/mario_floor_lamp.glb"
+    },
+    {
+        "name": "Sweep Floor Lamp",
+        "src": "models/Lamps/sweep_floor_lamp.glb"
+    },
+    {
+        "name": "Bookcase",
+        "src": "models/Cabinets/bookcase.glb"
+    },
+    {
+        "name": "Closet Oak White",
+        "src": "models/Cabinets/closet_oak_white.glb"
+    },
+    {
+        "name": "Ikea Alex Drawer",
+        "src": "models/Cabinets/ikea_alex_drawer.glb"
+    },
+    {
+        "name": "Indu Table",
+        "src": "models/Tables/Indu_table.glb"
+    },
+    {
+        "name": "Kumo Coffee Table",
+        "src": "models/Tables/kumo_white_coffee_table.glb"
+    }
 ]
