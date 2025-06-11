@@ -1,31 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>3D Model Showcase</title>
-  <link rel="stylesheet" href="style.css" />
-  <script type="module" src="https://unpkg.com/@google/model-viewer@3.4.0/dist/model-viewer.min.js"></script>
+  <meta charset="UTF-8">
+  <title>AR Furniture Showcase</title>
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
 </head>
 <body>
-  <div class="container">
-    <h1>3D Model Showcase</h1>
-    <div class="controls-container">
-      <label for="modelSelect">Select Model:</label>
-      <select id="modelSelect"></select>
-    </div>
-    <div class="viewer-card">
-      <model-viewer id="mainViewer"
-        src=""
-        camera-controls
-        auto-rotate
-        ar
-        ar-modes="webxr scene-viewer quick-look"
-        alt="3D Model"
-        style="width: 100%; background: #f5f6fa;">
-      </model-viewer>
-    </div>
-  </div>
+  <h1>AR Furniture Showcase</h1>
+  <label for="modelSelect">Choose a model:</label>
+  <select id="modelSelect"></select>
+  <button id="nightModeToggle">Toggle Night Mode</button>
+  <br><br>
+  <model-viewer
+    id="mainViewer"
+    ar
+    ar-modes="scene-viewer quick-look webxr"
+    camera-controls
+    touch-action="pan-y"
+    shadow-intensity="1"
+    exposure="1"
+    auto-rotate
+    autoplay
+    style="width: 100%; max-width: 600px; height: 500px; background: #eee;"
+    alt="3D model"
+    src=""
+  ></model-viewer>
   <script src="script.js"></script>
 </body>
 </html>
