@@ -9,27 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let models = [];
     let currentModelSrc = '';
 
-    // --- NEW FUNCTION: Check AR support and toggle QR button visibility ---
-    function updateQrButtonVisibility() {
-        // modelViewer.hasAR is true if the device supports AR (e.g., WebXR, ARCore, ARKit)
-        if (modelViewer && modelViewer.hasAR) {
-            qrButton.style.display = 'none'; // Hide the "View Model on Phone" button if AR is supported
-        } else {
-            qrButton.style.display = 'inline-block'; // Show it if AR is NOT supported
-        }
-    }
-
-    // Call this function once the DOM is loaded and model-viewer capabilities are assessed
-    // model-viewer capabilities are usually ready by DOMContentLoaded
-    updateQrButtonVisibility();
-
-    // You can also call it after a model loads, though hasAR is device-dependent, not model-dependent
-    modelViewer.addEventListener('load', () => {
-        // This ensures the button visibility is correct even if state changes after initial load
-        updateQrButtonVisibility();
-    });
-
-
     // --- Fetch models.json to get the list of models ---
     fetch('models.json')
         .then(response => {
