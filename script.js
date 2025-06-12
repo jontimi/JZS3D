@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
             modelViewer.src = modelSrc;
             modelViewer.alt = `A 3D model of ${modelName}`;
             currentModelSrc = modelSrc;
-            // No AR attributes set here, as per your request for a clean base
+            // AR attributes are now handled directly in index.html for model-viewer
         } else {
             console.error("model-viewer element not found in the DOM!");
             alert("Error: 3D viewer not initialized. Please check index.html.");
@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- MODIFIED: Event listener for the QR button click to generate AR intent URL ---
+    // --- MODIFIED: Event listener for the QR button click - QR links directly to GLB ---
     qrButton.addEventListener('click', () => {
         if (!currentModelSrc) {
             alert('Please select a model first.');
@@ -73,17 +73,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const baseUrl = window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-        const modelAbsoluteUrl = `${baseUrl}/${currentModelSrc}`;
-
-        // Construct Google Scene Viewer Intent URL for Android
-        // This URL tells Android to open the model in the Google ARCore Scene Viewer app.
-        // If the app isn't installed or device doesn't support AR, it provides a fallback URL to your site.
-        const sceneViewerIntentUrl = `intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(modelAbsoluteUrl)}&mode=ar_only#Intent;scheme=https;package=com.google.android.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(baseUrl)};end;`;
-
-        // Use the Scene Viewer intent URL for the QR code value.
-        // For iOS devices, scanning this URL will usually still attempt to open the GLB directly
-        // via Quick Look, or fall back to the browser. Dedicated USDZ files are ideal for iOS AR.
-        const qrCodeValue = sceneViewerIntentUrl;
+        // The QR code value is now simply the absolute URL to the GLB model
+        const qrCodeValue = `${baseUrl}/${currentModelSrc}`; 
         
         console.log("Generating QR for:", qrCodeValue);
 
