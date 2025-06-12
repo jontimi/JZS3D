@@ -5,7 +5,7 @@
     },
     {
         "name": "Dolton Armchair",
-        "src": "models/Sofas/dolton_armchair_h_res.glb"
+        "src": "models/Sofas/dolton_armchair_hudson_grey.glb"
     },
     {
         "name": "Sofawood",
@@ -25,7 +25,7 @@
     },
     {
         "name": "Sweep Floor Lamp",
-        "src": "models/Lamps/sweep_floor_lamp.glb"
+        "src": "models/Lamps/sweep_floor_lamp_black.glb"
     },
     {
         "name": "Bookcase",
