@@ -30,7 +30,15 @@
                 style="width: 100%; height: 500px;"
                 ar 
                 ar-modes="webxr scene-viewer quick-look"
-                environment-image="./models/environments/neutral_lightroom_128.hdr"> </model-viewer>
+                environment-image="./models/environments/neutral_lightroom_128.hdr"
+                min-field-of-view="40deg" 
+                max-field-of-view="40deg"> 
+            </model-viewer>
+        </div>
+
+        <div id="model-dimensions">
+            <h3>Dimensions:</h3>
+            <p id="dimensions-text">Select a model to see its dimensions.</p>
         </div>
 
         <div id="qr-code-container" class="qr-code-overlay">

@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const qrCodeContainer = document.getElementById('qr-code-container');
     const qrCodeCanvas = document.getElementById('qr-code-canvas');
     const closeQrButton = document.getElementById('close-qr');
+    const dimensionsText = document.getElementById('dimensions-text'); // New: Reference to dimensions display element
 
     let models = [];
     let currentModelSrc = '';
@@ -35,19 +36,16 @@ document.addEventListener('DOMContentLoaded', () => {
             // --- Check for model in URL query parameter ---
             const urlModelSrc = getQueryParam('model');
             if (urlModelSrc) {
-                // Find the model object based on the src from the URL
                 const initialModel = models.find(m => m.src === urlModelSrc);
                 if (initialModel) {
-                    updateModel(initialModel.src, initialModel.name);
-                    // Set the dropdown to the loaded model
+                    updateModel(initialModel.src, initialModel.name, initialModel.width, initialModel.height, initialModel.depth); // Pass dimensions
                     modelSelect.value = initialModel.src;
                 } else {
                     console.warn(`Model with src "${urlModelSrc}" not found in models.json. Loading first model.`);
-                    updateModel(models[0].src, models[0].name);
+                    updateModel(models[0].src, models[0].name, models[0].width, models[0].height, models[0].depth); // Pass dimensions for first model
                 }
             } else if (models.length > 0) {
-                // If no model in URL, load the first one by default
-                updateModel(models[0].src, models[0].name);
+                updateModel(models[0].src, models[0].name, models[0].width, models[0].height, models[0].depth); // Pass dimensions for first model
             }
         })
         .catch(error => {
@@ -65,11 +63,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function updateModel(modelSrc, modelName) {
+    // Modified updateModel function to accept and display dimensions
+    function updateModel(modelSrc, modelName, width, height, depth) {
         if (modelViewer) {
             modelViewer.src = modelSrc;
             modelViewer.alt = `A 3D model of ${modelName}`;
             currentModelSrc = modelSrc;
+            
+            // Display dimensions
+            if (width && height && depth) {
+                dimensionsText.textContent = `Width: ${width}m, Height: ${height}m, Depth: ${depth}m`;
+            } else {
+                dimensionsText.textContent = 'Dimensions: Not available for this model.';
+            }
         } else {
             console.error("model-viewer element not found in the DOM!");
             alert("Error: 3D viewer not initialized. Please check index.html.");
@@ -80,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const selectedSrc = event.target.value;
         const selectedModel = models.find(m => m.src === selectedSrc);
         if (selectedModel) {
-            updateModel(selectedModel.src, selectedModel.name);
+            updateModel(selectedModel.src, selectedModel.name, selectedModel.width, selectedModel.height, selectedModel.depth); // Pass dimensions
         }
     });
 
@@ -90,11 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Construct the base URL for the current page
-        // This makes sure the QR code links back to index.html
         const baseUrl = window.location.origin + window.location.pathname; 
-        
-        // Generate the QR code value with the model's source as a query parameter
         const qrCodeValue = `${baseUrl}?model=${currentModelSrc}`; 
         
         console.log("Generating QR for:", qrCodeValue);
