@@ -1,14 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
     const modelSelect = document.getElementById('model-select');
     const modelViewer = document.querySelector('.model-viewer');
-    // NEW: References for QR button and overlay
     const qrButton = document.getElementById('qr-button');
     const qrCodeContainer = document.getElementById('qr-code-container');
     const qrCodeCanvas = document.getElementById('qr-code-canvas');
     const closeQrButton = document.getElementById('close-qr');
 
     let models = [];
-    let currentModelSrc = ''; // To store the path of the currently loaded model
+    let currentModelSrc = '';
 
     // --- Fetch models.json to get the list of models ---
     fetch('models.json')
@@ -36,7 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
             alert(`Error loading models data: ${error.message}. Please ensure models.json is valid and accessible.`);
         });
 
-    // --- Populates the dropdown menu with model names ---
     function populateDropdown(modelsArray) {
         modelSelect.innerHTML = '';
         modelsArray.forEach(model => {
@@ -47,19 +45,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Updates the 3D model displayed in model-viewer ---
     function updateModel(modelSrc, modelName) {
         if (modelViewer) {
             modelViewer.src = modelSrc;
             modelViewer.alt = `A 3D model of ${modelName}`;
             currentModelSrc = modelSrc;
+            // No AR attributes set here, as per your request for a clean base
         } else {
             console.error("model-viewer element not found in the DOM!");
             alert("Error: 3D viewer not initialized. Please check index.html.");
         }
     }
 
-    // --- Event listener for when a new model is selected from the dropdown ---
     modelSelect.addEventListener('change', (event) => {
         const selectedSrc = event.target.value;
         const selectedModel = models.find(m => m.src === selectedSrc);
@@ -68,34 +65,40 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- NEW: Event listener for the QR button click ---
+    // --- MODIFIED: Event listener for the QR button click to generate AR intent URL ---
     qrButton.addEventListener('click', () => {
         if (!currentModelSrc) {
             alert('Please select a model first.');
             return;
         }
 
-        // Get the base URL of your deployed site (e.g., https://furniturear.netlify.app/)
-        // This ensures the QR code always points to the correct location.
         const baseUrl = window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
         const modelAbsoluteUrl = `${baseUrl}/${currentModelSrc}`;
 
-        // Generate QR code on the canvas element
+        // Construct Google Scene Viewer Intent URL for Android
+        // This URL tells Android to open the model in the Google ARCore Scene Viewer app.
+        // If the app isn't installed or device doesn't support AR, it provides a fallback URL to your site.
+        const sceneViewerIntentUrl = `intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(modelAbsoluteUrl)}&mode=ar_only#Intent;scheme=https;package=com.google.android.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(baseUrl)};end;`;
+
+        // Use the Scene Viewer intent URL for the QR code value.
+        // For iOS devices, scanning this URL will usually still attempt to open the GLB directly
+        // via Quick Look, or fall back to the browser. Dedicated USDZ files are ideal for iOS AR.
+        const qrCodeValue = sceneViewerIntentUrl;
+        
+        console.log("Generating QR for:", qrCodeValue);
+
         const qr = new QRious({
             element: qrCodeCanvas,
-            value: modelAbsoluteUrl, // QR code points directly to the GLB file
+            value: qrCodeValue,
             size: 256,
             background: 'white',
             foreground: 'black'
         });
 
-        // Show the QR code overlay
-        qrCodeContainer.style.display = 'flex';
+        qrCodeContainer.style.display = 'flex'; // Show the QR code overlay
     });
 
-    // --- NEW: Event listener for the Close QR button click ---
     closeQrButton.addEventListener('click', () => {
-        // Hide the QR code overlay
-        qrCodeContainer.style.display = 'none';
+        qrCodeContainer.style.display = 'none'; // Hide the QR code overlay
     });
 });
