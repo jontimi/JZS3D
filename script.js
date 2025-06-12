@@ -9,95 +9,108 @@ document.addEventListener('DOMContentLoaded', () => {
     let models = [];
     let currentModelSrc = '';
 
+    // Function to get a query parameter from the URL
+    function getQueryParam(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+    }
+
     // --- Fetch models.json to get the list of models ---
     fetch('models.json')
         .then(response => {
             if (!response.ok) {
-                // If response is not OK (e.g., 404), throw an error
                 throw new Error(`HTTP error! status: ${response.status} - Could not load models.json`);
             }
-            return response.json(); // Try to parse JSON
+            return response.json();
         })
         .then(data => {
-            // Check if data is a valid array and not empty
             if (!Array.isArray(data) || data.length === 0) {
                 console.error('models.json is empty or not an array:', data);
-                // Alert if JSON is invalid or empty
                 alert('Error: models data is empty or invalid. Please check models.json.');
                 return;
             }
-            models = data; // Assign fetched data to models array
-            populateDropdown(models); // Populate the dropdown menu
+            models = data;
+            populateDropdown(models);
 
-            // If models exist, load the first one by default
-            if (models.length > 0) {
+            // --- Check for model in URL query parameter ---
+            const urlModelSrc = getQueryParam('model');
+            if (urlModelSrc) {
+                // Find the model object based on the src from the URL
+                const initialModel = models.find(m => m.src === urlModelSrc);
+                if (initialModel) {
+                    updateModel(initialModel.src, initialModel.name);
+                    // Set the dropdown to the loaded model
+                    modelSelect.value = initialModel.src;
+                } else {
+                    console.warn(`Model with src "${urlModelSrc}" not found in models.json. Loading first model.`);
+                    updateModel(models[0].src, models[0].name);
+                }
+            } else if (models.length > 0) {
+                // If no model in URL, load the first one by default
                 updateModel(models[0].src, models[0].name);
             }
         })
         .catch(error => {
-            // Catch any errors during fetch or JSON parsing
             console.error('Error loading models.json:', error);
             alert(`Error loading models data: ${error.message}. Please ensure models.json is valid and accessible.`);
         });
 
     function populateDropdown(modelsArray) {
-        modelSelect.innerHTML = ''; // Clear existing options
+        modelSelect.innerHTML = '';
         modelsArray.forEach(model => {
             const option = document.createElement('option');
-            option.value = model.src; // Set option value to model's source path
-            option.textContent = model.name; // Set option text to model's display name
-            modelSelect.appendChild(option); // Add option to the dropdown
+            option.value = model.src;
+            option.textContent = model.name;
+            modelSelect.appendChild(option);
         });
     }
 
     function updateModel(modelSrc, modelName) {
         if (modelViewer) {
-            modelViewer.src = modelSrc; // Set the model-viewer's source
-            modelViewer.alt = `A 3D model of ${modelName}`; // Set alt text for accessibility
-            currentModelSrc = modelSrc; // Keep track of the currently loaded model's source
+            modelViewer.src = modelSrc;
+            modelViewer.alt = `A 3D model of ${modelName}`;
+            currentModelSrc = modelSrc;
         } else {
             console.error("model-viewer element not found in the DOM!");
             alert("Error: 3D viewer not initialized. Please check index.html.");
         }
     }
 
-    // Event listener for dropdown menu change
     modelSelect.addEventListener('change', (event) => {
-        const selectedSrc = event.target.value; // Get the source path from the selected option
-        // Find the full model object from the models array
+        const selectedSrc = event.target.value;
         const selectedModel = models.find(m => m.src === selectedSrc);
         if (selectedModel) {
-            updateModel(selectedModel.src, selectedModel.name); // Update the model in the viewer
+            updateModel(selectedModel.src, selectedModel.name);
         }
     });
 
-    // Event listener for QR button click
     qrButton.addEventListener('click', () => {
         if (!currentModelSrc) {
             alert('Please select a model first.');
             return;
         }
 
-        // Construct the full URL for the QR code
-        // This takes your Netlify site's base URL and appends the model's GLB path
-        const baseUrl = window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-        const qrCodeValue = `${baseUrl}/${currentModelSrc}`; 
+        // Construct the base URL for the current page
+        // This makes sure the QR code links back to index.html
+        const baseUrl = window.location.origin + window.location.pathname; 
+        
+        // Generate the QR code value with the model's source as a query parameter
+        const qrCodeValue = `${baseUrl}?model=${currentModelSrc}`; 
         
         console.log("Generating QR for:", qrCodeValue);
 
-        // Generate the QR code using QRious library
         const qr = new QRious({
-            element: qrCodeCanvas, // Canvas element to draw the QR code on
-            value: qrCodeValue,   // Data to encode in the QR code
-            size: 256,            // Size of the QR code in pixels
-            background: 'white',  // QR code background color
-            foreground: 'black'   // QR code foreground color
+            element: qrCodeCanvas,
+            value: qrCodeValue,
+            size: 256,
+            background: 'white',
+            foreground: 'black'
         });
 
-        qrCodeContainer.style.display = 'flex'; // Show the QR code overlay (uses flexbox for centering)
+        qrCodeContainer.style.display = 'flex';
     });
 
     closeQrButton.addEventListener('click', () => {
-        qrCodeContainer.style.display = 'none'; // Hide the QR code overlay
+        qrCodeContainer.style.display = 'none';
     });
 });
