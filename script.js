@@ -5,7 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const qrCodeContainer = document.getElementById('qr-code-container');
     const qrCodeCanvas = document.getElementById('qr-code-canvas');
     const closeQrButton = document.getElementById('close-qr');
-    const dimensionsText = document.getElementById('dimensions-text'); // New: Reference to dimensions display element
+    const dimensionsText = document.getElementById('dimensions-text');
+    const toggleRotateButton = document.getElementById('toggle-rotate-button'); // UPDATED: Reference to the new button
 
     let models = [];
     let currentModelSrc = '';
@@ -33,19 +34,18 @@ document.addEventListener('DOMContentLoaded', () => {
             models = data;
             populateDropdown(models);
 
-            // --- Check for model in URL query parameter ---
             const urlModelSrc = getQueryParam('model');
             if (urlModelSrc) {
                 const initialModel = models.find(m => m.src === urlModelSrc);
                 if (initialModel) {
-                    updateModel(initialModel.src, initialModel.name, initialModel.width, initialModel.height, initialModel.depth); // Pass dimensions
+                    updateModel(initialModel.src, initialModel.name, initialModel.width, initialModel.height, initialModel.depth);
                     modelSelect.value = initialModel.src;
                 } else {
                     console.warn(`Model with src "${urlModelSrc}" not found in models.json. Loading first model.`);
-                    updateModel(models[0].src, models[0].name, models[0].width, models[0].height, models[0].depth); // Pass dimensions for first model
+                    updateModel(models[0].src, models[0].name, models[0].width, models[0].height, models[0].depth);
                 }
             } else if (models.length > 0) {
-                updateModel(models[0].src, models[0].name, models[0].width, models[0].height, models[0].depth); // Pass dimensions for first model
+                updateModel(models[0].src, models[0].name, models[0].width, models[0].height, models[0].depth);
             }
         })
         .catch(error => {
@@ -63,14 +63,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Modified updateModel function to accept and display dimensions
     function updateModel(modelSrc, modelName, width, height, depth) {
         if (modelViewer) {
             modelViewer.src = modelSrc;
             modelViewer.alt = `A 3D model of ${modelName}`;
             currentModelSrc = modelSrc;
             
-            // Display dimensions
             if (width && height && depth) {
                 dimensionsText.textContent = `Width: ${width}m, Height: ${height}m, Depth: ${depth}m`;
             } else {
@@ -86,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const selectedSrc = event.target.value;
         const selectedModel = models.find(m => m.src === selectedSrc);
         if (selectedModel) {
-            updateModel(selectedModel.src, selectedModel.name, selectedModel.width, selectedModel.height, selectedModel.depth); // Pass dimensions
+            updateModel(selectedModel.src, selectedModel.name, selectedModel.width, selectedModel.height, selectedModel.depth);
         }
     });
 
@@ -114,5 +112,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     closeQrButton.addEventListener('click', () => {
         qrCodeContainer.style.display = 'none';
+    });
+
+    // UPDATED: Event listener for the Toggle Rotation button
+    toggleRotateButton.addEventListener('click', () => {
+        if (modelViewer) {
+            if (modelViewer.hasAttribute('auto-rotate')) {
+                modelViewer.removeAttribute('auto-rotate');
+                toggleRotateButton.textContent = 'Start Rotation';
+            } else {
+                modelViewer.setAttribute('auto-rotate', ''); // Add the attribute back to enable rotation
+                toggleRotateButton.textContent = 'Stop Rotation';
+            }
+        }
     });
 });
