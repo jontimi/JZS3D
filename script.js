@@ -68,7 +68,7 @@ window.onload = () => {
                 populateColorOptions([]);
                 populateMaterialOptions([]);
             }
-            setupARButtons();
+            setupARButtons(); // Call this after model is loaded
         }
         catch (error) {
             console.error("Error fetching or processing models data:", error);
@@ -77,13 +77,26 @@ window.onload = () => {
         }
     }
 
+    // --- CRITICAL FIX HERE ---
     function setupARButtons() {
-        mobileARButton.style.display = 'none';
-        desktopQRButton.style.display = 'block';
-        modelViewer.removeAttribute('ar');
-        modelViewer.removeAttribute('ar-modes');
-        console.log("Forced Desktop behavior: Showing QR button. Model-viewer AR attributes removed.");
+        // Check if the browser supports AR, which typically implies a mobile device
+        if (modelViewer.canActivateAR) {
+            mobileARButton.style.display = 'block'; // Show native AR button
+            desktopQRButton.style.display = 'none';  // Hide QR button
+            modelViewer.setAttribute('ar', ''); // Enable AR attribute
+            modelViewer.setAttribute('ar-modes', 'webxr scene-viewer quick-look'); // Set AR modes
+            console.log("AR supported: Showing native AR button. QR button hidden.");
+        } else {
+            // No AR support detected, likely a desktop browser
+            mobileARButton.style.display = 'none';  // Hide native AR button
+            desktopQRButton.style.display = 'block'; // Show QR button
+            modelViewer.removeAttribute('ar');
+            modelViewer.removeAttribute('ar-modes');
+            console.log("AR not supported: Showing QR button. Native AR button hidden.");
+        }
     }
+    // --- END CRITICAL FIX ---
+
 
     function populateProductDropdown(models) {
         if (models.length === 0) {
@@ -106,6 +119,7 @@ window.onload = () => {
             currentModelSrc = modelSrc;
             currentModelData = allModelsData.find(model => model.src === modelSrc); // Store the full model data
             console.log("Model loaded:", modelSrc);
+            setupARButtons(); // Recalibrate AR buttons after new model loads
         } else {
             console.warn("Model viewer element or source path is missing.");
         }
@@ -278,9 +292,13 @@ window.onload = () => {
         });
     }
 
+    // mobileARButton is implicitly handled by model-viewer's 'ar' attribute when setupARButtons enables it.
+    // No explicit click listener needed for the slot-based AR button, model-viewer handles it.
     if (mobileARButton) {
         mobileARButton.addEventListener('click', () => {
-            console.log("Native AR button clicked. This should only happen on mobile devices.");
+            // This listener might not be strictly necessary if model-viewer handles the click,
+            // but it's good for logging or if you ever add custom mobile AR logic.
+            console.log("Native AR button clicked.");
         });
     }
 
