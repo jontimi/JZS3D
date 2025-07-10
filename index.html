@@ -3,53 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Furniture Showcase</title>
+    <title>JZS Product Preview</title>
     <link rel="stylesheet" href="style.css">
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
-    <script src="https://unpkg.com/qrious@4.0.2/dist/qrious.min.js"></script>
+    <script src="script.js" defer></script>
 </head>
 <body>
-    <div class="container">
-        <h1>3D Furniture Showcase</h1>
+    <div class="app-container">
+        <div class="sidebar">
+            <h1 class="product-preview-title">Product Preview</h1>
 
-        <div class="model-controls">
-            <label for="model-select">Select Model:</label>
-            <select id="model-select"></select>
-            <button id="qr-button">View Model on Phone</button> 
-            <button id="toggle-rotate-button">Stop Rotation</button> </div>
+            <div class="card product-info-card">
+                <div class="product-header">
+                    <h2 class="product-name">Loading Product...</h2>
+                    <span class="edit-icon">✏️</span>
+                </div>
+                <div class="dimensions">
+                    <div class="dimension-item">
+                        <span>Height</span>
+                        <span class="dimension-height">N/A</span>
+                    </div>
+                    <div class="dimension-item">
+                        <span>Width</span>
+                        <span class="dimension-width">N/A</span>
+                    </div>
+                    <div class="dimension-item">
+                        <span>Depth</span>
+                        <span class="dimension-depth">N/A</span>
+                    </div>
+                </div>
+            </div>
 
-        <div class="viewer-container">
-            <model-viewer 
-                class="model-viewer" 
-                camera-controls 
-                touch-action="pan-y" 
-                exposure="1" 
-                shadow-intensity="1" 
-                auto-rotate 
-                alt="A 3D model" 
-                style="width: 100%; height: 500px;"
-                ar 
-                ar-modes="webxr scene-viewer quick-look"
-                environment-image="./models/environments/neutral_lightroom_128.hdr"
-                min-field-of-view="40deg" 
-                max-field-of-view="40deg"> 
-            </model-viewer>
-        </div>
+            <div class="card category-card">
+                <h3>Product</h3>
+                <select class="category-select">
+                    </select>
+            </div>
 
-        <div id="model-dimensions">
-            <h3>Dimensions:</h3>
-            <p id="dimensions-text">Select a model to see its dimensions.</p>
-        </div>
+            <div class="card colors-card">
+                <h3>Colors</h3>
+                <div class="color-options">
+                    <div class="color-swatch active"></div>
+                    <div class="color-add-button">+</div>
+                </div>
+            </div>
 
-        <div id="qr-code-container" class="qr-code-overlay">
-            <div class="qr-code-content">
-                <h2>Scan to View Model</h2>
-                <canvas id="qr-code-canvas"></canvas>
-                <p>Point your phone's camera at the QR code.</p>
-                <button id="close-qr">Close</button>
+            <div class="card materials-card">
+                <h3>Materials</h3>
+                <div class="material-options">
+                    <span class="material-tag">Metal</span>
+                </div>
+            </div>
+
+            <div class="card brightness-card">
+                <h3>Brightness</h3>
+                <input type="range" min="0" max="100" value="50" class="brightness-slider">
             </div>
         </div>
+
+        <div class="viewer-area">
+            <model-viewer
+                id="product-model"
+                src=""
+                ar ar-modes="webxr scene-viewer quick-look" camera-controls
+                touch-action="pan-y"
+                shadow-intensity="1"
+                alt="3D Product Model"
+                loading="eager"
+                disable-zoom
+                disable-pan
+                exposure="1"
+                field-of-view="30deg"
+                camera-orbit="0deg 75deg 105%"
+                interaction-prompt="none"
+                style="background-color: transparent;">
+                <div class="model-controls">
+                    <button class="refresh-button">🔄</button>
+                    <button class="ar-button">AR</button>
+                </div>
+            </model-viewer>
+        </div>
     </div>
-    <script src="script.js"></script>
 </body>
 </html>
