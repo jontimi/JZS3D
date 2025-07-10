@@ -71,7 +71,6 @@ body {
     color: #555;
     display: flex;
     flex-direction: column;
-    /* Ensure there's some minimum space if needed, though flex-basis might be better */
     min-width: 60px; /* Example: Give items a minimum width */
 }
 
@@ -221,7 +220,7 @@ model-viewer {
     cursor: pointer;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     transition: background-color 0.3s;
-    /* Positioned by model-viewer when in its slot */
+    /* model-viewer's slot handles positioning */
 }
 .mobile-ar-button:hover {
     background-color: rgba(255, 255, 255, 1);
@@ -329,85 +328,83 @@ model-viewer {
 /* Responsive adjustments */
 @media (max-width: 768px) {
     body {
-        /* Prevents horizontal scroll from overflowing content */
         overflow-x: hidden; 
     }
 
     .app-container {
         flex-direction: column;
-        height: auto; /* Allow content to dictate height */
-        overflow-y: auto; /* Allow the entire app-container to scroll if needed */
-        min-height: 100vh; /* Ensure it takes full height if content is short */
+        height: auto; 
+        overflow-y: auto; 
+        min-height: 100vh; 
     }
 
     .sidebar {
         width: 100%;
-        padding: 15px; /* Slightly less padding on mobile */
-        max-height: 50vh; /* Keep model-viewer visible above it */
-        order: 2; /* Sidebar appears below viewer-area */
+        padding: 15px; 
+        max-height: 50vh; 
+        order: 2; 
     }
     
     .product-preview-title {
-        font-size: 20px; /* Smaller title on mobile */
+        font-size: 20px; 
     }
 
     .product-name {
-        font-size: 18px; /* Smaller product name on mobile */
+        font-size: 18px; 
     }
 
     .dimension-item {
-        font-size: 12px; /* Smaller dimension text on mobile */
-        min-width: unset; /* Remove min-width to allow more flexibility */
+        font-size: 12px; 
+        min-width: unset; 
     }
 
     .category-card h3,
     .colors-card h3,
     .materials-card h3,
     .brightness-card h3 {
-        font-size: 15px; /* Slightly smaller headings */
+        font-size: 15px; 
     }
 
     .category-select {
-        font-size: 13px; /* Smaller font in dropdown */
+        font-size: 13px; 
         padding: 6px;
     }
 
     .color-swatch,
     .color-add-button {
-        width: 25px; /* Slightly smaller swatches */
+        width: 25px; 
         height: 25px;
     }
     
     .material-tag {
-        font-size: 11px; /* Smaller material tags */
+        font-size: 11px; 
         padding: 4px 8px;
     }
 
     .viewer-area {
-        height: 50vh; /* Take top half of the screen */
-        order: 1; /* Viewer-area appears above sidebar */
-        /* Make sure model-viewer doesn't overflow its container */
-        width: 100%; /* Ensure it spans full width */
+        height: 50vh; 
+        order: 1; 
+        width: 100%; 
     }
 
     /* Adjust button positions for mobile if needed */
     .desktop-qr-button,
     .refresh-button {
-        top: 10px; /* Move buttons slightly higher */
-        padding: 8px 12px; /* Smaller padding */
-        font-size: 14px; /* Smaller font size */
-        right: 10px; /* Keep consistent spacing from right */
+        top: 10px; 
+        padding: 8px 12px; 
+        font-size: 14px; 
+        right: 10px; 
     }
     .desktop-qr-button {
-        right: 70px; /* Adjust left position relative to refresh button */
+        right: 70px; 
     }
 
     .modal-content {
-        width: 90%; /* Wider modal on smaller screens */
-        padding: 20px; /* Less padding */
+        width: 90%; 
+        padding: 20px; 
     }
     #qrcode {
-        width: 200px; /* Smaller QR code on mobile */
+        width: 200px; 
         height: 200px;
     }
 }

@@ -41,7 +41,6 @@ window.onload = () => {
             populateProductDropdown(allModelsData);
 
             if (allModelsData.length > 0) {
-                // --- Start of Mario Floor Lamp Default Logic ---
                 const marioLampModel = allModelsData.find(model => model.name === "Mario Floor Lamp");
                 let defaultModel;
 
@@ -52,7 +51,6 @@ window.onload = () => {
                     defaultModel = allModelsData[0]; // Fallback to the first model if Mario is not found
                     console.warn("Mario Floor Lamp not found in models.json. Loading the first available model instead.");
                 }
-                // --- End of Mario Floor Lamp Default Logic ---
 
                 loadModel(defaultModel.src);
                 updateProductDetails(defaultModel);
@@ -68,7 +66,7 @@ window.onload = () => {
                 populateColorOptions([]);
                 populateMaterialOptions([]);
             }
-            setupARButtons(); // Call this after model is loaded
+            // setupARButtons is called by loadModel now for initial and subsequent loads
         }
         catch (error) {
             console.error("Error fetching or processing models data:", error);
@@ -77,7 +75,6 @@ window.onload = () => {
         }
     }
 
-    // --- CRITICAL FIX HERE ---
     function setupARButtons() {
         // Check if the browser supports AR, which typically implies a mobile device
         if (modelViewer.canActivateAR) {
@@ -95,8 +92,6 @@ window.onload = () => {
             console.log("AR not supported: Showing QR button. Native AR button hidden.");
         }
     }
-    // --- END CRITICAL FIX ---
-
 
     function populateProductDropdown(models) {
         if (models.length === 0) {
@@ -256,7 +251,6 @@ window.onload = () => {
             }
 
             if (currentModelData) { 
-                // CRITICAL FIX: Ensure the model URL includes the repository name for GitHub Pages
                 const modelUrl = `https://jontimi.github.io/JZS-AR-SHOWCASE/${currentModelData.src}`;
                 
                 const arUrl = `https://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(modelUrl)}&mode=ar_only`;
@@ -292,12 +286,8 @@ window.onload = () => {
         });
     }
 
-    // mobileARButton is implicitly handled by model-viewer's 'ar' attribute when setupARButtons enables it.
-    // No explicit click listener needed for the slot-based AR button, model-viewer handles it.
     if (mobileARButton) {
         mobileARButton.addEventListener('click', () => {
-            // This listener might not be strictly necessary if model-viewer handles the click,
-            // but it's good for logging or if you ever add custom mobile AR logic.
             console.log("Native AR button clicked.");
         });
     }
