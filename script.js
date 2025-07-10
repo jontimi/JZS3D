@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+window.onload = () => {
     const productSelect = document.querySelector('.category-select');
     const modelViewer = document.getElementById('product-model');
     const refreshButton = document.querySelector('.refresh-button');
@@ -16,19 +16,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const qrModal = document.getElementById('qrModal');
     const closeButton = document.querySelector('.close-button');
-    const qrcodeDiv = document.getElementById('qrcode');
+    const qrcodeDiv = document.getElementById('qrcode'); 
 
     let allModelsData = [];
     let currentModelSrc = ''; 
 
-    // Ensure modal is hidden immediately on script load, complementing the inline style
     if (qrModal) {
         qrModal.style.display = 'none';
-    }
-
-    // Helper to detect mobile device
-    function isMobile() {
-        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     }
 
     async function fetchModelsData() {
@@ -61,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 populateColorOptions([]);
                 populateMaterialOptions([]);
             }
-            setupARButtons(); // This is called after initial data load
+            setupARButtons();
         } catch (error) {
             console.error("Error fetching or processing models data:", error);
             alert(`Error loading product models. Please check 'models.json' file content and browser console for details: ${error.message}`);
@@ -70,28 +64,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function setupARButtons() {
-        if (isMobile()) {
-            mobileARButton.style.display = 'block'; // Show native button
-            desktopQRButton.style.display = 'none'; // Hide custom QR button
-            modelViewer.setAttribute('ar', ''); // Enable AR mode
-            modelViewer.setAttribute('ar-modes', 'scene-viewer quick-look webxr'); // Mobile AR modes
-            console.log("Mobile device detected: Showing native AR button.");
-        } else {
-            mobileARButton.style.display = 'none'; // Ensure native AR button is hidden
-            desktopQRButton.style.display = 'block'; // Show custom QR button
-            modelViewer.removeAttribute('ar'); // Remove AR attribute
-            modelViewer.removeAttribute('ar-modes'); // Remove AR modes
-            
-            // This explicit check for `modelViewer.canActivateAR` might be useful for debugging
-            // but `model-viewer` usually handles its own button visibility based on AR support.
-            // if (modelViewer.canActivateAR) {
-            //     // This means the desktop CAN support WebXR, so a different button logic might be needed
-            //     // However, for QR code, we assume it's for devices that *can't* directly run WebXR.
-            //     console.log("Desktop is WebXR capable, but showing QR for mobile fallback.");
-            // }
-
-            console.log("Desktop device detected: Showing QR button. Model-viewer AR attributes removed.");
-        }
+        mobileARButton.style.display = 'none';
+        desktopQRButton.style.display = 'block';
+        modelViewer.removeAttribute('ar');
+        modelViewer.removeAttribute('ar-modes');
+        console.log("Forced Desktop behavior: Showing QR button. Model-viewer AR attributes removed.");
     }
 
     function populateProductDropdown(models) {
@@ -225,10 +202,9 @@ document.addEventListener('DOMContentLoaded', () => {
         refreshButton.addEventListener('click', () => {
             if (modelViewer.src) {
                 const currentSrc = modelViewer.src;
-                // Temporarily clear src to force re-render, then set back
                 modelViewer.src = '';
                 modelViewer.src = currentSrc;
-                modelViewer.cameraOrbit = "0deg 75deg 105%"; // Reset camera view
+                modelViewer.cameraOrbit = "0deg 75deg 105%";
                 console.log("Model refreshed and camera reset.");
             }
         });
@@ -236,49 +212,67 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (desktopQRButton) {
         desktopQRButton.addEventListener('click', () => {
-            // Check if QRCode is defined before using it
-            if (typeof QRCode === 'undefined') {
-                console.error("QRCode library is not loaded. Cannot generate QR code.");
-                alert("QR code generation failed. Please refresh the page (Ctrl+F5) and check console for errors.");
-                return; // Exit if QRCode is not defined
+            console.log("Desktop QR button clicked."); 
+
+            // Ensure QRious is defined
+            if (typeof QRious === 'undefined' || typeof QRious !== 'function') {
+                console.error("QRious library is not loaded or not properly defined. 'QRious' is not a function.");
+                alert("QR code generation failed. Please try a hard refresh (Ctrl+F5) and check the browser console for details.");
+                return; 
+            }
+
+            if (!qrcodeDiv) {
+                console.error("The 'qrcode' div element was not found in the DOM.");
+                alert("Cannot display QR code. Missing 'qrcode' element.");
+                return; 
             }
 
             if (currentModelSrc) {
-                // Construct the full URL to the GLB model
-                // window.location.origin gives "http://127.0.0.1:5500"
-                // currentModelSrc gives "models/Sofas/wasily_chair.glb"
-                // Combined: "http://127.0.0.1:5500/models/Sofas/wasily_chair.glb"
-                const modelUrl = window.location.origin + '/' + currentModelSrc; 
-                
-                // This is the correct HTTPS Scene Viewer URL for QR codes
-                // It works on iOS (Quick Look) and Android (Scene Viewer app)
+                const modelUrl = window.location.origin + '/' + currentModelSrc;
                 const arUrl = `https://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(modelUrl)}&mode=ar_only`;
                 
-                // Clear previous QR code and generate new one
-                qrcodeDiv.innerHTML = ''; // Clear existing QR to prevent duplicates
-                new QRCode(qrcodeDiv, {
-                    text: arUrl,
-                    width: 256,
-                    height: 256,
-                    colorDark: "#000000",
-                    colorLight: "#ffffff",
-                    correctLevel: QRCode.CorrectLevel.H // High error correction
-                });
-                qrModal.style.display = 'flex'; // Show the modal
-                console.log("QR Code generated for URL:", arUrl);
+                qrcodeDiv.innerHTML = ''; // Clear existing QR code content
+
+                // Create a canvas element for QRious to draw on
+                const canvas = document.createElement('canvas');
+                canvas.width = 256;
+                canvas.height = 256;
+                qrcodeDiv.appendChild(canvas);
+
+                try {
+                    new QRious({ // Use QRious (capital Q)
+                        element: canvas, // Specify the canvas element
+                        value: arUrl,
+                        size: 256,
+                        background: 'white',
+                        foreground: 'black'
+                    });
+                    console.log("QR Code successfully generated for URL:", arUrl);
+                } catch (error) {
+                    console.error("Error generating QR code:", error);
+                    alert("An error occurred while generating the QR code. See console for details.");
+                    return; 
+                }
+                
+                qrModal.style.display = 'flex';
             } else {
                 alert("Please select a product first to generate the AR QR code.");
             }
         });
     }
 
-    if (closeButton) {
-        closeButton.addEventListener('click', () => {
-            qrModal.style.display = 'none'; // Hide the modal
+    if (mobileARButton) {
+        mobileARButton.addEventListener('click', () => {
+            console.log("Native AR button clicked. This should only happen on mobile devices.");
         });
     }
 
-    // Close modal if user clicks outside of it
+    if (closeButton) {
+        closeButton.addEventListener('click', () => {
+            qrModal.style.display = 'none';
+        });
+    }
+
     window.addEventListener('click', (event) => {
         if (event.target == qrModal) {
             qrModal.style.display = 'none';
@@ -295,6 +289,5 @@ document.addEventListener('DOMContentLoaded', () => {
         console.warn("Brightness slider or model-viewer not found for brightness control.");
     }
 
-    // Initial data fetch and setup when the page loads
     fetchModelsData();
-});
+};

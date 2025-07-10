@@ -66,11 +66,9 @@
                 camera-controls 
                 touch-action="pan-y" 
                 environment-image="neutral"
-                >
+            >
                 <button slot="ar-button" class="mobile-ar-button" style="display: none;">View in AR</button>
-                
                 <button class="desktop-qr-button" style="display: none;">View in Room (QR)</button>
-                
                 <button class="refresh-button">🔄</button>
             </model-viewer>
         </div>
@@ -86,7 +84,7 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/qrcode.js/qrcode.min.js"></script>
-    <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js" async></script>
+    <script src="script.js" defer></script> 
 </body>
 </html>
