@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Product Viewer</title>
+    <title>Product AR Showcase</title>
     <link rel="stylesheet" href="style.css">
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.0.1/model-viewer.min.js"></script>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <script src="script.js" defer></script>
 </head>
 <body>
     <div class="app-container">
@@ -35,7 +37,8 @@
             <div class="card category-card">
                 <h3>Product</h3>
                 <select class="category-select">
-                    </select>
+                    <option value="">Select a Product</option>
+                </select>
             </div>
 
             <div class="card colors-card">
@@ -48,7 +51,7 @@
             <div class="card materials-card">
                 <h3>Materials</h3>
                 <div class="material-options">
-                    </div>
+                </div>
             </div>
 
             <div class="card brightness-card">
@@ -58,33 +61,28 @@
         </div>
 
         <div class="viewer-area">
-            <model-viewer 
-                id="product-model"
-                src="" 
-                alt="3D model of product" 
-                shadow-intensity="1" 
-                camera-controls 
-                touch-action="pan-y" 
-                environment-image="neutral"
-            >
-                <button slot="ar-button" class="mobile-ar-button" style="display: none;">View in AR</button>
-                <button class="desktop-qr-button" style="display: none;">View in Room (QR)</button>
+            <model-viewer id="product-model"
+                          src=""
+                          alt="3D model of product"
+                          ar
+                          ar-modes="webxr scene-viewer quick-look"
+                          shadow-intensity="1"
+                          camera-controls
+                          touch-action="pan-y"
+                          environment-image="neutral">
+                <button class="desktop-qr-button">View in Room (QR)</button>
                 <button class="refresh-button">🔄</button>
             </model-viewer>
         </div>
     </div>
 
-    <div id="qrModal" class="modal" style="display: none;"> 
+    <div id="qrModal" class="modal">
         <div class="modal-content">
             <span class="close-button">&times;</span>
             <h2>Scan QR Code for AR</h2>
-            <p>Scan this QR code with your mobile device to view the product in augmented reality.</p>
             <div id="qrcode"></div>
-            <p><small>Make sure your device supports ARCore (Android) or ARKit (iOS) and has a compatible browser.</small></p>
+            <p>Make sure your device supports ARCore (Android) or ARKit (iOS)<br>and has a compatible browser.</p>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js" async></script>
-    <script src="script.js" defer></script> 
 </body>
 </html>

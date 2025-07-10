@@ -2,7 +2,7 @@ window.onload = () => {
     const productSelect = document.querySelector('.category-select');
     const modelViewer = document.getElementById('product-model');
     const refreshButton = document.querySelector('.refresh-button');
-    const mobileARButton = document.querySelector('.mobile-ar-button'); 
+    // Removed mobileARButton as a separate element to query; model-viewer handles its own AR button
     const desktopQRButton = document.querySelector('.desktop-qr-button'); 
 
     const productNameDisplay = document.querySelector('.product-name');
@@ -76,20 +76,19 @@ window.onload = () => {
     }
 
     function setupARButtons() {
-        // Check if the browser supports AR, which typically implies a mobile device
+        // modelViewer.canActivateAR checks if AR is supported on the device
         if (modelViewer.canActivateAR) {
-            mobileARButton.style.display = 'block'; // Show native AR button
-            desktopQRButton.style.display = 'none';  // Hide QR button
-            modelViewer.setAttribute('ar', ''); // Enable AR attribute
-            modelViewer.setAttribute('ar-modes', 'webxr scene-viewer quick-look'); // Set AR modes
-            console.log("AR supported: Showing native AR button. QR button hidden.");
+            // On AR-capable devices, enable model-viewer's native AR mode
+            modelViewer.setAttribute('ar', '');
+            modelViewer.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
+            desktopQRButton.style.display = 'none'; // Hide the custom QR button
+            console.log("AR supported: Enabling native AR button and hiding QR button.");
         } else {
-            // No AR support detected, likely a desktop browser
-            mobileARButton.style.display = 'none';  // Hide native AR button
-            desktopQRButton.style.display = 'block'; // Show QR button
+            // On non-AR devices (e.g., desktop), disable model-viewer's AR and show QR button
             modelViewer.removeAttribute('ar');
             modelViewer.removeAttribute('ar-modes');
-            console.log("AR not supported: Showing QR button. Native AR button hidden.");
+            desktopQRButton.style.display = 'block'; // Show the custom QR button
+            console.log("AR not supported: Hiding native AR button and showing QR button.");
         }
     }
 
@@ -238,8 +237,9 @@ window.onload = () => {
         desktopQRButton.addEventListener('click', () => {
             console.log("Desktop QR button clicked."); 
 
-            if (typeof QRious === 'undefined' || typeof QRious !== 'function') {
-                console.error("QRious library is not loaded or not properly defined. 'QRious' is not a function.");
+            // CRITICAL FIX: Use 'QRCode' as defined by qrcode.min.js
+            if (typeof QRCode === 'undefined' || typeof QRCode !== 'function') {
+                console.error("QRCode library is not loaded or not properly defined. 'QRCode' is not a function.");
                 alert("QR code generation failed. Please try a hard refresh (Ctrl+F5) and check the browser console for details.");
                 return; 
             }
@@ -251,6 +251,7 @@ window.onload = () => {
             }
 
             if (currentModelData) { 
+                // CRITICAL FIX: Ensure the model URL includes the repository name for GitHub Pages
                 const modelUrl = `https://jontimi.github.io/JZS-AR-SHOWCASE/${currentModelData.src}`;
                 
                 const arUrl = `https://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(modelUrl)}&mode=ar_only`;
@@ -265,12 +266,14 @@ window.onload = () => {
                 qrcodeDiv.appendChild(canvas);
 
                 try {
-                    new QRious({
-                        element: canvas,
-                        value: arUrl,
-                        size: 256,
-                        background: 'white',
-                        foreground: 'black'
+                    // CRITICAL FIX: Use 'new QRCode'
+                    new QRCode(canvas, {
+                        text: arUrl,
+                        width: 256,
+                        height: 256,
+                        colorDark : "#000000",
+                        colorLight : "#ffffff",
+                        correctLevel : QRCode.CorrectLevel.H // High error correction
                     });
                     console.log("QR Code successfully generated for URL:", arUrl);
                 } catch (error) {
@@ -286,11 +289,8 @@ window.onload = () => {
         });
     }
 
-    if (mobileARButton) {
-        mobileARButton.addEventListener('click', () => {
-            console.log("Native AR button clicked.");
-        });
-    }
+    // No explicit click listener needed for model-viewer's native AR button.
+    // It's handled by model-viewer itself when 'ar' attribute is present.
 
     if (closeButton) {
         closeButton.addEventListener('click', () => {
