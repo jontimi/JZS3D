@@ -5,7 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const arButton = document.querySelector('.ar-button');
     const productNameDisplay = document.querySelector('.product-name');
     const brightnessSlider = document.querySelector('.brightness-slider');
-    const colorOptionsContainer = document.querySelector('.color-options'); // Get the color options container
+    const colorOptionsContainer = document.querySelector('.color-options');
+    const materialOptionsContainer = document.querySelector('.material-options'); // Get the material options container
 
     const dimensionHeightDisplay = document.querySelector('.dimension-height');
     const dimensionWidthDisplay = document.querySelector('.dimension-width');
@@ -37,6 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 loadModel(defaultModel.src);
                 updateProductDetails(defaultModel);
                 populateColorOptions(defaultModel.colors); // Populate colors for the default model
+                populateMaterialOptions(defaultModel.materials); // Populate materials for the default model
                 productSelect.value = defaultModel.src;
                 
                 if (brightnessSlider && modelViewer) {
@@ -46,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.warn("No models found in models.json. Viewer might be empty.");
                 if (productNameDisplay) productNameDisplay.textContent = "No Products Available";
                 populateColorOptions([]); // Clear colors if no models
+                populateMaterialOptions([]); // Clear materials if no models
             }
 
         } catch (error) {
@@ -80,7 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- New function to populate color options ---
     function populateColorOptions(colors) {
         if (!colorOptionsContainer) {
             console.warn("Color options container not found.");
@@ -99,20 +101,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 const swatch = document.createElement('div');
                 swatch.classList.add('color-swatch');
                 swatch.style.backgroundColor = color;
-                // Make the first swatch active by default, or you can add logic to match model's current color
                 if (index === 0) {
                     swatch.classList.add('active');
                 }
-                // Add event listener for color selection if you want to change model color
                 swatch.addEventListener('click', () => {
-                    // Implement logic here to change the model's material color
-                    // This is complex and depends on your GLB's material setup
-                    // For now, it just changes the active state of the swatch
                     colorOptionsContainer.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
                     swatch.classList.add('active');
                     console.log("Selected color:", color);
                 });
-                colorOptionsContainer.insertBefore(swatch, addButton); // Insert before the add button
+                colorOptionsContainer.insertBefore(swatch, addButton);
             });
         } else {
             const noColorsMessage = document.createElement('span');
@@ -121,6 +118,33 @@ document.addEventListener('DOMContentLoaded', () => {
             noColorsMessage.style.color = '#777';
             colorOptionsContainer.insertBefore(noColorsMessage, addButton);
             console.log("No colors specified for this model.");
+        }
+    }
+
+    // --- New function to populate material options ---
+    function populateMaterialOptions(materials) {
+        if (!materialOptionsContainer) {
+            console.warn("Material options container not found.");
+            return;
+        }
+
+        materialOptionsContainer.innerHTML = ''; // Clear existing tags
+
+        if (materials && materials.length > 0) {
+            materials.forEach(material => {
+                const tag = document.createElement('span');
+                tag.classList.add('material-tag');
+                tag.textContent = material;
+                // Add event listener if you want to make tags interactive
+                materialOptionsContainer.appendChild(tag);
+            });
+        } else {
+            const noMaterialsMessage = document.createElement('span');
+            noMaterialsMessage.textContent = 'No materials specified for this product.';
+            noMaterialsMessage.style.fontSize = '12px';
+            noMaterialsMessage.style.color = '#777';
+            materialOptionsContainer.appendChild(noMaterialsMessage);
+            console.log("No materials specified for this model.");
         }
     }
 
@@ -157,6 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (selectedModel) {
                 updateProductDetails(selectedModel);
                 populateColorOptions(selectedModel.colors); // Update colors when product changes
+                populateMaterialOptions(selectedModel.materials); // Update materials when product changes
             }
         } else {
             modelViewer.src = ''; 
@@ -166,6 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (dimensionDepthDisplay) dimensionDepthDisplay.textContent = 'N/A';
             console.log("No product selected or default option chosen.");
             populateColorOptions([]); // Clear colors if no product is selected
+            populateMaterialOptions([]); // Clear materials if no product is selected
         }
     });
 
