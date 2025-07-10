@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const productNameDisplay = document.querySelector('.product-name');
     const brightnessSlider = document.querySelector('.brightness-slider');
     const colorOptionsContainer = document.querySelector('.color-options');
-    const materialOptionsContainer = document.querySelector('.material-options'); // Get the material options container
+    const materialOptionsContainer = document.querySelector('.material-options');
 
     const dimensionHeightDisplay = document.querySelector('.dimension-height');
     const dimensionWidthDisplay = document.querySelector('.dimension-width');
@@ -37,8 +37,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const defaultModel = allModelsData[0];
                 loadModel(defaultModel.src);
                 updateProductDetails(defaultModel);
-                populateColorOptions(defaultModel.colors); // Populate colors for the default model
-                populateMaterialOptions(defaultModel.materials); // Populate materials for the default model
+                populateColorOptions(defaultModel.colors);
+                populateMaterialOptions(defaultModel.materials);
                 productSelect.value = defaultModel.src;
                 
                 if (brightnessSlider && modelViewer) {
@@ -47,8 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 console.warn("No models found in models.json. Viewer might be empty.");
                 if (productNameDisplay) productNameDisplay.textContent = "No Products Available";
-                populateColorOptions([]); // Clear colors if no models
-                populateMaterialOptions([]); // Clear materials if no models
+                populateColorOptions([]);
+                populateMaterialOptions([]);
             }
 
         } catch (error) {
@@ -89,7 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Clear existing swatches but keep the add button if it exists
         const addButton = colorOptionsContainer.querySelector('.color-add-button');
         colorOptionsContainer.innerHTML = '';
         if (addButton) {
@@ -121,21 +120,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- New function to populate material options ---
     function populateMaterialOptions(materials) {
         if (!materialOptionsContainer) {
             console.warn("Material options container not found.");
             return;
         }
 
-        materialOptionsContainer.innerHTML = ''; // Clear existing tags
+        materialOptionsContainer.innerHTML = '';
 
         if (materials && materials.length > 0) {
             materials.forEach(material => {
                 const tag = document.createElement('span');
                 tag.classList.add('material-tag');
                 tag.textContent = material;
-                // Add event listener if you want to make tags interactive
                 materialOptionsContainer.appendChild(tag);
             });
         } else {
@@ -180,8 +177,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const selectedModel = allModelsData.find(model => model.src === selectedModelSrc);
             if (selectedModel) {
                 updateProductDetails(selectedModel);
-                populateColorOptions(selectedModel.colors); // Update colors when product changes
-                populateMaterialOptions(selectedModel.materials); // Update materials when product changes
+                populateColorOptions(selectedModel.colors);
+                populateMaterialOptions(selectedModel.materials);
             }
         } else {
             modelViewer.src = ''; 
@@ -190,8 +187,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (dimensionWidthDisplay) dimensionWidthDisplay.textContent = 'N/A';
             if (dimensionDepthDisplay) dimensionDepthDisplay.textContent = 'N/A';
             console.log("No product selected or default option chosen.");
-            populateColorOptions([]); // Clear colors if no product is selected
-            populateMaterialOptions([]); // Clear materials if no product is selected
+            populateColorOptions([]);
+            populateMaterialOptions([]);
         }
     });
 
@@ -208,23 +205,30 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (arButton) {
-        arButton.addEventListener('click', () => {
+        arButton.addEventListener('click', async () => { // Made async to await activateAR()
             console.log("AR button clicked.");
-            console.log("modelViewer.ar:", modelViewer.ar);
+            console.log("modelViewer.ar capability:", modelViewer.ar);
             console.log("modelViewer.src:", modelViewer.src);
+            console.log("Window protocol:", window.location.protocol);
 
             if (modelViewer.ar && modelViewer.src) {
-                modelViewer.activateAR();
-                console.log("Attempting to activate AR...");
+                try {
+                    console.log("Attempting to activate AR...");
+                    await modelViewer.activateAR(); // Await the activation
+                    console.log("AR activation initiated successfully.");
+                } catch (error) {
+                    console.error("Error activating AR:", error);
+                    alert("Error activating AR. Check console for details. Common issues: device/browser not supported, not on HTTPS (for live sites), or model failed to load.");
+                }
             } else {
                 let errorMessage = "AR activation failed.";
                 if (!modelViewer.ar) {
-                    errorMessage += " AR not supported on this device/browser, or requires HTTPS (for live deployment).";
+                    errorMessage += "\n- AR not supported by device/browser or requires HTTPS (for live deployment).";
                 }
                 if (!modelViewer.src) {
-                    errorMessage += " No 3D model is currently loaded.";
+                    errorMessage += "\n- No 3D model is currently loaded.";
                 }
-                alert(errorMessage + " Check console for more details.");
+                alert(errorMessage);
                 console.error(errorMessage);
             }
         });
