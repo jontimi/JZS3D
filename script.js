@@ -41,7 +41,7 @@ window.onload = () => {
             populateProductDropdown(allModelsData);
 
             if (allModelsData.length > 0) {
-                // --- Start of Default Model Logic ---
+                // --- Start of Mario Floor Lamp Default Logic ---
                 const marioLampModel = allModelsData.find(model => model.name === "Mario Floor Lamp");
                 let defaultModel;
 
@@ -52,7 +52,7 @@ window.onload = () => {
                     defaultModel = allModelsData[0]; // Fallback to the first model if Mario is not found
                     console.warn("Mario Floor Lamp not found in models.json. Loading the first available model instead.");
                 }
-                // --- End of Default Model Logic ---
+                // --- End of Mario Floor Lamp Default Logic ---
 
                 loadModel(defaultModel.src);
                 updateProductDetails(defaultModel);
@@ -242,45 +242,14 @@ window.onload = () => {
             }
 
             if (currentModelData) { 
-                const modelOriginalPath = `https://jontimi.github.io/JZS-AR-SHOWCASE/${currentModelData.src}`;
-                let arFileUrl;
-
-                // Check for arScaleFactor - This logic is now commented out as per your previous request to simplify
-                // if (currentModelData.arScaleFactor !== undefined && currentModelData.arScaleFactor !== 1) {
-                //     const scaleValue = currentModelData.arScaleFactor;
-                //     const htmlContent = `
-                //         <!DOCTYPE html>
-                //         <html>
-                //         <head>
-                //             <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
-                //         </head>
-                //         <body>
-                //             <model-viewer
-                //                 src="${modelOriginalPath}"
-                //                 ar
-                //                 ar-modes="webxr scene-viewer quick-look"
-                //                 ar-scale="fixed"
-                //                 scale="${scaleValue} ${scaleValue} ${scaleValue}"
-                //                 disable-zoom
-                //                 auto-rotate
-                //             >
-                //             </model-viewer>
-                //         </body>
-                //         </html>
-                //     `;
-                //     arFileUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent);
-                //     console.log("Generated AR Data URI with scale:", scaleValue);
-                // } else {
-                    // No custom scaling needed, use direct GLB path for AR
-                    arFileUrl = modelOriginalPath;
-                    console.log("Generated direct AR file URL (no custom scale):", arFileUrl);
-                // }
-
-                const arUrl = `https://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(arFileUrl)}&mode=ar_only`;
+                // CRITICAL FIX: Ensure the model URL includes the repository name for GitHub Pages
+                const modelUrl = `https://jontimi.github.io/JZS-AR-SHOWCASE/${currentModelData.src}`;
+                
+                const arUrl = `https://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(modelUrl)}&mode=ar_only`;
                 
                 console.log("Final AR URL for QR Code:", arUrl);
                 
-                qrcodeDiv.innerHTML = ''; 
+                qrcodeDiv.innerHTML = ''; // Clear existing QR code content
 
                 const canvas = document.createElement('canvas');
                 canvas.width = 256;

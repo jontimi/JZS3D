@@ -4,7 +4,7 @@ body {
     background-color: #f0f2f5;
     display: flex;
     min-height: 100vh;
-    overflow: hidden;
+    overflow-x: hidden; /* Prevent horizontal scroll on small screens */
 }
 
 .app-container {
@@ -52,6 +52,9 @@ body {
     font-size: 20px;
     color: #333;
     margin: 0;
+    /* Allow product name to wrap if long on small screens */
+    word-break: break-word; 
+    flex-grow: 1; /* Allow it to take available space */
 }
 
 .dimensions {
@@ -68,6 +71,8 @@ body {
     color: #555;
     display: flex;
     flex-direction: column;
+    /* Ensure there's some minimum space if needed, though flex-basis might be better */
+    min-width: 60px; /* Example: Give items a minimum width */
 }
 
 .dimension-item span:last-child {
@@ -117,6 +122,7 @@ body {
     cursor: pointer;
     box-shadow: 0 1px 3px rgba(0,0,0,0.2); /* Subtle shadow */
     transition: transform 0.2s, border-color 0.2s;
+    flex-shrink: 0; /* Prevent swatches from shrinking */
 }
 
 .color-swatch:hover {
@@ -322,20 +328,115 @@ model-viewer {
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+    body {
+        /* Prevents horizontal scroll from overflowing content */
+        overflow-x: hidden; 
+    }
+
     .app-container {
         flex-direction: column;
-        height: auto;
-        overflow-y: auto;
+        height: auto; /* Allow content to dictate height */
+        overflow-y: auto; /* Allow the entire app-container to scroll if needed */
+        min-height: 100vh; /* Ensure it takes full height if content is short */
     }
 
     .sidebar {
         width: 100%;
-        max-height: 50vh;
-        order: 2;
+        padding: 15px; /* Slightly less padding on mobile */
+        max-height: 50vh; /* Keep model-viewer visible above it */
+        order: 2; /* Sidebar appears below viewer-area */
+    }
+    
+    .product-preview-title {
+        font-size: 20px; /* Smaller title on mobile */
+    }
+
+    .product-name {
+        font-size: 18px; /* Smaller product name on mobile */
+    }
+
+    .dimension-item {
+        font-size: 12px; /* Smaller dimension text on mobile */
+        min-width: unset; /* Remove min-width to allow more flexibility */
+    }
+
+    .category-card h3,
+    .colors-card h3,
+    .materials-card h3,
+    .brightness-card h3 {
+        font-size: 15px; /* Slightly smaller headings */
+    }
+
+    .category-select {
+        font-size: 13px; /* Smaller font in dropdown */
+        padding: 6px;
+    }
+
+    .color-swatch,
+    .color-add-button {
+        width: 25px; /* Slightly smaller swatches */
+        height: 25px;
+    }
+    
+    .material-tag {
+        font-size: 11px; /* Smaller material tags */
+        padding: 4px 8px;
     }
 
     .viewer-area {
-        height: 50vh;
-        order: 1;
+        height: 50vh; /* Take top half of the screen */
+        order: 1; /* Viewer-area appears above sidebar */
+        /* Make sure model-viewer doesn't overflow its container */
+        width: 100%; /* Ensure it spans full width */
+    }
+
+    /* Adjust button positions for mobile if needed */
+    .desktop-qr-button,
+    .refresh-button {
+        top: 10px; /* Move buttons slightly higher */
+        padding: 8px 12px; /* Smaller padding */
+        font-size: 14px; /* Smaller font size */
+        right: 10px; /* Keep consistent spacing from right */
+    }
+    .desktop-qr-button {
+        right: 70px; /* Adjust left position relative to refresh button */
+    }
+
+    .modal-content {
+        width: 90%; /* Wider modal on smaller screens */
+        padding: 20px; /* Less padding */
+    }
+    #qrcode {
+        width: 200px; /* Smaller QR code on mobile */
+        height: 200px;
+    }
+}
+
+/* Optional: Even smaller screens (e.g., iPhone 5/SE) */
+@media (max-width: 480px) {
+    .sidebar {
+        padding: 10px;
+    }
+    .card {
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+    .product-name {
+        font-size: 16px;
+    }
+    .dimensions {
+        padding: 8px 0;
+    }
+    .dimension-item {
+        font-size: 11px;
+    }
+    .desktop-qr-button,
+    .refresh-button {
+        top: 5px;
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+    .desktop-qr-button {
+        right: 60px;
     }
 }
