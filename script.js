@@ -214,7 +214,6 @@ window.onload = () => {
         desktopQRButton.addEventListener('click', () => {
             console.log("Desktop QR button clicked."); 
 
-            // Ensure QRious is defined
             if (typeof QRious === 'undefined' || typeof QRious !== 'function') {
                 console.error("QRious library is not loaded or not properly defined. 'QRious' is not a function.");
                 alert("QR code generation failed. Please try a hard refresh (Ctrl+F5) and check the browser console for details.");
@@ -228,20 +227,26 @@ window.onload = () => {
             }
 
             if (currentModelSrc) {
-                const modelUrl = window.location.origin + '/' + currentModelSrc;
+                // *** THE CRITICAL FIX IS HERE ***
+                // Construct the modelUrl to correctly point to your GitHub Pages path.
+                // Assuming currentModelSrc is like "models/Sofas/wasily_chair.glb"
+                // The base URL for your models on GitHub Pages is https://jontimi.github.io/JZS-AR-SHOWCASE/
+                const modelUrl = `https://jontimi.github.io/JZS-AR-SHOWCASE/${currentModelSrc}`; 
+                
                 const arUrl = `https://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(modelUrl)}&mode=ar_only`;
                 
-                qrcodeDiv.innerHTML = ''; // Clear existing QR code content
+                console.log("AR URL generated:", arUrl); // Good for debugging
+                
+                qrcodeDiv.innerHTML = ''; 
 
-                // Create a canvas element for QRious to draw on
                 const canvas = document.createElement('canvas');
                 canvas.width = 256;
                 canvas.height = 256;
                 qrcodeDiv.appendChild(canvas);
 
                 try {
-                    new QRious({ // Use QRious (capital Q)
-                        element: canvas, // Specify the canvas element
+                    new QRious({
+                        element: canvas,
                         value: arUrl,
                         size: 256,
                         background: 'white',
