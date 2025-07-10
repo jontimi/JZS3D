@@ -171,6 +171,7 @@ body {
 .brightness-slider {
     width: 100%;
     -webkit-appearance: none;
+    appearance: none;
     height: 8px;
     border-radius: 5px;
     background: #d3d3d3;
