@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JZS Product Preview</title>
+    <title>3D Product Viewer</title>
     <link rel="stylesheet" href="style.css">
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
-    <script src="script.js" defer></script>
 </head>
 <body>
     <div class="app-container">
@@ -15,8 +14,7 @@
 
             <div class="card product-info-card">
                 <div class="product-header">
-                    <h2 class="product-name">Loading Product...</h2>
-                    <span class="edit-icon">✏️</span>
+                    <h2 class="product-name"></h2>
                 </div>
                 <div class="dimensions">
                     <div class="dimension-item">
@@ -60,29 +58,35 @@
         </div>
 
         <div class="viewer-area">
-            <model-viewer
+            <model-viewer 
                 id="product-model"
-                src=""
-                ar
-                ar-modes="webxr scene-viewer quick-look"
-                camera-controls
-                touch-action="pan-y"
-                shadow-intensity="1"
-                alt="3D Product Model"
-                loading="eager"
-                disable-zoom
-                disable-pan
-                exposure="1"
-                field-of-view="30deg"
-                camera-orbit="0deg 75deg 105%"
-                interaction-prompt="none"
-                style="background-color: transparent;">
-                <div class="model-controls">
-                    <button class="refresh-button">🔄</button>
-                    <button class="ar-button">AR</button>
-                </div>
+                src="" 
+                alt="3D model of product" 
+                shadow-intensity="1" 
+                camera-controls 
+                touch-action="pan-y" 
+                environment-image="neutral"
+                >
+                <button slot="ar-button" class="mobile-ar-button" style="display: none;">View in AR</button>
+                
+                <button class="desktop-qr-button" style="display: none;">View in Room (QR)</button>
+                
+                <button class="refresh-button">🔄</button>
             </model-viewer>
         </div>
     </div>
+
+    <div id="qrModal" class="modal" style="display: none;"> 
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Scan QR Code for AR</h2>
+            <p>Scan this QR code with your mobile device to view the product in augmented reality.</p>
+            <div id="qrcode"></div>
+            <p><small>Make sure your device supports ARCore (Android) or ARKit (iOS) and has a compatible browser.</small></p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode.js/qrcode.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
