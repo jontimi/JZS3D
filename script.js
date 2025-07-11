@@ -2,7 +2,6 @@ window.onload = () => {
     const productSelect = document.querySelector('.category-select');
     const modelViewer = document.getElementById('product-model');
     const refreshButton = document.querySelector('.refresh-button');
-    // Removed mobileARButton as a separate element to query; model-viewer handles its own AR button
     const desktopQRButton = document.querySelector('.desktop-qr-button'); 
 
     const productNameDisplay = document.querySelector('.product-name');
@@ -26,281 +25,250 @@ window.onload = () => {
         qrModal.style.display = 'none';
     }
 
+    // Function to fetch model data from models.json
     async function fetchModelsData() {
+        console.log("Attempting to fetch models.json...");
         try {
             const response = await fetch('./models.json');
+            
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status} for models.json`);
+                // Log HTTP error details
+                console.error(`HTTP error! Status: ${response.status} when fetching models.json. ` + 
+                              `Please check if 'models.json' exists at the root and your live server is running correctly.`);
+                alert(`Error loading model data: Server responded with status ${response.status}. Please check your browser's console for details (F12).`);
+                return; // Stop execution if response is not OK
             }
-            const data = await response.json(); 
-            if (!Array.isArray(data)) {
-                throw new Error("Invalid models.json structure: Expected a top-level array of model objects.");
-            }
-            allModelsData = data;
-            console.log("Fetched models data (flat array):", allModelsData);
-            populateProductDropdown(allModelsData);
+
+            // Attempt to parse JSON
+            let jsonData = await response.json();
+            allModelsData = jsonData;
+            
+            // Log the actual content fetched
+            console.log("Fetched models data (allModelsData):", allModelsData); 
 
             if (allModelsData.length > 0) {
-                const marioLampModel = allModelsData.find(model => model.name === "Mario Floor Lamp");
-                let defaultModel;
-
-                if (marioLampModel) {
-                    defaultModel = marioLampModel;
-                    console.log("Setting Mario Floor Lamp as default.");
+                console.log("Model data loaded successfully. Populating dropdown and loading default model.");
+                populateProductDropdown();
+                // Load the first model by default after data is fetched
+                const defaultModel = allModelsData[0];
+                if (defaultModel) {
+                    loadModel(defaultModel);
                 } else {
-                    defaultModel = allModelsData[0]; // Fallback to the first model if Mario is not found
-                    console.warn("Mario Floor Lamp not found in models.json. Loading the first available model instead.");
-                }
-
-                loadModel(defaultModel.src);
-                updateProductDetails(defaultModel);
-                populateColorOptions(defaultModel.colors);
-                populateMaterialOptions(defaultModel.materials);
-                productSelect.value = defaultModel.src; // Set the dropdown to the default model
-                if (brightnessSlider && modelViewer) {
-                    brightnessSlider.value = modelViewer.exposure * 50;
+                    console.warn("models.json contains data, but the first element is undefined.");
                 }
             } else {
-                console.warn("No models found in models.json. Viewer might be empty.");
-                if (productNameDisplay) productNameDisplay.textContent = "No Products Available";
-                populateColorOptions([]);
-                populateMaterialOptions([]);
+                console.warn("models.json was fetched successfully but contains no model data (it's an empty array or invalid structure after parsing).");
+                alert("No model data found in models.json or file is empty/invalid. Please check the content of 'models.json'.");
             }
-            // setupARButtons is called by loadModel now for initial and subsequent loads
-        }
-        catch (error) {
-            console.error("Error fetching or processing models data:", error);
-            alert(`Error loading product models. Please check 'models.json' file content and browser console for details: ${error.message}`);
-            if (productNameDisplay) productNameDisplay.textContent = "Error Loading Products";
+        } catch (error) {
+            console.error("Error fetching or parsing models.json:", error);
+            alert("Failed to load model data due to a network or parsing error. See your browser's console (F12) for details.");
         }
     }
 
-    function setupARButtons() {
-        // modelViewer.canActivateAR checks if AR is supported on the device
-        if (modelViewer.canActivateAR) {
-            // On AR-capable devices, enable model-viewer's native AR mode
-            modelViewer.setAttribute('ar', '');
-            modelViewer.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
-            desktopQRButton.style.display = 'none'; // Hide the custom QR button
-            console.log("AR supported: Enabling native AR button and hiding QR button.");
-        } else {
-            // On non-AR devices (e.g., desktop), disable model-viewer's AR and show QR button
-            modelViewer.removeAttribute('ar');
-            modelViewer.removeAttribute('ar-modes');
-            desktopQRButton.style.display = 'block'; // Show the custom QR button
-            console.log("AR not supported: Hiding native AR button and showing QR button.");
-        }
-    }
-
-    function populateProductDropdown(models) {
-        if (models.length === 0) {
-            console.warn("No models found to populate the dropdown.");
+    // Function to populate the product dropdown
+    function populateProductDropdown() {
+        if (!productSelect) {
+            console.warn("Product select dropdown (.category-select) not found in HTML.");
             return;
         }
-        models.forEach(model => {
+        productSelect.innerHTML = ''; // Clear existing options
+        allModelsData.forEach(model => {
             const option = document.createElement('option');
-            option.value = model.src;
+            option.value = model.name;
             option.textContent = model.name;
             productSelect.appendChild(option);
         });
-        console.log("Product dropdown populated.");
-    }
 
-    function loadModel(modelSrc) {
-        if (modelViewer && modelSrc) {
-            modelViewer.src = modelSrc;
-            modelViewer.cameraOrbit = "0deg 75deg 105%";
-            currentModelSrc = modelSrc;
-            currentModelData = allModelsData.find(model => model.src === modelSrc); // Store the full model data
-            console.log("Model loaded:", modelSrc);
-            setupARButtons(); // Recalibrate AR buttons after new model loads
+        // Set the default selected option if available
+        if (allModelsData.length > 0) {
+            productSelect.value = allModelsData[0].name;
+            console.log("Product dropdown populated successfully.");
         } else {
-            console.warn("Model viewer element or source path is missing.");
+            console.warn("No models data to populate product dropdown.");
         }
     }
 
-    function populateColorOptions(colors) {
+    // Function to load a specific model
+    function loadModel(model) {
+        if (!modelViewer) {
+            console.warn("Model viewer element (#product-model) not found in HTML.");
+            return;
+        }
+        if (!model || !model.src) {
+            console.error("Attempted to load an invalid model object:", model);
+            alert("Error: Model data is incomplete. Cannot load model.");
+            return;
+        }
+        currentModelData = model;
+        currentModelSrc = model.src;
+        modelViewer.src = currentModelSrc; // Update the model-viewer src
+        console.log(`Loading model: ${currentModelSrc}`);
+
+        // Update product info
+        if (productNameDisplay) productNameDisplay.textContent = model.name;
+        if (dimensionHeightDisplay) dimensionHeightDisplay.textContent = `${(model.height * 100).toFixed(1)}cm`; // Added .toFixed(1) for cleaner display
+        if (dimensionWidthDisplay) dimensionWidthDisplay.textContent = `${(model.width * 100).toFixed(1)}cm`;
+        if (dimensionDepthDisplay) dimensionDepthDisplay.textContent = `${(model.depth * 100).toFixed(1)}cm`;
+
+        // Update colors
+        updateColors(model.colors);
+        // Update materials
+        updateMaterials(model.materials);
+    }
+
+    // Function to update color swatches
+    function updateColors(colors) {
         if (!colorOptionsContainer) {
             console.warn("Color options container not found.");
             return;
         }
-        const addButton = colorOptionsContainer.querySelector('.color-add-button');
-        colorOptionsContainer.querySelectorAll('.color-swatch, span').forEach(el => {
-            if (el !== addButton) el.remove();
-        });
-        if (addButton) {
-             colorOptionsContainer.appendChild(addButton);
+        colorOptionsContainer.innerHTML = ''; // Clear previous colors
+        if (!colors || !Array.isArray(colors)) {
+            console.warn("Invalid colors data provided:", colors);
+            return;
         }
-        if (colors && colors.length > 0) {
-            colors.forEach((color, index) => {
-                const swatch = document.createElement('div');
-                swatch.classList.add('color-swatch');
-                swatch.style.backgroundColor = color;
-                if (index === 0) {
-                    swatch.classList.add('active');
-                }
-                swatch.addEventListener('click', () => {
-                    colorOptionsContainer.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
-                    swatch.classList.add('active');
-                    console.log("Selected color:", color);
-                });
-                colorOptionsContainer.insertBefore(swatch, addButton);
+        colors.forEach(color => {
+            const swatch = document.createElement('div');
+            swatch.className = 'color-swatch';
+            swatch.style.backgroundColor = color;
+            swatch.addEventListener('click', () => {
+                modelViewer.style.setProperty('--main-color', color);
             });
-        } else {
-            const noColorsMessage = document.createElement('span');
-            noColorsMessage.textContent = 'No colors available for this product.';
-            noColorsMessage.style.fontSize = '12px';
-            noColorsMessage.style.color = '#777';
-            colorOptionsContainer.insertBefore(noColorsMessage, addButton);
-            console.log("No colors specified for this model.");
+            colorOptionsContainer.appendChild(swatch);
+        });
+        const addColorButton = document.createElement('div');
+        addColorButton.className = 'color-add-button';
+        addColorButton.textContent = '+';
+        colorOptionsContainer.appendChild(addColorButton);
+
+        // Set default color
+        if (colors.length > 0) {
+            modelViewer.style.setProperty('--main-color', colors[0]);
         }
     }
 
-    function populateMaterialOptions(materials) {
+    // Function to update material tags
+    function updateMaterials(materials) {
         if (!materialOptionsContainer) {
             console.warn("Material options container not found.");
             return;
         }
-        materialOptionsContainer.innerHTML = '';
-        if (materials && materials.length > 0) {
-            materials.forEach(material => {
-                const tag = document.createElement('span');
-                tag.classList.add('material-tag');
-                tag.textContent = material;
-                materialOptionsContainer.appendChild(tag);
-            });
-        } else {
-            const noMaterialsMessage = document.createElement('span');
-            noMaterialsMessage.textContent = 'No materials specified for this product.';
-            noMaterialsMessage.style.fontSize = '12px';
-            noMaterialsMessage.style.color = '#777';
-            materialOptionsContainer.appendChild(noMaterialsMessage);
-            console.log("No materials specified for this model.");
+        materialOptionsContainer.innerHTML = ''; // Clear previous materials
+        if (!materials || !Array.isArray(materials)) {
+            console.warn("Invalid materials data provided:", materials);
+            return;
         }
-    }
-
-    function updateProductDetails(model) {
-        console.log("Updating product details for model:", model);
-        if (productNameDisplay) {
-            productNameDisplay.textContent = model.name || "Unknown Product";
-        }
-        if (dimensionHeightDisplay) {
-            const heightCm = model.height !== undefined ? (model.height * 100).toFixed(1) : 'N/A';
-            dimensionHeightDisplay.textContent = `${heightCm}cm`;
-        } else { console.warn("dimensionHeightDisplay element not found."); }
-        if (dimensionWidthDisplay) {
-            const widthCm = model.width !== undefined ? (model.width * 100).toFixed(1) : 'N/A';
-            dimensionWidthDisplay.textContent = `${widthCm}cm`;
-        } else { console.warn("dimensionWidthDisplay element not found."); }
-        if (dimensionDepthDisplay) {
-            const depthCm = model.depth !== undefined ? (model.depth * 100).toFixed(1) : 'N/A';
-            dimensionDepthDisplay.textContent = `${depthCm}cm`;
-        } else { console.warn("dimensionDepthDisplay element not found."); }
-        console.log("Dimensions attempted to update to (in CM):", model.height * 100, model.width * 100, model.depth * 100);
-    }
-
-    productSelect.addEventListener('change', (event) => {
-        const selectedModelSrc = event.target.value;
-        if (selectedModelSrc) {
-            loadModel(selectedModelSrc);
-            const selectedModel = allModelsData.find(model => model.src === selectedModelSrc);
-            if (selectedModel) {
-                updateProductDetails(selectedModel);
-                populateColorOptions(selectedModel.colors);
-                populateMaterialOptions(selectedModel.materials);
-            }
-        } else {
-            modelViewer.src = ''; 
-            if (productNameDisplay) productNameDisplay.textContent = "Select a Product";
-            if (dimensionHeightDisplay) dimensionHeightDisplay.textContent = 'N/A';
-            if (dimensionWidthDisplay) dimensionWidthDisplay.textContent = 'N/A';
-            if (dimensionDepthDisplay) dimensionDepthDisplay.textContent = 'N/A';
-            console.log("No product selected or default option chosen.");
-            populateColorOptions([]);
-            populateMaterialOptions([]);
-        }
-    });
-
-    if (refreshButton) {
-        refreshButton.addEventListener('click', () => {
-            if (modelViewer.src) {
-                const currentSrc = modelViewer.src;
-                modelViewer.src = '';
-                modelViewer.src = currentSrc;
-                modelViewer.cameraOrbit = "0deg 75deg 105%";
-                console.log("Model refreshed and camera reset.");
-            }
+        materials.forEach(material => {
+            const tag = document.createElement('span');
+            tag.className = 'material-tag';
+            tag.textContent = material;
+            materialOptionsContainer.appendChild(tag);
         });
     }
 
+    // Event Listeners
+    if (productSelect) {
+        productSelect.addEventListener('change', (event) => {
+            const selectedModelName = event.target.value;
+            const selectedModel = allModelsData.find(model => model.name === selectedModelName);
+            if (selectedModel) {
+                loadModel(selectedModel);
+            } else {
+                console.warn(`Selected model '${selectedModelName}' not found in allModelsData.`);
+            }
+        });
+    } else {
+        console.warn("Product select dropdown not available for event listener setup.");
+    }
+
+
+    if (refreshButton) {
+        refreshButton.addEventListener('click', () => {
+            if (modelViewer) {
+                modelViewer.resetCamera(); 
+                if (currentModelData) {
+                    loadModel(currentModelData); 
+                } else {
+                    console.warn("No current model data to reload; attempting to re-fetch all data.");
+                    fetchModelsData(); // Attempt to re-fetch all data
+                }
+                console.log("Refresh button clicked. Camera reset.");
+            } else {
+                console.warn("Model viewer not found for refresh button.");
+            }
+        });
+    } else {
+        console.warn("Refresh button not found.");
+    }
+
+    // Desktop QR Button
     if (desktopQRButton) {
         desktopQRButton.addEventListener('click', () => {
-            console.log("Desktop QR button clicked."); 
+            if (currentModelData) {
+                // Ensure qrcodeDiv is cleared before new QR generation
+                if (qrcodeDiv) {
+                    qrcodeDiv.innerHTML = '';
+                } else {
+                    console.error("QR Code div (#qrcode) not found in HTML. Cannot generate QR.");
+                    alert("QR Code display area missing. Please check your HTML structure for an element with id='qrcode'.");
+                    return;
+                }
 
-            // CRITICAL FIX: Use 'QRCode' as defined by qrcode.min.js
-            if (typeof QRCode === 'undefined' || typeof QRCode !== 'function') {
-                console.error("QRCode library is not loaded or not properly defined. 'QRCode' is not a function.");
-                alert("QR code generation failed. Please try a hard refresh (Ctrl+F5) and check the browser console for details.");
-                return; 
-            }
+                // Base URL for your GitHub Pages project
+                const baseUrl = 'https://jontimi.github.io/JZS-AR-SHOWCASE/';
+                const modelPath = currentModelData.src; // e.g., models/Lamps/mario_floor_lamp.glb
 
-            if (!qrcodeDiv) {
-                console.error("The 'qrcode' div element was not found in the DOM.");
-                alert("Cannot display QR code. Missing 'qrcode' element.");
-                return; 
-            }
+                // Construct the full URL to the GLB model
+                const fullModelUrl = `${baseUrl}${modelPath}`;
 
-            if (currentModelData) { 
-                // CRITICAL FIX: Ensure the model URL includes the repository name for GitHub Pages
-                const modelUrl = `https://jontimi.github.io/JZS-AR-SHOWCASE/${currentModelData.src}`;
-                
-                const arUrl = `https://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(modelUrl)}&mode=ar_only`;
+                // Construct the AR viewer URL for Google Scene Viewer
+                // Ensure modelPath is URL-encoded for the 'file' parameter
+                const arUrl = `https://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(fullModelUrl)}&mode=ar_only`;
                 
                 console.log("Final AR URL for QR Code:", arUrl);
-                
-                qrcodeDiv.innerHTML = ''; // Clear existing QR code content
-
-                const canvas = document.createElement('canvas');
-                canvas.width = 256;
-                canvas.height = 256;
-                qrcodeDiv.appendChild(canvas);
 
                 try {
-                    // CRITICAL FIX: Use 'new QRCode'
-                    new QRCode(canvas, {
+                    // CRITICAL FIX: Use 'new QRCode' instead of directly calling QRCode
+                    // This creates a new instance correctly
+                    new QRCode(qrcodeDiv, {
                         text: arUrl,
                         width: 256,
                         height: 256,
-                        colorDark : "#000000",
-                        colorLight : "#ffffff",
-                        correctLevel : QRCode.CorrectLevel.H // High error correction
+                        colorDark: "#000000",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.H
                     });
                     console.log("QR Code successfully generated for URL:", arUrl);
                 } catch (error) {
                     console.error("Error generating QR code:", error);
-                    alert("An error occurred while generating the QR code. See console for details.");
+                    alert("An error occurred while generating the QR code. See console for details (F12).");
                     return; 
                 }
                 
                 qrModal.style.display = 'flex';
             } else {
+                console.warn("No current model data available. Cannot generate QR code.");
                 alert("Please select a product first to generate the AR QR code.");
             }
         });
+    } else {
+        console.warn("Desktop QR button not found.");
     }
-
-    // No explicit click listener needed for model-viewer's native AR button.
-    // It's handled by model-viewer itself when 'ar' attribute is present.
 
     if (closeButton) {
         closeButton.addEventListener('click', () => {
             qrModal.style.display = 'none';
+            console.log("QR Modal closed.");
         });
+    } else {
+        console.warn("Close button for QR modal not found.");
     }
 
     window.addEventListener('click', (event) => {
         if (event.target == qrModal) {
             qrModal.style.display = 'none';
+            console.log("QR Modal closed by clicking outside.");
         }
     });
     
@@ -314,5 +282,6 @@ window.onload = () => {
         console.warn("Brightness slider or model-viewer not found for brightness control.");
     }
 
+    // Initial data fetch when the page loads
     fetchModelsData();
 };
