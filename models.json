@@ -36,15 +36,6 @@
     "materials": ["Solid Wood", "Linen Blend Fabric"]
   },
   {
-    "name": "Industrial Dining Table",
-    "src": "models/Tables/indu_table.glb",
-    "width": 1.2,
-    "height": 0.75,
-    "depth": 0.7,
-    "colors": ["#333333", "#A0522D"],
-    "materials": ["Industrial Steel", "Solid Acacia Wood"]
-  },
-  {
     "name": "Kumo White Coffee Table",
     "src": "models/Tables/kumo_white_coffee_table.glb",
     "width": 0.8,
