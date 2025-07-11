@@ -49,13 +49,30 @@ window.onload = () => {
             if (allModelsData.length > 0) {
                 console.log("Model data loaded successfully. Populating dropdown and loading default model.");
                 populateProductDropdown();
-                // Load the first model by default after data is fetched
-                const defaultModel = allModelsData[0];
-                if (defaultModel) {
-                    loadModel(defaultModel);
+                
+                // Find the "Mario Floor Lamp" data to load it first
+                const marioLamp = allModelsData.find(model => model.name === "Mario Floor Lamp");
+                if (marioLamp) {
+                    loadModel(marioLamp);
+                    // Also update the dropdown to show "Mario Floor Lamp" as selected
+                    if (productSelect) {
+                        productSelect.value = "Mario Floor Lamp";
+                    }
+                    console.log("Mario Floor Lamp set as the default model.");
                 } else {
-                    console.warn("models.json contains data, but the first element is undefined.");
+                    // Fallback to the first model if "Mario Floor Lamp" isn't found
+                    console.warn("Mario Floor Lamp not found in models.json, loading the first available model.");
+                    const defaultModel = allModelsData[0];
+                    if (defaultModel) {
+                        loadModel(defaultModel);
+                        if (productSelect) {
+                            productSelect.value = defaultModel.name;
+                        }
+                    } else {
+                        console.error("No default model (first model) found in models.json array.");
+                    }
                 }
+
             } else {
                 console.warn("models.json was fetched successfully but contains no model data (it's an empty array or invalid structure after parsing).");
                 alert("No model data found in models.json or file is empty/invalid. Please check the content of 'models.json'.");
@@ -80,9 +97,8 @@ window.onload = () => {
             productSelect.appendChild(option);
         });
 
-        // Set the default selected option if available
+        // The default selected option is set after loading the Mario Lamp or fallback model
         if (allModelsData.length > 0) {
-            productSelect.value = allModelsData[0].name;
             console.log("Product dropdown populated successfully.");
         } else {
             console.warn("No models data to populate product dropdown.");
