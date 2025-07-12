@@ -1,11 +1,15 @@
+/* Universal Box-Sizing for consistent layout */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
 body {
     margin: 0;
     font-family: Arial, sans-serif;
     background-color: #f0f2f5;
     display: flex;
     min-height: 100vh;
-    overflow-x: hidden; /* Prevents horizontal scroll on small screens */
-    /* 🎨 NEW: Center content and add padding for larger screens */
+    overflow-x: hidden; /* Prevents horizontal scroll */
     justify-content: center;
     align-items: center;
     padding: 20px; /* Adds space around the app on large displays */
@@ -15,13 +19,11 @@ body {
 .app-container {
     display: flex;
     flex-direction: row;
-    /* 📐 FIX: Ensure app-container explicitly takes viewport space minus body padding, then caps at max-size */
     width: calc(100vw - 40px); /* Takes viewport width minus 20px padding on left and right */
     height: calc(100vh - 40px); /* Takes viewport height minus 20px padding on top and bottom */
     max-width: 1200px; /* Sets a maximum width for the app on large screens */
     max-height: 780px; /* Sets a maximum height for the app on large screens */
     overflow: hidden;
-    /* ⚪ NEW: Set a semi-transparent white background for the app container */
     background-color: rgba(255, 255, 255, 0.7); /* White with 70% opacity */
 }
 
@@ -62,8 +64,7 @@ body {
     font-size: 20px;
     color: #333;
     margin: 0;
-    /* Allow product name to wrap if long on small screens */
-    word-break: break-word;
+    word-break: break-word; /* Allow product name to wrap if long on small screens */
     flex-grow: 1; /* Allow it to take available space */
 }
 
@@ -338,35 +339,59 @@ model-viewer {
 /* Responsive adjustments */
 @media (max-width: 768px) {
     body {
-        overflow-x: hidden;
+        padding: 0; /* Remove body padding on small screens */
+        overflow-x: hidden; /* Ensure no horizontal scroll on body */
     }
 
     .app-container {
         flex-direction: column;
-        height: auto;
-        overflow-y: auto;
-        /* ✂️ REMOVED: This was causing potential issues on mobile with other height properties */
-        /* min-height: 100vh; */
+        width: 100vw; /* Take full viewport width */
+        height: auto; /* Let content dictate height */
+        overflow-y: auto; /* Allow vertical scroll */
+        max-width: none; /* Remove max-width/height to allow full screen use */
+        max-height: none;
     }
 
     .sidebar {
         width: 100%;
-        padding: 15px;
-        max-height: 50vh;
-        order: 2;
+        padding: 15px; /* Adjust padding for smaller screens */
+        max-height: 50vh; /* Limits sidebar height to 50% of viewport height */
+        order: 2; /* Puts sidebar below viewer area on mobile */
+        overflow-x: hidden; /* Ensure nothing inside sidebar overflows horizontally */
     }
 
     .product-preview-title {
         font-size: 20px;
     }
 
+    .card {
+        padding: 10px; /* Adjust card padding for smaller screens */
+        margin-bottom: 10px;
+    }
+
+    .product-info-card .product-header {
+        flex-wrap: wrap; /* Allow header content to wrap if needed */
+        justify-content: space-between;
+        align-items: flex-start; /* Align items to top if wrapped */
+    }
+
     .product-name {
         font-size: 18px;
+        flex-basis: 100%; /* Ensure name takes full width if needed */
+        margin-bottom: 5px; /* Add some space below name if wrapped */
+    }
+
+    .dimensions {
+        flex-wrap: wrap; /* Allow dimensions to wrap */
+        justify-content: center; /* Center dimensions if they wrap */
+        gap: 10px; /* Add a gap between wrapped dimension items */
+        padding: 8px 0; /* Slightly reduce padding */
     }
 
     .dimension-item {
         font-size: 12px;
-        min-width: unset;
+        min-width: unset; /* Allow items to shrink naturally */
+        flex-basis: auto; /* Let content dictate width within flex */
     }
 
     .category-card h3,
@@ -381,33 +406,43 @@ model-viewer {
         padding: 6px;
     }
 
+    .color-options {
+        gap: 8px; /* Slightly reduce gap between color swatches */
+        justify-content: center; /* Center color swatches if space allows */
+    }
+
     .color-swatch,
     .color-add-button {
-        width: 25px;
+        width: 25px; /* Slightly smaller size for swatches */
         height: 25px;
+    }
+
+    .material-options {
+        justify-content: center; /* Center material tags if space allows */
+        gap: 6px; /* Slightly reduce gap between material tags */
     }
 
     .material-tag {
         font-size: 11px;
-        padding: 4px 8px;
+        padding: 3px 8px; /* Slightly reduce padding on tags */
     }
 
     .viewer-area {
-        height: 50vh;
-        order: 1;
-        width: 100%;
+        height: 50vh; /* Viewer takes 50% of viewport height */
+        order: 1; /* Puts viewer area above sidebar on mobile */
+        width: 100vw; /* Ensure viewer area takes full viewport width */
+        overflow: hidden; /* Ensure viewer area itself doesn't cause scroll */
     }
 
-    /* Adjust button positions for mobile if needed */
-    .desktop-qr-button,
+    /* Adjust button positions for mobile */
+    .desktop-qr-button {
+        display: none; /* Hide desktop QR button on small screens */
+    }
     .refresh-button {
         top: 10px;
+        right: 10px;
         padding: 8px 12px;
         font-size: 14px;
-        right: 10px;
-    }
-    .desktop-qr-button {
-        right: 70px;
     }
 
     .modal-content {
@@ -420,31 +455,24 @@ model-viewer {
     }
 }
 
-/* Optional: Even smaller screens (e.g., iPhone 5/SE) */
-@media (max-width: 480px) {
+/* New media query for very small screens (e.g., iPhone 5/SE, older Androids) */
+@media (max-width: 400px) {
     .sidebar {
-        padding: 10px;
+        padding: 10px; /* Further reduce padding for very small screens */
     }
     .card {
-        padding: 10px;
-        margin-bottom: 10px;
+        padding: 8px; /* Further reduce card padding */
     }
-    .product-name {
-        font-size: 16px;
+    .color-options {
+        gap: 5px; /* Further reduce color swatch gap */
     }
-    .dimensions {
-        padding: 8px 0;
+    .material-options {
+        gap: 4px; /* Further reduce material tag gap */
     }
-    .dimension-item {
-        font-size: 11px;
-    }
-    .desktop-qr-button,
     .refresh-button {
         top: 5px;
+        right: 5px;
         padding: 6px 10px;
         font-size: 12px;
-    }
-    .desktop-qr-button {
-        right: 60px;
     }
 }
