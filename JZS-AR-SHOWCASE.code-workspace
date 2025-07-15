@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"name": "3d-models-ar-site",
+			"path": "../3d-models-ar-site"
+		}
+	],
+	"settings": {}
+}

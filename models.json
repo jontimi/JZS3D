@@ -1,86 +1,101 @@
 [
-    {
-        "name": "BLACK Sofa",
-        "src": "models/Sofas/BLACKSofa.glb",
-        "width": 2.2,
-        "height": 0.8,
-        "depth": 0.9
-    },
-    {
-        "name": "Dolton Armchair",
-        "src": "models/Sofas/dolton_armchair_hudson_grey.glb",
-        "width": 1.0,
-        "height": 0.85,
-        "depth": 0.9
-    },
-    {
-        "name": "Sofawood",
-        "src": "models/Sofas/sofawood.glb",
-        "width": 2.0,
-        "height": 0.75,
-        "depth": 0.8
-    },
-    {
-        "name": "Wasily Chair",
-        "src": "models/Sofas/wasily_chair.glb",
-        "width": 0.75,
-        "height": 0.7,
-        "depth": 0.7
-    },
-    {
-        "name": "Floor Lamp",
-        "src": "models/Lamps/floor_lamp.glb",
-        "width": 0.4,
-        "height": 1.5,
-        "depth": 0.4
-    },
-    {
-        "name": "Mario Floor Lamp",
-        "src": "models/Lamps/mario_floor_lamp.glb",
-        "width": 0.3,
-        "height": 1.6,
-        "depth": 0.3
-    },
-    {
-        "name": "Sweep Floor Lamp",
-        "src": "models/Lamps/sweep_floor_lamp_black.glb",
-        "width": 0.35,
-        "height": 1.4,
-        "depth": 0.35
-    },
-    {
-        "name": "Bookcase",
-        "src": "models/Cabinets/bookcase.glb",
-        "width": 0.8,
-        "height": 1.8,
-        "depth": 0.3
-    },
-    {
-        "name": "Closet Oak White",
-        "src": "models/Cabinets/closet_oak_white.glb",
-        "width": 1.2,
-        "height": 2.0,
-        "depth": 0.6
-    },
-    {
-        "name": "Ikea Alex Drawer",
-        "src": "models/Cabinets/ikea_alex_drawer.glb",
-        "width": 0.36,
-        "height": 0.7,
-        "depth": 0.58
-    },
-    {
-        "name": "Indu Table",
-        "src": "models/Tables/Indu_table.glb",
-        "width": 1.6,
-        "height": 0.75,
-        "depth": 0.9
-    },
-    {
-        "name": "Kumo Coffee Table",
-        "src": "models/Tables/kumo_white_coffee_table.glb",
-        "width": 1.0,
-        "height": 0.4,
-        "depth": 0.6
-    }
+  {
+    "name": "Wasily Chair",
+    "src": "models/Sofas/wasily_chair.glb",
+    "width": 0.79,
+    "height": 0.73,
+    "depth": 0.69,
+    "colors": ["#000000", "#A8A8A8"],
+    "materials": ["Genuine Leather", "Chrome Plated Steel"]
+  },
+  {
+    "name": "Black Leather Sofa",
+    "src": "models/Sofas/BLACKSofa.glb",
+    "width": 2.2,
+    "height": 0.8,
+    "depth": 0.9,
+    "colors": ["#000000", "#404040"],
+    "materials": ["Faux Leather", "Powder-Coated Metal"]
+  },
+  {
+    "name": "Dolton Armchair Hudson Grey",
+    "src": "models/Sofas/dolton_armchair_hudson_grey.glb",
+    "width": 0.88,
+    "height": 1.01,
+    "depth": 0.79,
+    "colors": ["#888888"],
+    "materials": ["Polyester Fabric", "Solid Wood Legs"]
+  },
+  {
+    "name": "Wood Frame Sofa",
+    "src": "models/Sofas/sofawood.glb",
+    "width": 2.0,
+    "height": 0.75,
+    "depth": 0.85,
+    "colors": ["#C19A6B", "#D2B48C", "#000000"],
+    "materials": ["Solid Wood", "Linen Blend Fabric"]
+  },
+  {
+    "name": "Kumo White Coffee Table",
+    "src": "models/Tables/kumo_white_coffee_table.glb",
+    "width": 0.8,
+    "height": 0.4,
+    "depth": 0.8,
+    "colors": ["#F8F8F8"],
+    "materials": ["Lacquered MDF"]
+  },
+  {
+    "name": "Oluce Coupé – 3321",
+    "src": "models/Lamps/floor_lamp.glb",
+    "width": 0.28,
+    "height": 1.4,
+    "depth": 0.28,
+    "colors": ["#000000", "#E0E0E0"],
+    "materials": ["Painted Steel", "Polished Aluminum"]
+  },
+  {
+    "name": "Mario Floor Lamp",
+    "src": "models/Lamps/mario_floor_lamp.glb",
+    "width": 0.5,
+    "height": 1.7,
+    "depth": 0.5,
+    "colors": ["#36454F", "#B0B0B0"],
+    "materials": ["Brushed Aluminum", "Steel"]
+  },
+  {
+    "name": "Sweep Floor Lamp Black",
+    "src": "models/Lamps/sweep_floor_lamp_black.glb",
+    "width": 0.3,
+    "height": 1.5,
+    "depth": 0.3,
+    "colors": ["#000000"],
+    "materials": ["Matte Black Steel"]
+  },
+  {
+    "name": "Bookcase",
+    "src": "models/Cabinets/bookcase.glb",
+    "width": 0.8,
+    "height": 1.8,
+    "depth": 0.3,
+    "colors": ["#F0EAD6"],
+    "materials": ["Engineered Wood", "Wood Veneer Finish", "Metal Accents"]
+  },
+  {
+    "name": "White Oak Wardrobe",
+    "src": "models/Cabinets/closet_oak_white.glb",
+    "width": 1.2,
+    "height": 2.0,
+    "depth": 0.6,
+    "colors": ["#F5F5DC"],
+    "materials": ["Solid Oak Wood", "Oak Veneer"]
+  },
+  {
+    "name": "IKEA Alex Drawer",
+    "src": "models/Cabinets/ikea_alex_drawer.glb",
+    "width": 0.36,
+    "height": 0.7,
+    "depth": 0.58,
+    "colors": ["#FFFFFF", "#F0F0F0"],
+    "materials": ["Particleboard", "Melamine Finish"]
+  }
 ]

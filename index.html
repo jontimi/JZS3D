@@ -3,80 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Models AR Showcase</title>
-    <style>
-        body { font-family: sans-serif; margin: 20px; text-align: center; }
-        model-viewer {
-            width: 100%;
-            max-width: 800px; /* Limit max width for larger screens */
-            height: 400px;
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
-            margin-bottom: 30px;
-        }
-        h1 { color: #333; }
-        h2 { color: #555; margin-top: 40px; }
-    </style>
+    <title>3D Furniture Showcase</title>
+    <link rel="stylesheet" href="style.css">
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+    <script src="https://unpkg.com/qrious@4.0.2/dist/qrious.min.js"></script>
 </head>
 <body>
-    <h1>My 3D Furniture Collection (Different Format)</h1>
+    <div class="container">
+        <h1>3D Furniture Showcase</h1>
 
-    <h2>BLACK Sofa</h2>
-    <model-viewer
-        src="3d-models-ar-site/models/Sofas/BLACKSofa.glb"  poster="3d-models-ar-site/poster.png"              alt="A stylish black sofa"
-        ar
-        ar-modes="webxr scene-viewer quick-look"
-        camera-controls
-        shadow-intensity="1"
-        exposure="1"
-        environment-image="neutral"
-        bounds="tight"
-        min-field-of-view="40deg"
-        max-field-of-view="40deg">
-    </model-viewer>
+        <div class="model-controls">
+            <label for="model-select">Select Model:</label>
+            <select id="model-select"></select>
+            <button id="qr-button">View Model on Phone</button> 
+            <button id="toggle-rotate-button">Stop Rotation</button> </div>
 
-    <h2>Dolton Armchair</h2>
-    <model-viewer
-        src="3d-models-ar-site/models/Sofas/dolton_armchair_hudson_grey.glb" poster="3d-models-ar-site/poster.png"                          alt="A comfortable grey armchair"
-        ar
-        ar-modes="webxr scene-viewer quick-look"
-        camera-controls
-        shadow-intensity="1"
-        exposure="1"
-        environment-image="neutral"
-        bounds="tight"
-        min-field-of-view="40deg"
-        max-field-of-view="40deg">
-    </model-viewer>
+        <div class="viewer-container">
+            <model-viewer 
+                class="model-viewer" 
+                camera-controls 
+                touch-action="pan-y" 
+                exposure="1" 
+                shadow-intensity="1" 
+                auto-rotate 
+                alt="A 3D model" 
+                style="width: 100%; height: 500px;"
+                ar 
+                ar-modes="webxr scene-viewer quick-look"
+                environment-image="./models/environments/neutral_lightroom_128.hdr"
+                min-field-of-view="40deg" 
+                max-field-of-view="40deg"> 
+            </model-viewer>
+        </div>
 
-    <h2>Floor Lamp</h2>
-    <model-viewer
-        src="3d-models-ar-site/models/Lamps/floor_lamp.glb" poster="3d-models-ar-site/poster.png"          alt="A modern floor lamp"
-        ar
-        ar-modes="webxr scene-viewer quick-look"
-        camera-controls
-        shadow-intensity="1"
-        exposure="1"
-        environment-image="neutral"
-        bounds="tight"
-        min-field-of-view="40deg"
-        max-field-of-view="40deg">
-    </model-viewer>
+        <div id="model-dimensions">
+            <h3>Dimensions:</h3>
+            <p id="dimensions-text">Select a model to see its dimensions.</p>
+        </div>
 
-    <h2>Bookcase</h2>
-    <model-viewer
-        src="3d-models-ar-site/models/Cabinets/bookcase.glb" poster="3d-models-ar-site/poster.png"           alt="A classic wooden bookcase"
-        ar
-        ar-modes="webxr scene-viewer quick-look"
-        camera-controls
-        shadow-intensity="1"
-        exposure="1"
-        environment-image="neutral"
-        bounds="tight"
-        min-field-of-view="40deg"
-        max-field-of-view="40deg">
-    </model-viewer>
-
+        <div id="qr-code-container" class="qr-code-overlay">
+            <div class="qr-code-content">
+                <h2>Scan to View Model</h2>
+                <canvas id="qr-code-canvas"></canvas>
+                <p>Point your phone's camera at the QR code.</p>
+                <button id="close-qr">Close</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
