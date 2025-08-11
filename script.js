@@ -128,6 +128,12 @@ window.onload = () => {
                 initialCameraTarget = modelViewer.getAttribute('camera-target');
                 initialCameraSet = true;
             }
+            // Also set these on the clean viewer so its reset works
+            if (cleanViewer) {
+                cleanViewer.setAttribute('camera-orbit', modelViewer.getAttribute('camera-orbit'));
+                cleanViewer.setAttribute('field-of-view', modelViewer.getAttribute('field-of-view'));
+                cleanViewer.setAttribute('camera-target', modelViewer.getAttribute('camera-target'));
+            }
             modelViewer.removeEventListener('load', setInitialCamera);
         });
 
@@ -281,6 +287,10 @@ window.onload = () => {
     function syncCleanViewer() {
         if (modelViewer && cleanViewer) {
             cleanViewer.src = modelViewer.src;
+            // Copy camera attributes so reset works in clean view
+            cleanViewer.setAttribute('camera-orbit', modelViewer.getAttribute('camera-orbit'));
+            cleanViewer.setAttribute('field-of-view', modelViewer.getAttribute('field-of-view'));
+            cleanViewer.setAttribute('camera-target', modelViewer.getAttribute('camera-target'));
         }
     }
 
@@ -288,13 +298,11 @@ window.onload = () => {
         toggleBtn.addEventListener('click', () => {
             isClean = !isClean;
             if (isClean) {
-                // Switch to clean view
                 modelViewer.style.display = 'none';
                 cleanContainer.style.display = 'block';
                 toggleBtn.textContent = "Advanced View";
                 syncCleanViewer();
             } else {
-                // Switch back to advanced view
                 modelViewer.style.display = 'block';
                 cleanContainer.style.display = 'none';
                 toggleBtn.textContent = "Clean View";
@@ -374,3 +382,118 @@ let initialCameraOrbit = '0deg 75deg 4m';
 let initialFieldOfView = '45deg';
 let initialCameraTarget = '0m 0m 0m';
 let initialCameraSet = false;
+
+const cleanContainer = document.getElementById('cleanViewContainer');
+const cleanViewer = document.getElementById('cleanModelViewer');
+const toggleBtn = document.getElementById('toggleCleanViewBtn');
+
+let isClean = false;
+
+function syncCleanViewer() {
+    if (modelViewer && cleanViewer) {
+        cleanViewer.src = modelViewer.src;
+        // Copy camera attributes so reset works in clean view
+        cleanViewer.setAttribute('camera-orbit', modelViewer.getAttribute('camera-orbit'));
+        cleanViewer.setAttribute('field-of-view', modelViewer.getAttribute('field-of-view'));
+        cleanViewer.setAttribute('camera-target', modelViewer.getAttribute('camera-target'));
+    }
+}
+
+if (toggleBtn && cleanContainer) {
+    toggleBtn.addEventListener('click', () => {
+        isClean = !isClean;
+        if (isClean) {
+            modelViewer.style.display = 'none';
+            cleanContainer.style.display = 'block';
+            toggleBtn.textContent = "Advanced View";
+            syncCleanViewer();
+        } else {
+            modelViewer.style.display = 'block';
+            cleanContainer.style.display = 'none';
+            toggleBtn.textContent = "Clean View";
+        }
+    });
+}
+
+if (modelViewer) {
+    modelViewer.addEventListener('load', syncCleanViewer);
+}
+
+// Clean QR Button in Clean View
+const cleanQRButton = cleanContainer ? cleanContainer.querySelector('.desktop-qr-button') : null;
+
+if (cleanQRButton) {
+    cleanQRButton.addEventListener('click', () => {
+        if (currentModelData) {
+            if (qrcodeDiv) qrcodeDiv.innerHTML = '';
+            const baseUrl = 'https://jontimi.github.io/JZS-AR-SHOWCASE/';
+            const modelPath = currentModelData.src;
+            const fullModelUrl = `${baseUrl}${modelPath}`;
+            const arUrl = `https://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(fullModelUrl)}&mode=ar_only`;
+            new QRCode(qrcodeDiv, {
+                text: arUrl,
+                width: 256,
+                height: 256,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            qrModal.style.display = 'flex';
+        } else {
+            alert("Please select a product first to generate the AR QR code.");
+        }
+    });
+}
+
+if (closeButton) {
+    closeButton.addEventListener('click', () => {
+        qrModal.style.display = 'none';
+        console.log("QR Modal closed.");
+    });
+} else {
+    console.warn("Close button for QR modal not found.");
+}
+
+window.addEventListener('click', (event) => {
+    if (event.target == qrModal) {
+        qrModal.style.display = 'none';
+        console.log("QR Modal closed by clicking outside.");
+    }
+});
+
+if (brightnessSlider && modelViewer) {
+    brightnessSlider.addEventListener('input', (event) => {
+        const sliderValue = parseFloat(event.target.value);
+        modelViewer.exposure = sliderValue / 50; 
+        console.log("Brightness set to:", modelViewer.exposure);
+    });
+} else {
+    console.warn("Brightness slider or model-viewer not found for brightness control.");
+}
+
+// Initial data fetch when the page loads
+fetchModelsData();
+
+function reloadCleanViewer() {
+    if (cleanViewer && currentModelData) {
+        // Remove the model to force a reload
+        cleanViewer.src = '';
+        setTimeout(() => {
+            cleanViewer.src = currentModelData.src;
+            // After reload, set camera attributes to initial values
+            setTimeout(() => {
+                cleanViewer.setAttribute('camera-orbit', initialCameraOrbit);
+                cleanViewer.setAttribute('field-of-view', initialFieldOfView);
+                cleanViewer.setAttribute('camera-target', initialCameraTarget);
+            }, 100);
+        }, 50);
+    }
+}
+
+const cleanRefreshButton = cleanContainer ? cleanContainer.querySelector('.refresh-button') : null;
+if (cleanRefreshButton && cleanViewer) {
+    cleanRefreshButton.addEventListener('click', () => {
+        reloadCleanViewer();
+        console.log("Clean view refresh button clicked. Model reloaded and camera reset.");
+    });
+}
