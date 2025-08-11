@@ -34,6 +34,7 @@
     </style>
 </head>
 <body>
+    <div id="toggleCleanViewBtn">Clean View</div>
     <div class="app-container">
         <div class="sidebar">
             <h1 class="product-preview-title">Product Preview</h1>
@@ -107,6 +108,22 @@
             <div id="qrcode"></div>
             <p>Make sure your device supports ARCore (Android) or ARKit (iOS)<br>and has a compatible browser.</p>
         </div>
+    </div>
+
+    <div id="cleanViewContainer" style="display:none;">
+        <model-viewer id="cleanModelViewer"
+            src=""
+            alt="3D model"
+            ar
+            ar-modes="webxr scene-viewer quick-look"
+            shadow-intensity="1"
+            camera-controls
+            touch-action="pan-y"
+            environment-image="neutral"
+            style="width:100vw;height:80vh;background:transparent;border:none;">
+            <button class="desktop-qr-button">View in Room (QR)</button>
+            <button class="refresh-button">🔄</button>
+        </model-viewer>
     </div>
 
     <footer class="footer-text">

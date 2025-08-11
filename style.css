@@ -476,3 +476,18 @@ model-viewer {
         font-size: 12px;
     }
 }
+
+#toggleCleanViewBtn {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1001;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 8px 18px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}

@@ -119,6 +119,18 @@ window.onload = () => {
         currentModelData = model;
         currentModelSrc = model.src;
         modelViewer.src = currentModelSrc; // Update the model-viewer src
+
+        // Store initial camera attributes for reset (only once)
+        modelViewer.addEventListener('load', function setInitialCamera() {
+            if (!initialCameraSet) {
+                initialCameraOrbit = modelViewer.getAttribute('camera-orbit');
+                initialFieldOfView = modelViewer.getAttribute('field-of-view');
+                initialCameraTarget = modelViewer.getAttribute('camera-target');
+                initialCameraSet = true;
+            }
+            modelViewer.removeEventListener('load', setInitialCamera);
+        });
+
         console.log(`Loading model: ${currentModelSrc}`);
 
         // Update product info
@@ -201,21 +213,9 @@ window.onload = () => {
 
     if (refreshButton) {
         refreshButton.addEventListener('click', () => {
-            if (modelViewer) {
-                modelViewer.resetCamera(); 
-                if (currentModelData) {
-                    loadModel(currentModelData); 
-                } else {
-                    console.warn("No current model data to reload; attempting to re-fetch all data.");
-                    fetchModelsData(); // Attempt to re-fetch all data
-                }
-                console.log("Refresh button clicked. Camera reset.");
-            } else {
-                console.warn("Model viewer not found for refresh button.");
-            }
+            resetModelCamera(modelViewer);
+            console.log("Refresh button clicked. Camera reset.");
         });
-    } else {
-        console.warn("Refresh button not found.");
     }
 
     // Desktop QR Button
@@ -272,6 +272,66 @@ window.onload = () => {
         console.warn("Desktop QR button not found.");
     }
 
+    const cleanContainer = document.getElementById('cleanViewContainer');
+    const cleanViewer = document.getElementById('cleanModelViewer');
+    const toggleBtn = document.getElementById('toggleCleanViewBtn');
+
+    let isClean = false;
+
+    function syncCleanViewer() {
+        if (modelViewer && cleanViewer) {
+            cleanViewer.src = modelViewer.src;
+        }
+    }
+
+    if (toggleBtn && cleanContainer) {
+        toggleBtn.addEventListener('click', () => {
+            isClean = !isClean;
+            if (isClean) {
+                // Switch to clean view
+                modelViewer.style.display = 'none';
+                cleanContainer.style.display = 'block';
+                toggleBtn.textContent = "Advanced View";
+                syncCleanViewer();
+            } else {
+                // Switch back to advanced view
+                modelViewer.style.display = 'block';
+                cleanContainer.style.display = 'none';
+                toggleBtn.textContent = "Clean View";
+            }
+        });
+    }
+
+    if (modelViewer) {
+        modelViewer.addEventListener('load', syncCleanViewer);
+    }
+
+    // Clean QR Button in Clean View
+    const cleanQRButton = cleanContainer ? cleanContainer.querySelector('.desktop-qr-button') : null;
+
+    if (cleanQRButton) {
+        cleanQRButton.addEventListener('click', () => {
+            if (currentModelData) {
+                if (qrcodeDiv) qrcodeDiv.innerHTML = '';
+                const baseUrl = 'https://jontimi.github.io/JZS-AR-SHOWCASE/';
+                const modelPath = currentModelData.src;
+                const fullModelUrl = `${baseUrl}${modelPath}`;
+                const arUrl = `https://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(fullModelUrl)}&mode=ar_only`;
+                new QRCode(qrcodeDiv, {
+                    text: arUrl,
+                    width: 256,
+                    height: 256,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+                qrModal.style.display = 'flex';
+            } else {
+                alert("Please select a product first to generate the AR QR code.");
+            }
+        });
+    }
+
     if (closeButton) {
         closeButton.addEventListener('click', () => {
             qrModal.style.display = 'none';
@@ -301,3 +361,16 @@ window.onload = () => {
     // Initial data fetch when the page loads
     fetchModelsData();
 };
+
+function resetModelCamera(viewer) {
+    if (viewer) {
+        viewer.setAttribute('camera-orbit', initialCameraOrbit);
+        viewer.setAttribute('field-of-view', initialFieldOfView);
+        viewer.setAttribute('camera-target', initialCameraTarget);
+    }
+}
+
+let initialCameraOrbit = '0deg 75deg 4m';
+let initialFieldOfView = '45deg';
+let initialCameraTarget = '0m 0m 0m';
+let initialCameraSet = false;
