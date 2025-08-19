@@ -8,23 +8,17 @@
     }
   ],
   "defaultModel": "Llama 3 (local)",
-  "tabAutocompleteModel": null,
-  "allowAnonymousTelemetry": false,
-  "systemMessage": "You are a senior full-stack developer and careful pair-programmer. When the user requests a change, FIRST produce a concise plan and a unified diff patch (no direct edits yet). Ask: 'Apply these changes? (yes/no)'. Only write to files after explicit 'yes'. If tests, types, or build scripts are missing, propose minimal versions.",
+  "systemMessage": "You are a senior full-stack developer and careful pair-programmer. When the user requests a change, FIRST produce a concise plan and a unified diff patch. Ask: 'Apply these changes? (yes/no)'. Only write to files after explicit 'yes'.",
   "customCommands": [
     {
       "name": "Plan Change",
       "description": "Propose a plan + diff without applying",
-      "prompt": "Given the user's request and the current repo, propose a bullet plan and then a unified diff (---/+++ with @@ hunks) of all files you would change. Do not apply. Ask for confirmation."
+      "prompt": "Given the user's request and the current repo, propose a bullet plan and then a unified diff of all files. Do not apply. Ask for confirmation."
     },
     {
       "name": "Apply Last Diff",
       "description": "Apply the most recent proposed diff",
-      "prompt": "Apply the latest diff you proposed to the working tree. Make sure all files are created/updated exactly as specified."
+      "prompt": "Apply the latest diff you proposed to the working tree."
     }
-  ],
-  "contextProviders": {
-    "disable": [],
-    "include": ["repo", "openTabs", "terminal", "diff", "problems"]
-  }
+  ]
 }

@@ -1,0 +1,4 @@
+[
+  { "key": "ctrl+alt+s", "command": "workbench.action.tasks.runTask", "args": "Save Build" },
+  { "key": "ctrl+alt+r", "command": "workbench.action.tasks.runTask", "args": "Restore Last Build" }
+]
