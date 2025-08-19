@@ -1,0 +1,29 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Save Build (macOS/Linux)",
+      "type": "shell",
+      "command": "git add -A && git commit -m \"savepoint: $(date +\"%F %T\")\"",
+      "problemMatcher": []
+    },
+    {
+      "label": "Restore Last Build (macOS/Linux)",
+      "type": "shell",
+      "command": "git reset --hard HEAD~1",
+      "problemMatcher": []
+    },
+    {
+      "label": "Save Build (Windows)",
+      "type": "shell",
+      "command": "powershell -NoProfile -Command \"git add -A; git commit -m ('savepoint: ' + (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'))\"",
+      "problemMatcher": []
+    },
+    {
+      "label": "Restore Last Build (Windows)",
+      "type": "shell",
+      "command": "powershell -NoProfile -Command \"git reset --hard HEAD~1\"",
+      "problemMatcher": []
+    }
+  ]
+}
