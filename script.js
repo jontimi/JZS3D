@@ -191,7 +191,12 @@ window.onload = () => {
         console.log("Generating QR for model:", currentModelSrc); // Debug log
 
         qrcodeDiv.innerHTML = '';
-        const modelUrl = `${window.location.origin}${window.location.pathname}${currentModelSrc}`;
+        let base = window.location.href;
+        // Check if the URL ends with a file name (e.g., index.html) and remove it
+        if (base.endsWith('.html') || base.endsWith('.htm')) {
+            base = base.substring(0, base.lastIndexOf('/') + 1);
+        }
+        const modelUrl = `${base}${currentModelSrc}`;
 
         console.log("Full AR URL:", modelUrl); // Debug log
 
