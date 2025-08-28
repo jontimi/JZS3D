@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,28 +12,41 @@
     <style>
         /* Styles for the new footer text */
         .footer-text {
-            position: fixed; /* Ensures it stays at the bottom of the viewport */
-            bottom: 10px;    /* 10 pixels from the bottom edge */
-            width: 100%;      /* Stretches across the entire width */
-            text-align: center; /* Centers the text */
-            color: rgba(0, 0, 0, 0.5); /* Semi-transparent dark grey for a subtle look */
-            font-family: Arial, sans-serif; /* Professional, readable font */
-            font-size: 12px; /* Small font size */
-            padding: 5px 0; /* A little vertical padding */
-            z-index: 100; /* Ensures it appears above other elements if there's any overlap */
+            position: fixed;
+            /* Ensures it stays at the bottom of the viewport */
+            bottom: 10px;
+            /* 10 pixels from the bottom edge */
+            width: 100%;
+            /* Stretches across the entire width */
+            text-align: center;
+            /* Centers the text */
+            color: rgba(0, 0, 0, 0.5);
+            /* Semi-transparent dark grey for a subtle look */
+            font-family: Arial, sans-serif;
+            /* Professional, readable font */
+            font-size: 12px;
+            /* Small font size */
+            padding: 5px 0;
+            /* A little vertical padding */
+            z-index: 100;
+            /* Ensures it appears above other elements if there's any overlap */
         }
 
         /* Style for the link within the footer */
         .footer-text a {
-            color: inherit; /* Inherits the color from the parent (.footer-text) */
-            text-decoration: none; /* Removes the default underline */
+            color: inherit;
+            /* Inherits the color from the parent (.footer-text) */
+            text-decoration: none;
+            /* Removes the default underline */
         }
 
         .footer-text a:hover {
-            text-decoration: underline; /* Adds underline on hover for user feedback */
+            text-decoration: underline;
+            /* Adds underline on hover for user feedback */
         }
     </style>
 </head>
+
 <body>
     <div id="toggleCleanViewBtn">Clean View</div>
     <div class="app-container">
@@ -84,15 +98,9 @@
         </div>
 
         <div class="viewer-area">
-            <model-viewer id="product-model"
-                          src=""
-                          alt="3D model of product"
-                          ar
-                          ar-modes="webxr scene-viewer quick-look"
-                          shadow-intensity="1"
-                          camera-controls
-                          touch-action="pan-y"
-                          environment-image="neutral">
+            <model-viewer id="product-model" src="" alt="3D model of product" ar
+                ar-modes="webxr scene-viewer quick-look" ar-scale="fixed" shadow-intensity="1" camera-controls
+                touch-action="pan-y" environment-image="neutral" scale="1 1 1" disable-variants>
                 <button class="desktop-qr-button">View in Room (QR)</button>
                 <button class="refresh-button">🔄</button>
             </model-viewer>
@@ -109,16 +117,9 @@
     </div>
 
     <div id="cleanViewContainer" style="display:none;">
-        <model-viewer id="cleanModelViewer"
-            src=""
-            alt="3D model"
-            ar
-            ar-modes="webxr scene-viewer quick-look"
-            shadow-intensity="1"
-            camera-controls
-            touch-action="pan-y"
-            environment-image="neutral"
-            style="width:100vw;height:80vh;background:transparent;border:none;">
+        <model-viewer id="cleanModelViewer" src="" alt="3D model" ar ar-modes="webxr scene-viewer quick-look"
+            ar-scale="fixed" shadow-intensity="1" camera-controls touch-action="pan-y" environment-image="neutral"
+            scale="1 1 1" disable-variants style="width:100vw;height:80vh;background:transparent;border:none;">
             <button class="desktop-qr-button">View in Room (QR)</button>
             <button class="refresh-button">🔄</button>
         </model-viewer>
@@ -126,6 +127,7 @@
 
     <footer class="footer-text">
         Made by <a href="https://jzs3d.framer.ai/" target="_blank" rel="noopener noreferrer">JZS3D</a>
-        </footer>
+    </footer>
 </body>
+
 </html>

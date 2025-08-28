@@ -13,20 +13,30 @@ window.onload = () => {
     const qrcodeDiv = document.getElementById('qrcode');
     const closeButton = qrModal ? qrModal.querySelector('.close-button') : null;
 
+    // Ensure QR modal is hidden on load
+    if (qrModal) {
+        qrModal.style.display = 'none';
+    }
+
     let allModelsData = [];
     let currentModelData = null;
     let currentModelSrc = '';
-    let currentModelDefaultCamera = null;
+
+    // Default camera settings
+    let initialCameraOrbit = '0deg 75deg 4m';
+    let initialFieldOfView = '45deg';
+    let initialCameraTarget = '0m 0m 0m';
+    let initialCameraSet = false;
 
     async function fetchModelsData() {
         try {
             const response = await fetch('./models.json');
             if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
             allModelsData = await response.json();
-            
+
             if (allModelsData.length > 0) {
                 populateProductDropdown();
-                const defaultModel = allModelsData.find(m => m.name === "Dolton Armchair Hudson") || allModelsData[0];
+                const defaultModel = allModelsData.find(m => m.name === "Mario Floor Lamp") || allModelsData[0];
                 if (defaultModel) {
                     productSelect.value = defaultModel.name;
                     loadModel(defaultModel);
@@ -54,9 +64,38 @@ window.onload = () => {
     function loadModel(model) {
         currentModelData = model;
 
-        if (model.camera) {
-            currentModelDefaultCamera = model.camera;
-            updateCamera(currentModelDefaultCamera);
+        modelViewer.addEventListener('load', function setInitialCamera() {
+            if (!initialCameraSet) {
+                initialCameraOrbit = modelViewer.getAttribute('camera-orbit') || '0deg 75deg 4m';
+                initialFieldOfView = modelViewer.getAttribute('field-of-view') || '45deg';
+                initialCameraTarget = modelViewer.getAttribute('camera-target') || '0m 0m 0m';
+                initialCameraSet = true;
+            }
+
+            if (cleanViewer) {
+                cleanViewer.setAttribute('camera-orbit', modelViewer.getAttribute('camera-orbit'));
+                cleanViewer.setAttribute('field-of-view', modelViewer.getAttribute('field-of-view'));
+                cleanViewer.setAttribute('camera-target', modelViewer.getAttribute('camera-target'));
+            }
+            modelViewer.removeEventListener('load', setInitialCamera);
+        });
+
+        // Apply camera settings from models.json if available
+        if (model.camera && model.camera.cameraOrbit) {
+            modelViewer.cameraOrbit = model.camera.cameraOrbit;
+        }
+
+        // Apply scale settings from models.json if available
+        if (model.scale) {
+            modelViewer.scale = model.scale;
+            if (cleanViewer) {
+                cleanViewer.scale = model.scale;
+            }
+        } else {
+            modelViewer.scale = "1 1 1";
+            if (cleanViewer) {
+                cleanViewer.scale = "1 1 1";
+            }
         }
 
         if (model.variants && model.variants.length > 0) {
@@ -71,21 +110,9 @@ window.onload = () => {
         updateMaterials(model.materials);
     }
 
-    function updateCamera(cameraSettings) {
-        if (!modelViewer || !cameraSettings) return;
-        modelViewer.cameraOrbit = cameraSettings.cameraOrbit;
-        modelViewer.cameraTarget = cameraSettings.cameraTarget;
-        modelViewer.fieldOfView = cameraSettings.fieldOfView;
-
-        if (cleanViewer) {
-            cleanViewer.cameraOrbit = cameraSettings.cameraOrbit;
-            cleanViewer.cameraTarget = cameraSettings.cameraTarget;
-            cleanViewer.fieldOfView = cameraSettings.fieldOfView;
-        }
-    }
-
     function updateModelViewer(src) {
         if (!modelViewer) return;
+        console.log(`Updating model viewer with src: ${src}`); // Debug log
         modelViewer.src = src;
         if (cleanViewer) {
             cleanViewer.src = src;
@@ -111,12 +138,18 @@ window.onload = () => {
             swatch.style.backgroundColor = data.color;
             swatch.title = data.name || data.color;
 
+            // Only make swatches clickable if there are multiple variants
             if (model.variants && model.variants.length > 1) {
+                swatch.style.cursor = 'pointer';
                 swatch.addEventListener('click', () => {
+                    console.log(`Swatch clicked! Changing model to: ${data.src}`);
+                    console.log(`Model data:`, data); // Debug log
                     currentModelSrc = data.src;
                     updateModelViewer(currentModelSrc);
                     setActiveSwatch(swatch);
                 });
+            } else {
+                swatch.style.cursor = 'default';
             }
 
             colorOptionsContainer.appendChild(swatch);
@@ -155,9 +188,13 @@ window.onload = () => {
         }
         if (!qrcodeDiv || !qrModal) return;
 
+        console.log("Generating QR for model:", currentModelSrc); // Debug log
+
         qrcodeDiv.innerHTML = '';
-        const baseUrl = window.location.origin + window.location.pathname.replace('index.html', '');
-        const modelUrl = new URL(currentModelSrc, baseUrl).href;
+        const baseUrl = 'https://jontimi.github.io/JZS-AR-SHOWCASE/';
+        const modelUrl = `${baseUrl}${currentModelSrc}`;
+
+        console.log("Full AR URL:", modelUrl); // Debug log
 
         const arUrl = `https://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(modelUrl)}&mode=ar_only`;
 
@@ -170,6 +207,19 @@ window.onload = () => {
             correctLevel: QRCode.CorrectLevel.H
         });
         qrModal.style.display = 'flex';
+    }
+
+    function resetModelCamera(viewer) {
+        if (viewer) {
+            // Use the camera settings from the model data if available, otherwise use default
+            if (currentModelData && currentModelData.camera && currentModelData.camera.cameraOrbit) {
+                viewer.cameraOrbit = currentModelData.camera.cameraOrbit;
+            } else {
+                viewer.setAttribute('camera-orbit', initialCameraOrbit);
+            }
+            viewer.setAttribute('field-of-view', initialFieldOfView);
+            viewer.setAttribute('camera-target', initialCameraTarget);
+        }
     }
 
     // Event Listeners
@@ -186,8 +236,9 @@ window.onload = () => {
 
     document.querySelectorAll('.refresh-button').forEach(button => {
         button.addEventListener('click', () => {
-            if (currentModelDefaultCamera) {
-                updateCamera(currentModelDefaultCamera);
+            resetModelCamera(modelViewer);
+            if (cleanViewer.style.display !== 'none') {
+                resetModelCamera(cleanViewer);
             }
         });
     });
@@ -205,7 +256,7 @@ window.onload = () => {
     if (brightnessSlider && modelViewer) {
         brightnessSlider.addEventListener('input', (event) => {
             modelViewer.exposure = parseFloat(event.target.value) / 50;
-             if(cleanViewer) cleanViewer.exposure = modelViewer.exposure;
+            if (cleanViewer) cleanViewer.exposure = modelViewer.exposure;
         });
     }
 
@@ -225,7 +276,7 @@ window.onload = () => {
                 appContainer.style.display = 'none';
                 cleanContainer.style.display = 'block';
                 toggleBtn.textContent = "Advanced View";
-                if(cleanViewer) {
+                if (cleanViewer) {
                     cleanViewer.cameraOrbit = modelViewer.cameraOrbit;
                     cleanViewer.cameraTarget = modelViewer.cameraTarget;
                     cleanViewer.fieldOfView = modelViewer.fieldOfView;
