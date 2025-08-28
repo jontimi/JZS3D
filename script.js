@@ -191,7 +191,7 @@ window.onload = () => {
         console.log("Generating QR for model:", currentModelSrc); // Debug log
 
         qrcodeDiv.innerHTML = '';
-        const baseUrl = 'https://jontimi.github.io/JZS-AR-SHOWCASE/';
+        const baseUrl = 'https://jontimi.github.io/JZS3D/';
         const modelUrl = `${baseUrl}${currentModelSrc}`;
 
         console.log("Full AR URL:", modelUrl); // Debug log
