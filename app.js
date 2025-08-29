@@ -34,16 +34,97 @@ document.addEventListener('DOMContentLoaded', () => {
                     <strong>Materials:</strong> ${product.materials.join(', ')}
                 </div>
 
-                <!-- 3D Viewer will go here in Phase 2 -->
-                <div style="width: 100%; height: 250px; background: #eee; text-align: center; line-height: 250px; margin-bottom: 1rem;">3D Model Placeholder</div>
+                <model-viewer
+                    src="${product.variants[0].src}"
+                    alt="${product.name}"
+                    camera-controls
+                    auto-rotate
+                    camera-orbit="${product.camera.orbit}"
+                    camera-target="${product.camera.target}"
+                    id="viewer-${product.id}">
+                </model-viewer>
 
-                <div class="color-swatches">
-                    <!-- Color swatches will be rendered here in Phase 3 -->
+                <div class="controls">
+                    <button class="reset-view-button" data-product-id="${product.id}">Reset View</button>
                 </div>
 
-                <button class="ar-button">View in AR</button>
+                <div class="color-swatches" id="swatches-${product.id}">
+                    ${product.variants.map(variant => `
+                        <div class="color-swatch"
+                             style="background-color: ${variant.color};"
+                             data-src="${variant.src}"
+                             data-product-id="${product.id}">
+                        </div>
+                    `).join('')}
+                </div>
+
+                <button class="ar-button" data-product-id="${product.id}">View in AR</button>
             </div>
         `).join('');
+
+        addEventListeners();
+    }
+
+    function addEventListeners() {
+        document.querySelectorAll('.reset-view-button').forEach(button => {
+            button.addEventListener('click', (event) => {
+                const productId = event.target.dataset.productId;
+                const viewer = document.getElementById(`viewer-${productId}`);
+                const product = getProductById(productId);
+                if (viewer && product) {
+                    viewer.cameraOrbit = product.camera.orbit;
+                    viewer.cameraTarget = product.camera.target;
+                }
+            });
+        });
+
+        document.querySelectorAll('.color-swatch').forEach(swatch => {
+            swatch.addEventListener('click', (event) => {
+                const swatchEl = event.target;
+                const productId = swatchEl.dataset.productId;
+                const viewer = document.getElementById(`viewer-${productId}`);
+                if (viewer) {
+                    viewer.src = swatchEl.dataset.src;
+                }
+            });
+        });
+
+        document.querySelectorAll('.ar-button').forEach(button => {
+            button.addEventListener('click', (event) => {
+                const productId = event.target.dataset.productId;
+                const viewer = document.getElementById(`viewer-${productId}`);
+                if (viewer) {
+                    const modelSrc = viewer.src;
+                    window.open(`viewer.html?model=${encodeURIComponent(modelSrc)}`, '_blank');
+                }
+            });
+        });
+
+        const viewModeToggle = document.getElementById('view-mode-toggle');
+        viewModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('advanced-view');
+            const isAdvanced = document.body.classList.contains('advanced-view');
+            viewModeToggle.textContent = isAdvanced ? 'Clean View' : 'Advanced View';
+        });
+    }
+
+    let allProducts = [];
+    function getProductById(id) {
+        return allProducts.find(p => p.id === id);
+    }
+
+    async function loadProducts() {
+        try {
+            const response = await fetch('products.json');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            allProducts = await response.json();
+            renderProducts(allProducts);
+        } catch (error) {
+            console.error("Could not load products:", error);
+            productGrid.innerHTML = '<p>Error loading products. Please try again later.</p>';
+        }
     }
 
     loadProducts();

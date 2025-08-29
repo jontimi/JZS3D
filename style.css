@@ -18,6 +18,19 @@ header {
     padding: 1rem 0;
     text-align: center;
     margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+}
+
+#view-mode-toggle {
+    padding: 0.5rem 1rem;
+    background: #fff;
+    color: #333;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
 #product-grid {
@@ -77,4 +90,13 @@ header {
     border-radius: 5px;
     cursor: pointer;
     text-align: center;
+}
+
+.product-card .controls {
+    display: none; /* Hidden by default */
+    margin-top: 1rem;
+}
+
+.advanced-view .product-card .controls {
+    display: block; /* Shown in advanced view */
 }

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AR Viewer</title>
+  <script type="module" src="https://unpkg.com/@google/model-viewer@3.4.0/dist/model-viewer.min.js"></script>
+  <style>
+    body, html { margin: 0; padding: 0; width: 100%; height: 100%; }
+    model-viewer { width: 100%; height: 100%; }
+  </style>
+</head>
+<body>
+  <model-viewer id="ar-viewer"
+    ar
+    ar-modes="webxr scene-viewer quick-look"
+    ar-scale="fixed"
+    camera-controls
+    alt="A 3D model of a piece of furniture">
+  </model-viewer>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const viewer = document.getElementById('ar-viewer');
+      const params = new URLSearchParams(window.location.search);
+      const modelSrc = params.get('model');
+
+      if (modelSrc) {
+        viewer.src = modelSrc;
+        // Automatically activate AR mode
+        setTimeout(() => {
+            viewer.activateAR();
+        }, 100);
+      } else {
+        document.body.innerHTML = '<p>No model specified.</p>';
+      }
+    });
+  </script>
+</body>
+</html>
