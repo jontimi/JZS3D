@@ -1,39 +1,45 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const productGrid = document.getElementById('product-grid');
+    const productViewerContainer = document.getElementById('product-viewer-container');
+    const productSelect = document.getElementById('product-select');
+    const viewModeToggle = document.getElementById('view-mode-toggle');
 
-    async function loadProducts() {
+    let allProducts = [];
+    let currentProduct = null;
+
+    async function initializeApp() {
         try {
             const response = await fetch('products.json');
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            allProducts = await response.json();
+
+            populateProductSelect();
+
+            if (allProducts.length > 0) {
+                // Load the first product by default
+                currentProduct = allProducts[0];
+                renderProduct(currentProduct);
             }
-            const products = await response.json();
-            renderProducts(products);
+
+            addEventListeners();
         } catch (error) {
-            console.error("Could not load products:", error);
-            productGrid.innerHTML = '<p>Error loading products. Please try again later.</p>';
+            console.error("Could not initialize app:", error);
+            productViewerContainer.innerHTML = '<p>Error loading products. Please try again later.</p>';
         }
     }
 
-    function renderProducts(products) {
-        if (!products || products.length === 0) {
-            productGrid.innerHTML = '<p>No products found.</p>';
-            return;
-        }
+    function populateProductSelect() {
+        allProducts.forEach(product => {
+            const option = document.createElement('option');
+            option.value = product.id;
+            option.textContent = product.name;
+            productSelect.appendChild(option);
+        });
+    }
 
-        productGrid.innerHTML = products.map(product => `
-            <div class="product-card" id="product-${product.id}">
-                <h2>${product.name}</h2>
-                <div class="dimensions">
-                    <strong>Dimensions:</strong>
-                    ${product.dimensions.width}m (W) &times;
-                    ${product.dimensions.height}m (H) &times;
-                    ${product.dimensions.depth}m (D)
-                </div>
-                <div class="materials">
-                    <strong>Materials:</strong> ${product.materials.join(', ')}
-                </div>
-
+    function renderProduct(product) {
+        currentProduct = product;
+        productViewerContainer.innerHTML = `
+            <div class="viewer-column">
                 <model-viewer
                     src="${product.variants[0].src}"
                     alt="${product.name}"
@@ -41,66 +47,49 @@ document.addEventListener('DOMContentLoaded', () => {
                     auto-rotate
                     camera-orbit="${product.camera.orbit}"
                     camera-target="${product.camera.target}"
-                    id="viewer-${product.id}">
+                    id="viewer-${product.id}"
+                    loading="eager"
+                    reveal="auto">
+                    <div class="loading-indicator" slot="progress-bar"></div>
                 </model-viewer>
-
-                <div class="controls">
-                    <button class="reset-view-button" data-product-id="${product.id}">Reset View</button>
+            </div>
+            <div class="info-column">
+                <h2>${product.name}</h2>
+                <div class="dimensions">
+                    <strong>Dimensions:</strong>
+                    ${(product.dimensions.width * 100).toFixed(0)}cm (W) &times;
+                    ${(product.dimensions.height * 100).toFixed(0)}cm (H) &times;
+                    ${(product.dimensions.depth * 100).toFixed(0)}cm (D)
                 </div>
-
-                <div class="color-swatches" id="swatches-${product.id}">
-                    ${product.variants.map(variant => `
-                        <div class="color-swatch"
+                <div class="materials">
+                    <strong>Materials:</strong> ${product.materials.join(', ')}
+                </div>
+                <div class="color-swatches">
+                    ${product.variants.map((variant, index) => `
+                        <div class="color-swatch ${index === 0 ? 'active' : ''}"
                              style="background-color: ${variant.color};"
-                             data-src="${variant.src}"
-                             data-product-id="${product.id}">
+                             data-src="${variant.src}">
                         </div>
                     `).join('')}
                 </div>
-
-                <button class="ar-button" data-product-id="${product.id}">View in AR</button>
+                <div class="controls">
+                    <button class="reset-view-button">Reset View</button>
+                </div>
+                <button class="ar-button">View in AR</button>
             </div>
-        `).join('');
-
-        addEventListeners();
+        `;
+        addProductSpecificEventListeners();
     }
 
     function addEventListeners() {
-        document.querySelectorAll('.reset-view-button').forEach(button => {
-            button.addEventListener('click', (event) => {
-                const productId = event.target.dataset.productId;
-                const viewer = document.getElementById(`viewer-${productId}`);
-                const product = getProductById(productId);
-                if (viewer && product) {
-                    viewer.cameraOrbit = product.camera.orbit;
-                    viewer.cameraTarget = product.camera.target;
-                }
-            });
+        productSelect.addEventListener('change', (event) => {
+            const selectedProductId = event.target.value;
+            const product = allProducts.find(p => p.id === selectedProductId);
+            if (product) {
+                renderProduct(product);
+            }
         });
 
-        document.querySelectorAll('.color-swatch').forEach(swatch => {
-            swatch.addEventListener('click', (event) => {
-                const swatchEl = event.target;
-                const productId = swatchEl.dataset.productId;
-                const viewer = document.getElementById(`viewer-${productId}`);
-                if (viewer) {
-                    viewer.src = swatchEl.dataset.src;
-                }
-            });
-        });
-
-        document.querySelectorAll('.ar-button').forEach(button => {
-            button.addEventListener('click', (event) => {
-                const productId = event.target.dataset.productId;
-                const viewer = document.getElementById(`viewer-${productId}`);
-                if (viewer) {
-                    const modelSrc = viewer.src;
-                    window.open(`viewer.html?model=${encodeURIComponent(modelSrc)}`, '_blank');
-                }
-            });
-        });
-
-        const viewModeToggle = document.getElementById('view-mode-toggle');
         viewModeToggle.addEventListener('click', () => {
             document.body.classList.toggle('advanced-view');
             const isAdvanced = document.body.classList.contains('advanced-view');
@@ -108,24 +97,63 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    let allProducts = [];
-    function getProductById(id) {
-        return allProducts.find(p => p.id === id);
-    }
+    function addProductSpecificEventListeners() {
+        const viewer = productViewerContainer.querySelector('model-viewer');
 
-    async function loadProducts() {
-        try {
-            const response = await fetch('products.json');
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            allProducts = await response.json();
-            renderProducts(allProducts);
-        } catch (error) {
-            console.error("Could not load products:", error);
-            productGrid.innerHTML = '<p>Error loading products. Please try again later.</p>';
+        productViewerContainer.querySelectorAll('.color-swatch').forEach(swatch => {
+            swatch.addEventListener('click', (event) => {
+                viewer.src = event.target.dataset.src;
+                productViewerContainer.querySelector('.color-swatch.active').classList.remove('active');
+                event.target.classList.add('active');
+            });
+        });
+
+        const resetButton = productViewerContainer.querySelector('.reset-view-button');
+        if (resetButton) {
+            resetButton.addEventListener('click', () => {
+                viewer.cameraOrbit = currentProduct.camera.orbit;
+                viewer.cameraTarget = currentProduct.camera.target;
+            });
         }
+
+        const arButton = productViewerContainer.querySelector('.ar-button');
+        if (arButton) {
+            arButton.addEventListener('click', () => {
+                // A simple check for AR support.
+                if (navigator.xr) {
+                    const modelSrc = viewer.src;
+                    window.open(`viewer.html?model=${encodeURIComponent(modelSrc)}`, '_blank');
+                } else {
+                    generateAndShowQRCode();
+                }
+            });
+        }
+
+        const modal = document.getElementById('qr-modal');
+        const closeButton = modal.querySelector('.close-button');
+        closeButton.addEventListener('click', () => modal.style.display = 'none');
+        modal.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
     }
 
-    loadProducts();
+    function generateAndShowQRCode() {
+        const viewer = productViewerContainer.querySelector('model-viewer');
+        const modelSrc = viewer.src;
+        const arUrl = `${window.location.href.replace('index.html', '')}viewer.html?model=${encodeURIComponent(modelSrc)}`;
+
+        const qrcodeContainer = document.getElementById('qrcode');
+        qrcodeContainer.innerHTML = ''; // Clear previous QR code
+        new QRCode(qrcodeContainer, {
+            text: arUrl,
+            width: 256,
+            height: 256,
+        });
+
+        document.getElementById('qr-modal').style.display = 'flex';
+    }
+
+    initializeApp();
 });
