@@ -1,13 +1,23 @@
 [
   {
+    "id": "dolton-armchair-hudson",
+    "name": "Dolton Armchair Hudson",
+    "dimensions": { "width": 0.88, "height": 1.01, "depth": 0.79 },
+    "materials": ["Polyester Fabric", "Solid Wood Legs"],
+    "camera": { "orbit": "0deg 75deg 2.5m", "target": "0m 0.5m 0m" },
+    "variants": [
+      { "name": "Cream", "color": "#F5F5DC", "src": "models/Sofas/dolton_armchair_hudson_cream.glb" },
+      { "name": "Gray", "color": "#A9A9A9", "src": "models/Sofas/dolton_armchair_hudson_grey.glb" }
+    ]
+  },
+  {
     "id": "wasily-chair",
     "name": "Wasily Chair",
     "dimensions": { "width": 0.79, "height": 0.73, "depth": 0.69 },
     "materials": ["Genuine Leather", "Chrome Plated Steel"],
     "camera": { "orbit": "0deg 75deg 2m", "target": "0m 0.3m 0m" },
     "variants": [
-      { "name": "Black", "color": "#000000", "src": "models/Sofas/wasily_chair.glb" },
-      { "name": "Gray", "color": "#A8A8A8", "src": "models/Sofas/wasily_chair.glb" }
+      { "name": "Black", "color": "#000000", "src": "models/Sofas/wasily_chair.glb" }
     ]
   },
   {
@@ -17,18 +27,7 @@
     "materials": ["Faux Leather", "Powder-Coated Metal"],
     "camera": { "orbit": "0deg 75deg 3m", "target": "0m 0.4m 0m" },
     "variants": [
-      { "name": "Black", "color": "#000000", "src": "models/Sofas/BLACKSofa.glb" },
-      { "name": "Dark Gray", "color": "#404040", "src": "models/Sofas/BLACKSofa.glb" }
-    ]
-  },
-  {
-    "id": "dolton-armchair-hudson",
-    "name": "Dolton Armchair Hudson",
-    "dimensions": { "width": 0.88, "height": 1.01, "depth": 0.79 },
-    "materials": ["Polyester Fabric", "Solid Wood Legs"],
-    "camera": { "orbit": "0deg 75deg 2.5m", "target": "0m 0.5m 0m" },
-    "variants": [
-      { "name": "Gray", "color": "#888888", "src": "models/Sofas/dolton_armchair_hudson_grey.glb" }
+      { "name": "Black", "color": "#000000", "src": "models/Sofas/BLACKSofa.glb" }
     ]
   },
   {
@@ -38,9 +37,7 @@
     "materials": ["Solid Wood", "Linen Blend Fabric"],
     "camera": { "orbit": "0deg 75deg 3.5m", "target": "0m 0.3m 0m" },
     "variants": [
-      { "name": "Tan", "color": "#C19A6B", "src": "models/Sofas/sofawood.glb" },
-      { "name": "Beige", "color": "#D2B48C", "src": "models/Sofas/sofawood.glb" },
-      { "name": "Black", "color": "#000000", "src": "models/Sofas/sofawood.glb" }
+      { "name": "Tan", "color": "#C19A6B", "src": "models/Sofas/sofawood.glb" }
     ]
   },
   {
@@ -60,8 +57,7 @@
     "materials": ["Painted Steel", "Polished Aluminum"],
     "camera": { "orbit": "0deg 65deg 2.5m", "target": "0m 0.7m 0m" },
     "variants": [
-      { "name": "Black", "color": "#000000", "src": "models/Lamps/floor_lamp.glb" },
-      { "name": "White", "color": "#E0E0E0", "src": "models/Lamps/floor_lamp.glb" }
+      { "name": "Black", "color": "#000000", "src": "models/Lamps/floor_lamp.glb" }
     ]
   },
   {
@@ -71,8 +67,7 @@
     "materials": ["Brushed Aluminum", "Steel"],
     "camera": { "orbit": "0deg 65deg 3m", "target": "0m 0.85m 0m" },
     "variants": [
-      { "name": "Charcoal", "color": "#36454F", "src": "models/Lamps/mario_floor_lamp.glb" },
-      { "name": "Silver", "color": "#B0B0B0", "src": "models/Lamps/mario_floor_lamp.glb" }
+      { "name": "Charcoal", "color": "#36454F", "src": "models/Lamps/mario_floor_lamp.glb" }
     ]
   },
   {
@@ -112,8 +107,7 @@
     "materials": ["Particleboard", "Melamine Finish"],
     "camera": { "orbit": "0deg 75deg 2m", "target": "0m 0.35m 0m" },
     "variants": [
-      { "name": "White", "color": "#FFFFFF", "src": "models/Cabinets/ikea_alex_drawer.glb" },
-      { "name": "Light Gray", "color": "#F0F0F0", "src": "models/Cabinets/ikea_alex_drawer.glb" }
+      { "name": "White", "color": "#FFFFFF", "src": "models/Cabinets/ikea_alex_drawer.glb" }
     ]
   }
 ]
