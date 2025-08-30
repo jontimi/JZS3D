@@ -15,9 +15,29 @@ document.addEventListener('DOMContentLoaded', () => {
             populateProductSelect();
 
             if (allProducts.length > 0) {
-                // Load the first product by default
-                currentProduct = allProducts[0];
-                renderProduct(currentProduct);
+                const urlParams = new URLSearchParams(window.location.search);
+                const productId = urlParams.get('product');
+                const variantSrc = urlParams.get('variant');
+
+                let productToLoad = allProducts[0];
+                if (productId) {
+                    const foundProduct = allProducts.find(p => p.id === productId);
+                    if (foundProduct) {
+                        productToLoad = foundProduct;
+                    }
+                }
+
+                renderProduct(productToLoad);
+
+                if (variantSrc) {
+                    const viewer = productViewerContainer.querySelector('model-viewer');
+                    const swatch = productViewerContainer.querySelector(`.color-swatch[data-src="${variantSrc}"]`);
+                    if (viewer && swatch) {
+                        viewer.src = variantSrc;
+                        productViewerContainer.querySelector('.color-swatch.active').classList.remove('active');
+                        swatch.classList.add('active');
+                    }
+                }
             }
 
             addEventListeners();
@@ -55,14 +75,16 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <div class="info-column">
                 <h2>${product.name}</h2>
-                <div class="dimensions">
-                    <strong>Dimensions:</strong>
-                    ${(product.dimensions.width * 100).toFixed(0)}cm (W) &times;
-                    ${(product.dimensions.height * 100).toFixed(0)}cm (H) &times;
-                    ${(product.dimensions.depth * 100).toFixed(0)}cm (D)
-                </div>
-                <div class="materials">
-                    <strong>Materials:</strong> ${product.materials.join(', ')}
+                <div class="advanced-info">
+                    <div class="dimensions">
+                        <strong>Dimensions:</strong>
+                        ${(product.dimensions.width * 100).toFixed(0)}cm (W) &times;
+                        ${(product.dimensions.height * 100).toFixed(0)}cm (H) &times;
+                        ${(product.dimensions.depth * 100).toFixed(0)}cm (D)
+                    </div>
+                    <div class="materials">
+                        <strong>Materials:</strong> ${product.materials.join(', ')}
+                    </div>
                 </div>
                 <div class="color-swatches">
                     ${product.variants.map((variant, index) => `
@@ -74,6 +96,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div class="controls">
                     <button class="reset-view-button">Reset View</button>
+                    <button class="qr-code-button">Show QR Code</button>
+                    <button class="share-button">Share</button>
+                    <div class="environment-controls">
+                        <label for="environment-select">Environment:</label>
+                        <select id="environment-select">
+                            <option value="neutral_lightroom_128.hdr">Neutral</option>
+                            <option value="https://modelviewer.dev/shared-assets/environments/spruit_sunrise_1k_HDR.hdr">Sunrise</option>
+                            <option value="">Default</option>
+                        </select>
+                    </div>
                 </div>
                 <button class="ar-button">View in AR</button>
             </div>
@@ -126,6 +158,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     generateAndShowQRCode();
                 }
+            });
+        }
+
+        const qrButton = productViewerContainer.querySelector('.qr-code-button');
+        if (qrButton) {
+            qrButton.addEventListener('click', generateAndShowQRCode);
+        }
+
+        const shareButton = productViewerContainer.querySelector('.share-button');
+        if (shareButton) {
+            shareButton.addEventListener('click', () => {
+                const modelSrc = viewer.src;
+                const url = new URL(window.location.href);
+                url.searchParams.set('product', currentProduct.id);
+                url.searchParams.set('variant', modelSrc);
+                navigator.clipboard.writeText(url.href).then(() => {
+                    alert('Link copied to clipboard!');
+                });
+            });
+        }
+
+        const environmentSelect = productViewerContainer.querySelector('#environment-select');
+        if (environmentSelect) {
+            environmentSelect.addEventListener('change', (event) => {
+                viewer.environmentImage = event.target.value;
             });
         }
 

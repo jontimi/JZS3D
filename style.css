@@ -86,7 +86,25 @@ model-viewer {
 }
 
 .advanced-view .controls {
-    display: block; /* Shown in advanced view */
+    display: flex; /* Shown in advanced view */
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.controls button, .controls select {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.advanced-info {
+    display: none;
+}
+
+.advanced-view .advanced-info {
+    display: block;
 }
 
 /* Modal Styles */
