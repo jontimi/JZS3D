@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                         <div class="brightness-controls">
                             <label for="brightness-slider">Brightness:</label>
-                            <input type="range" id="brightness-slider" min="0" max="2" value="1" step="0.1">
+                            <input type="range" id="brightness-slider" min="0" max="3" value="1" step="0.1">
                         </div>
                     </div>
                     <button class="ar-button">View in AR</button>
@@ -207,7 +207,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function generateAndShowQRCode() {
         const viewer = productViewerContainer.querySelector('model-viewer');
         const modelSrc = viewer.src;
-        const arUrl = `${window.location.href.replace('index.html', '')}viewer.html?model=${encodeURIComponent(modelSrc)}`;
+
+        let base = window.location.href;
+        const lastSlash = base.lastIndexOf('/');
+        base = base.substring(0, lastSlash + 1);
+        const arUrl = `${base}viewer.html?model=${encodeURIComponent(modelSrc)}`;
 
         const qrcodeContainer = document.getElementById('qrcode');
         qrcodeContainer.innerHTML = ''; // Clear previous QR code

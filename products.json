@@ -86,8 +86,7 @@
     "name": "Bookcase",
     "dimensions": { "width": 0.8, "height": 1.8, "depth": 0.3 },
     "materials": ["Engineered Wood", "Wood Veneer Finish", "Metal Accents"],
-    "camera": { "orbit": "45deg 75deg 7m", "target": "0m 0.9m 0m" },
-    "orientation": "0deg -30deg 0deg",
+    "camera": { "orbit": "65deg 75deg 7m", "target": "0m 0.9m 0m" },
     "variants": [
       { "name": "Light Wood", "color": "#F0EAD6", "src": "models/Cabinets/bookcase.glb" }
     ]
