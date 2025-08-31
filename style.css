@@ -156,6 +156,19 @@ model-viewer {
     display: block;
 }
 
+.info-section {
+    margin-bottom: 1rem;
+}
+
+.info-section h4 {
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    color: #555;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
 .modal-overlay {
     position: fixed;
     top: 0;

@@ -79,14 +79,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="info-column">
                     <h2>${product.name}</h2>
                     <div class="advanced-info">
-                        <div class="dimensions">
-                            <strong>Dimensions:</strong>
-                            ${(product.dimensions.width * 100).toFixed(0)}cm (W) &times;
-                            ${(product.dimensions.height * 100).toFixed(0)}cm (H) &times;
-                            ${(product.dimensions.depth * 100).toFixed(0)}cm (D)
+                    <div class="info-section">
+                        <h4>Dimensions</h4>
+                        <p>${(product.dimensions.width * 100).toFixed(0)}cm (W) &times; ${(product.dimensions.height * 100).toFixed(0)}cm (H) &times; ${(product.dimensions.depth * 100).toFixed(0)}cm (D)</p>
                         </div>
-                        <div class="materials">
-                            <strong>Materials:</strong> ${product.materials.join(', ')}
+                    <div class="info-section">
+                        <h4>Materials</h4>
+                        <p>${product.materials.join(', ')}</p>
                         </div>
                     </div>
                     <div class="color-swatches">
@@ -99,7 +98,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="controls">
                         <button class="reset-view-button">Reset View</button>
-                        <button class="qr-code-button">Show QR Code</button>
                         <button class="share-button">Share</button>
                         <div class="environment-controls">
                             <label for="environment-select">Environment:</label>
@@ -108,6 +106,10 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <option value="https://modelviewer.dev/shared-assets/environments/spruit_sunrise_1k_HDR.hdr">Sunrise</option>
                                 <option value="">Default</option>
                             </select>
+                        </div>
+                        <div class="brightness-controls">
+                            <label for="brightness-slider">Brightness:</label>
+                            <input type="range" id="brightness-slider" min="0" max="2" value="1" step="0.1">
                         </div>
                     </div>
                     <button class="ar-button">View in AR</button>
@@ -165,11 +167,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        const qrButton = productViewerContainer.querySelector('.qr-code-button');
-        if (qrButton) {
-            qrButton.addEventListener('click', generateAndShowQRCode);
-        }
-
         const shareButton = productViewerContainer.querySelector('.share-button');
         if (shareButton) {
             shareButton.addEventListener('click', () => {
@@ -187,6 +184,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (environmentSelect) {
             environmentSelect.addEventListener('change', (event) => {
                 viewer.environmentImage = event.target.value;
+            });
+        }
+
+        const brightnessSlider = productViewerContainer.querySelector('#brightness-slider');
+        if (brightnessSlider) {
+            brightnessSlider.addEventListener('input', (event) => {
+                viewer.exposure = event.target.value;
             });
         }
 
