@@ -4,7 +4,7 @@
     "name": "Dolton Armchair Hudson",
     "dimensions": { "width": 0.88, "height": 1.01, "depth": 0.79 },
     "materials": ["Polyester Fabric", "Solid Wood Legs"],
-    "camera": { "orbit": "45deg 75deg 3m", "target": "0m 0.5m 0m" },
+    "camera": { "orbit": "45deg 75deg 3.5m", "target": "0m 0.5m 0m" },
     "variants": [
       { "name": "Cream", "color": "#F5F5DC", "src": "models/Sofas/dolton_armchair_hudson_cream.glb" },
       { "name": "Gray", "color": "#A9A9A9", "src": "models/Sofas/dolton_armchair_hudson_grey.glb" }
@@ -15,7 +15,7 @@
     "name": "Wasily Chair",
     "dimensions": { "width": 0.79, "height": 0.73, "depth": 0.69 },
     "materials": ["Genuine Leather", "Chrome Plated Steel"],
-    "camera": { "orbit": "-45deg 75deg 2.5m", "target": "0m 0.3m 0m" },
+    "camera": { "orbit": "225deg 75deg 3m", "target": "0m 0.3m 0m" },
     "variants": [
       { "name": "Black", "color": "#000000", "src": "models/Sofas/wasily_chair.glb" }
     ]
@@ -25,7 +25,7 @@
     "name": "Leather Sofa",
     "dimensions": { "width": 2.2, "height": 0.8, "depth": 0.9 },
     "materials": ["Faux Leather", "Powder-Coated Metal"],
-    "camera": { "orbit": "45deg 75deg 4m", "target": "0m 0.4m 0m" },
+    "camera": { "orbit": "45deg 75deg 5.5m", "target": "0m 0.4m 0m" },
     "variants": [
       { "name": "Black", "color": "#000000", "src": "models/Sofas/BLACKSofa.glb" }
     ]
@@ -35,7 +35,7 @@
     "name": "Wood Frame Sofa",
     "dimensions": { "width": 2.0, "height": 0.75, "depth": 0.85 },
     "materials": ["Solid Wood", "Linen Blend Fabric"],
-    "camera": { "orbit": "45deg 75deg 4m", "target": "0m 0.3m 0m" },
+    "camera": { "orbit": "45deg 75deg 5m", "target": "0m 0.3m 0m" },
     "variants": [
       { "name": "Tan", "color": "#C19A6B", "src": "models/Sofas/sofawood.glb" }
     ]
@@ -45,7 +45,7 @@
     "name": "Kumo Coffee Table",
     "dimensions": { "width": 0.8, "height": 0.4, "depth": 0.8 },
     "materials": ["Lacquered MDF"],
-    "camera": { "orbit": "45deg 75deg 2m", "target": "0m 0.1m 0m" },
+    "camera": { "orbit": "45deg 75deg 2.5m", "target": "0m 0.1m 0m" },
     "variants": [
       { "name": "White", "color": "#F8F8F8", "src": "models/Tables/kumo_white_coffee_table.glb" }
     ]
@@ -55,7 +55,7 @@
     "name": "Oluce Coupé – 3321",
     "dimensions": { "width": 0.28, "height": 1.4, "depth": 0.28 },
     "materials": ["Painted Steel", "Polished Aluminum"],
-    "camera": { "orbit": "45deg 75deg 3m", "target": "0m 0.7m 0m" },
+    "camera": { "orbit": "45deg 75deg 3.5m", "target": "0m 0.7m 0m" },
     "variants": [
       { "name": "Black", "color": "#000000", "src": "models/Lamps/floor_lamp.glb" }
     ]
@@ -65,7 +65,7 @@
     "name": "Mario Floor Lamp",
     "dimensions": { "width": 0.5, "height": 1.7, "depth": 0.5 },
     "materials": ["Brushed Aluminum", "Steel"],
-    "camera": { "orbit": "45deg 75deg 3.5m", "target": "0m 0.85m 0m" },
+    "camera": { "orbit": "45deg 75deg 4m", "target": "0m 0.85m 0m" },
     "variants": [
       { "name": "Charcoal", "color": "#36454F", "src": "models/Lamps/mario_floor_lamp.glb" }
     ]
@@ -75,7 +75,7 @@
     "name": "Sweep Floor Lamp",
     "dimensions": { "width": 0.3, "height": 1.5, "depth": 0.3 },
     "materials": ["Matte Black Steel"],
-    "camera": { "orbit": "45deg 75deg 3m", "target": "0m 0.75m 0m" },
+    "camera": { "orbit": "45deg 75deg 3.5m", "target": "0m 0.75m 0m" },
     "variants": [
       { "name": "Black", "color": "#000000", "src": "models/Lamps/sweep_floor_lamp_black.glb" }
     ]
@@ -85,7 +85,7 @@
     "name": "Bookcase",
     "dimensions": { "width": 0.8, "height": 1.8, "depth": 0.3 },
     "materials": ["Engineered Wood", "Wood Veneer Finish", "Metal Accents"],
-    "camera": { "orbit": "45deg 75deg 4m", "target": "0m 0.9m 0m" },
+    "camera": { "orbit": "45deg 75deg 5.5m", "target": "0m 0.9m 0m" },
     "variants": [
       { "name": "Light Wood", "color": "#F0EAD6", "src": "models/Cabinets/bookcase.glb" }
     ]
@@ -95,7 +95,7 @@
     "name": "Oak Wardrobe",
     "dimensions": { "width": 1.2, "height": 2.0, "depth": 0.6 },
     "materials": ["Solid Oak Wood", "Oak Veneer"],
-    "camera": { "orbit": "45deg 75deg 5m", "target": "0m 1m 0m" },
+    "camera": { "orbit": "45deg 75deg 6.5m", "target": "0m 1m 0m" },
     "variants": [
       { "name": "Cream", "color": "#F5F5DC", "src": "models/Cabinets/closet_oak_white.glb" }
     ]
@@ -105,7 +105,7 @@
     "name": "IKEA Alex Drawer",
     "dimensions": { "width": 0.36, "height": 0.7, "depth": 0.58 },
     "materials": ["Particleboard", "Melamine Finish"],
-    "camera": { "orbit": "45deg 75deg 2.5m", "target": "0m 0.35m 0m" },
+    "camera": { "orbit": "45deg 75deg 3m", "target": "0m 0.35m 0m" },
     "variants": [
       { "name": "White", "color": "#FFFFFF", "src": "models/Cabinets/ikea_alex_drawer.glb" }
     ]
