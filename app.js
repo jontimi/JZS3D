@@ -59,14 +59,16 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderProduct(product) {
         currentProduct = product;
         productViewerContainer.innerHTML = `
-            <div class="viewer-column">
-                <model-viewer
-                    src="${product.variants[0].src}"
+            <div class="product-main-view">
+                <div class="viewer-column">
+                    <model-viewer
+                        src="${product.variants[0].src}"
                     alt="${product.name}"
                     camera-controls
                     auto-rotate
                     camera-orbit="${product.camera.orbit}"
                     camera-target="${product.camera.target}"
+                    field-of-view="auto"
                     id="viewer-${product.id}"
                     loading="eager"
                     reveal="auto">
@@ -109,6 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <button class="ar-button">View in AR</button>
             </div>
+        </div>
         `;
         addProductSpecificEventListeners();
     }
