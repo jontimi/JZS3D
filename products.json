@@ -15,7 +15,8 @@
     "name": "Wasily Chair",
     "dimensions": { "width": 0.79, "height": 0.73, "depth": 0.69 },
     "materials": ["Genuine Leather", "Chrome Plated Steel"],
-    "camera": { "orbit": "225deg 75deg 4m", "target": "0m 0.3m 0m" },
+    "camera": { "orbit": "45deg 75deg 4m", "target": "0m 0.3m 0m" },
+    "orientation": "0deg 180deg 0deg",
     "variants": [
       { "name": "Black", "color": "#000000", "src": "models/Sofas/wasily_chair.glb" }
     ]

@@ -63,55 +63,56 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="viewer-column">
                     <model-viewer
                         src="${product.variants[0].src}"
-                    alt="${product.name}"
-                    camera-controls
-                    auto-rotate
-                    camera-orbit="${product.camera.orbit}"
-                    camera-target="${product.camera.target}"
-                    field-of-view="auto"
-                    id="viewer-${product.id}"
-                    loading="eager"
-                    reveal="auto">
-                    <div class="loading-indicator" slot="progress-bar"></div>
-                </model-viewer>
-            </div>
-            <div class="info-column">
-                <h2>${product.name}</h2>
-                <div class="advanced-info">
-                    <div class="dimensions">
-                        <strong>Dimensions:</strong>
-                        ${(product.dimensions.width * 100).toFixed(0)}cm (W) &times;
-                        ${(product.dimensions.height * 100).toFixed(0)}cm (H) &times;
-                        ${(product.dimensions.depth * 100).toFixed(0)}cm (D)
-                    </div>
-                    <div class="materials">
-                        <strong>Materials:</strong> ${product.materials.join(', ')}
-                    </div>
+                        alt="${product.name}"
+                        camera-controls
+                        auto-rotate
+                        orientation="${product.orientation || '0deg 0deg 0deg'}"
+                        data-camera-orbit="${product.camera.orbit}"
+                        data-camera-target="${product.camera.target}"
+                        field-of-view="auto"
+                        id="viewer-${product.id}"
+                        loading="eager"
+                        reveal="auto">
+                        <div class="loading-indicator" slot="progress-bar"></div>
+                    </model-viewer>
                 </div>
-                <div class="color-swatches">
-                    ${product.variants.map((variant, index) => `
-                        <div class="color-swatch ${index === 0 ? 'active' : ''}"
-                             style="background-color: ${variant.color};"
-                             data-src="${variant.src}">
+                <div class="info-column">
+                    <h2>${product.name}</h2>
+                    <div class="advanced-info">
+                        <div class="dimensions">
+                            <strong>Dimensions:</strong>
+                            ${(product.dimensions.width * 100).toFixed(0)}cm (W) &times;
+                            ${(product.dimensions.height * 100).toFixed(0)}cm (H) &times;
+                            ${(product.dimensions.depth * 100).toFixed(0)}cm (D)
                         </div>
-                    `).join('')}
-                </div>
-                <div class="controls">
-                    <button class="reset-view-button">Reset View</button>
-                    <button class="qr-code-button">Show QR Code</button>
-                    <button class="share-button">Share</button>
-                    <div class="environment-controls">
-                        <label for="environment-select">Environment:</label>
-                        <select id="environment-select">
-                            <option value="neutral_lightroom_128.hdr">Neutral</option>
-                            <option value="https://modelviewer.dev/shared-assets/environments/spruit_sunrise_1k_HDR.hdr">Sunrise</option>
-                            <option value="">Default</option>
-                        </select>
+                        <div class="materials">
+                            <strong>Materials:</strong> ${product.materials.join(', ')}
+                        </div>
                     </div>
+                    <div class="color-swatches">
+                        ${product.variants.map((variant, index) => `
+                            <div class="color-swatch ${index === 0 ? 'active' : ''}"
+                                 style="background-color: ${variant.color};"
+                                 data-src="${variant.src}">
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="controls">
+                        <button class="reset-view-button">Reset View</button>
+                        <button class="qr-code-button">Show QR Code</button>
+                        <button class="share-button">Share</button>
+                        <div class="environment-controls">
+                            <label for="environment-select">Environment:</label>
+                            <select id="environment-select">
+                                <option value="neutral_lightroom_128.hdr">Neutral</option>
+                                <option value="https://modelviewer.dev/shared-assets/environments/spruit_sunrise_1k_HDR.hdr">Sunrise</option>
+                                <option value="">Default</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="ar-button">View in AR</button>
                 </div>
-                <button class="ar-button">View in AR</button>
             </div>
-        </div>
         `;
         addProductSpecificEventListeners();
     }
@@ -146,16 +147,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const resetButton = productViewerContainer.querySelector('.reset-view-button');
         if (resetButton) {
             resetButton.addEventListener('click', () => {
-                viewer.cameraOrbit = currentProduct.camera.orbit;
-                viewer.cameraTarget = currentProduct.camera.target;
+                viewer.cameraOrbit = viewer.dataset.cameraOrbit;
+                viewer.cameraTarget = viewer.dataset.cameraTarget;
             });
         }
 
         const arButton = productViewerContainer.querySelector('.ar-button');
         if (arButton) {
             arButton.addEventListener('click', () => {
-                // A simple check for AR support.
-                if (navigator.xr) {
+                const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+                if (isMobile) {
                     const modelSrc = viewer.src;
                     window.open(`viewer.html?model=${encodeURIComponent(modelSrc)}`, '_blank');
                 } else {
