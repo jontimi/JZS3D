@@ -107,10 +107,6 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <option value="">Default</option>
                             </select>
                         </div>
-                        <div class="brightness-controls">
-                            <label for="brightness-slider">Brightness:</label>
-                            <input type="range" id="brightness-slider" min="0" max="3" value="1" step="0.1">
-                        </div>
                     </div>
                     <button class="ar-button">View in AR</button>
                 </div>
@@ -184,13 +180,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (environmentSelect) {
             environmentSelect.addEventListener('change', (event) => {
                 viewer.environmentImage = event.target.value;
-            });
-        }
-
-        const brightnessSlider = productViewerContainer.querySelector('#brightness-slider');
-        if (brightnessSlider) {
-            brightnessSlider.addEventListener('input', (event) => {
-                viewer.exposure = event.target.value;
             });
         }
 
